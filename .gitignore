@@ -12,3 +12,4 @@
 /web/.htaccess
 /composer.lock
 /app/logs/.gitkeep
+/.idea/
