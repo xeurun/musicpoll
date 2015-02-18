@@ -19,8 +19,26 @@
         "sensio/distribution-bundle": "~2.3",
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "sensio/generator-bundle": "~2.3",
-        "incenteev/composer-parameter-handler": "~2.0"
+        "incenteev/composer-parameter-handler": "~2.0",
+        "lzaztec/notification-bundle": "dev-master"
     },
+    "repositories": [
+        {
+            "type":"package",
+            "package":{
+                "name":"dklab/realplexor",
+                "version": "1.41",
+                "source":{
+                    "type":"git",
+                    "url":"https://github.com/DmitryKoterov/dklab_realplexor",
+                    "reference":"master"
+                },
+                "autoload":{
+                    "classmap":["api/php/Dklab/"]
+                }
+            }
+        }
+    ],
     "scripts": {
         "post-install-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",

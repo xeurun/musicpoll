@@ -67,3 +67,7 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+
+lz_aztec_notification:
+    realplexor_ns: musicpoll    # Realplexor namespace to use (allowed alphanumeric characters and the underscore character)
+    js_api_host: http://rpl.player.com/  # JS API host to listen for notifications

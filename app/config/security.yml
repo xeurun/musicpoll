@@ -10,8 +10,16 @@ security:
         in_memory:
             memory:
                 users:
-                    user:  { password: userpass, roles: [ 'ROLE_USER' ] }
-                    admin: { password: adminpass, roles: [ 'ROLE_ADMIN' ] }
+                    vova: { password: vova_player, roles: [ 'ROLE_ADMIN' ] }
+                    oleg:  { password: oleg_rap, roles: [ 'ROLE_USER' ] }
+                    valera:  { password: valera_valera, roles: [ 'ROLE_USER' ] }
+                    natasha:  { password: natasha_girl, roles: [ 'ROLE_USER' ] }
+                    sergei:  { password: sergei_18, roles: [ 'ROLE_USER' ] }
+                    alexandr:  { password: alexandr_null, roles: [ 'ROLE_USER' ] }
+                    alex:  { password: mrpenis, roles: [ 'ROLE_USER' ] }
+                    alex2:  { password: alex_dup, roles: [ 'ROLE_USER' ] }
+                    marat:  { password: marat_23, roles: [ 'ROLE_USER' ] }
+                    artem:  { password: artem_90, roles: [ 'ROLE_USER' ] }
 
     firewalls:
         dev:
@@ -22,7 +30,15 @@ security:
             pattern:  ^/admin/login$
             security: false
 
-        secured_area:
+        work_area:
+            pattern:    ^/
+            form_login:
+                check_path: security_check
+                login_path: login
+            logout:
+                path:   logout
+
+        admin_area:
             pattern:    ^/admin/
             form_login:
                 check_path: security_check
@@ -35,4 +51,5 @@ security:
 
     access_control:
         - { path: ^/admin/, roles: ROLE_ADMIN }
-        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
+        - { path: ^/, roles: ROLE_USER }
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }

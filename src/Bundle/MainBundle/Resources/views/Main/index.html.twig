@@ -1,19 +1,75 @@
 {% extends 'MainBundle::layout.html.twig' %}
 
 {% block body %}
+    <button type="button" class="js-add-song add-song btn btn-primary btn-lg" data-toggle="modal" data-target="#add-modal">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+    </button>
     <main>
-        <section class="info">
-            <h2>
-                <span>Алексей Степанков</span>
-            </h2>
-            <p>Разработчик</p>
-        </section>
-        <section class="navigation">
-            <nav>
-                <a class="active">Я</a>
-                <a>Проекты</a>
-                <a>Контакты</a>
-            </nav>
+        <section>
+            <ul id="poll" class="list-group">
+                {% for entity in entities %}
+                    {% include 'MainBundle::Main/songTemplate.html.twig' %}
+                {% endfor %}
+            </ul>
         </section>
     </main>
+    <div class="modal fade" id="add-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Добавить музон</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ path('add') }}" method="post">
+                        <p>
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">name</span>
+                                <input type="text" class="form-control" name="data[name]" placeholder="Name" aria-describedby="basic-addon1">
+                            </div>
+                        </p>
+                        <p>
+                            <select name="data[type]">
+                                <option value="VK">Vkontakte</option>
+                                <option value="YT">YouTube</option>
+                            </select>
+                        </p>
+                        <p>
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">url</span>
+                                <input type="text" class="form-control" name="data[link]" placeholder="Url" aria-describedby="basic-addon1">
+                            </div>
+                        </p>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary js-ajax-form">Окай</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Неа</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="error-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Ошибочка</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" role="alert">
+                        <p class="js-description">
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Окай</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <audio style="display:none;" controls>
+        <source src="http://api.xeurun.ml/uploads/no.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 {% endblock %}

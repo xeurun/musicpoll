@@ -1,0 +1,15 @@
+<li class="mix panel panel-primary item-{{ entity.id }}" data-count="{{ entity.counter }}">
+    <div class="panel-heading pull-right">
+        <span class="badge">
+            <span style="cursor: pointer;" class="glyphicon glyphicon-hand-up js-ajax" data-url="{{ path('vote', {'id': entity.id, 'choose': 'true'}) }}" aria-hidden="true"></span>
+            <span style="cursor: pointer;" class="glyphicon glyphicon-hand-down js-ajax" data-url="{{ path('vote', {'id': entity.id, 'choose': 'false'}) }}" aria-hidden="true"></span>
+            <span class="js-counter">{{ entity.counter }}</span>
+        </span>
+    </div>
+    <div class="panel-body">
+        {{ entity.name }}
+    </div>
+    <div class="panel-footer">
+        {{ entity.link }}
+    </div>
+</li>

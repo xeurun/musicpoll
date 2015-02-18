@@ -1,76 +1,21 @@
-body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #FBE9E7;
-    color: #263238;
+@font-face {
+    font-family: "Material-Design-Icons";
+    src: url('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/fonts/Material-Design-Icons.eot'); /* IE9 Compat Modes */
+    src: url('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/fonts/Material-Design-Icons.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/fonts/Material-Design-Icons.woff') format('woff'), /* Pretty Modern Browsers */
+    url('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/fonts/Material-Design-Icons.ttf')  format('truetype'), /* Safari, Android, iOS */
+    url('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/fonts/Material-Design-Icons.svg') format('svg'); /* Legacy iOS */
 }
 
-.info {
-    padding: 150px;
-    text-align: center;
+main {
+    padding: 10px;
 }
 
-    .info h2 {
-        width: 100%;
-        font-size: 72px;
-        margin: 0;
-    }
-
-        .info h2 span {
-            padding-bottom: 5px;
-            border-bottom: 3px solid black;
-        }
-
-    .info p {
-        font-size: 24px;
-    }
-
-main nav {
-    display: flex;
-    justify-content: center;
+#poll > li {
+    width: 350px;
     list-style: none;
-    background-color: #FF5722;
-    text-align: center;
-    padding: 5px 0;
 }
-    main nav a {
-        display: none;
-        width: 128px;
-        height: 64px;
-        line-height: 64px;
-        cursor: pointer;
-        font-size: 18px;
-        margin-left: 5px;
-    }
 
-    main nav a.active {
-        cursor: default;
-        border: 1px dashed;
-    }
-
-    main nav a:not(.active):hover {
-        -webkit-animation-name: tada;
-        animation-name: tada;
-        -webkit-animation-duration: 3s;
-        animation-duration: 3s;
-        -webkit-animation-fill-mode: both;
-        animation-fill-mode: both;
-        -webkit-animation-timing-function: linear;
-        animation-timing-function: linear;
-        animation-iteration-count:infinite;
-        -webkit-animation-iteration-count:infinite;
-    }
-
-    @-webkit-keyframes tada {
-        0% {-webkit-transform: scale(1);}
-        10%, 20% {-webkit-transform: scale(0.9) rotate(-3deg);}
-        30%, 50%, 70%, 90% {-webkit-transform: scale(1.1) rotate(3deg);}
-        40%, 60%, 80% {-webkit-transform: scale(1.1) rotate(-3deg);}
-        100% {-webkit-transform: scale(1) rotate(0);}
-    }
-    @keyframes tada {
-        0% {transform: scale(1);}
-        10%, 20% {transform: scale(0.9) rotate(-3deg);}
-        30%, 50%, 70%, 90% {transform: scale(1.1) rotate(3deg);}
-        40%, 60%, 80% {transform: scale(1.1) rotate(-3deg);}
-        100% {transform: scale(1) rotate(0);}
-    }
+#poll > li.top {
+    border: 1px solid red;
+}

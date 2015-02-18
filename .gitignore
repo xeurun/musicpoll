@@ -13,3 +13,5 @@
 /composer.lock
 /app/logs/.gitkeep
 /.idea/
+/web/js/
+/web/css/
