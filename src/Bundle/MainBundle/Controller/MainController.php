@@ -40,25 +40,24 @@ class MainController extends BaseController
         $response = new JsonResponse();
         $jsonData = array();
         try {
-            $voteRepository = $this->getRepository('vote');
-            //if(!$vote = $voteRepository->findBy(array('song' => $id, 'author' => $this->getUser()->getUsername()))) {
+            if(!$vote = $this->getRepository('vote')->findBy(array('song' => $id, 'author' => $this->getUser()))) {
                 $repository = $this->getRepository('song');
                 if($song = $repository->find($id)) {
                     $rpl = new \Dklab_Realplexor("127.0.0.1", "10010", "musicpoll");
                     $count = $song->getCounter();
                     $choose === 'true' ? $count++ : $count--;
                     $song->setCounter($count);
-                    //$vote = new Vote();
-                    //$vote->setSong($song->getId());
-                    //$vote->setAuthor($this->getUser()->getUsername());
-                    //$voteRepository->save($vote);
+                    $vote = new Vote();
+                    $vote->setSong($song);
+                    $vote->setAuthor($this->getUser());
+                    $song->addVote($vote);
                     $repository->save($song);
                     $jsonData['count'] = $count;
-                    $rpl->send(array("Update_Song"), array('count' => $count, 'id' => $song->getId()));
+                    $rpl->send("Update_Song", array('count' => $count, 'id' => $song->getId()));
                 }
-            //} else {
-                //$jsonData['error'] = 'Вы уже голосовали!';
-            //}
+            } else {
+                $jsonData['error'] = 'Вы уже голосовали!';
+            }
         } catch (\Exception $ex) {
             return $this->generateError('repository.get', $ex);
         }
@@ -77,25 +76,53 @@ class MainController extends BaseController
         $response = new JsonResponse();
         $rpl = new \Dklab_Realplexor("127.0.0.1", "10010", "musicpoll");
         $data = $request->get('data');
-        if(empty($data) || !isset($data['name']) || !isset($data['type']) || !isset($data['link'])) {
+        if(empty($data) || !isset($data['name']) || !isset($data['type']) || !isset($data['link']) || empty($data['name']) || empty($data['type']) || empty($data['link'])) {
             return $response;
         }
         /** @var Songrepository $songRepository */
         $songRepository = $this->getRepository('song');
         $song = new Song();
-        $song->setAuthor($this->getUser()->getUsername());
+        $song->setAuthor($this->getUser());
         $song->setName($data['name']);
         $song->setLink($data['link']);
-        $song->setCounter(0);
+        $song->setCounter(1);
         $song->setType($data['type']);
-
+        $songRepository->save($song);
+        $songRepository->refresh($song);
+        $vote = new Vote();
+        $vote->setSong($song);
+        $vote->setAuthor($this->getUser());
+        $song->addVote($vote);
         $songRepository->save($song);
         $response->setJsonContent(array('view' => $this->renderView("MainBundle:Main:songTemplate.html.twig", array(
             'entity' => $song,
         ))));
-        $rpl->send(array("Add_Song"), $this->renderView("MainBundle:Main:songTemplate.html.twig", array(
+        $rpl->send("Add_Song", $this->renderView("MainBundle:Main:songTemplate.html.twig", array(
             'entity' => $song,
         )));
+
+        return $response;
+    }
+
+    /**
+     * @Route("/remove/{id}", requirements={"id" = "\d+"}, name="remove")
+     * @Method("POST")
+     */
+    public function removeAction(Request $request, $id)
+    {
+        $response = new JsonResponse();
+        if (!$this->getUser()->hasRole('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException();
+        }
+        $rpl = new \Dklab_Realplexor("127.0.0.1", "10010", "musicpoll");
+        /** @var Songrepository $songRepository */
+        $songRepository = $this->getRepository('song');
+        if($song = $songRepository->find($id)) {
+            $songRepository->remove($song);
+            $rpl->send("Remove_Song", array('id' => $id));
+        } else {
+            $response->setJsonContent(array('error' => 'Ошибка!'));
+        }
 
         return $response;
     }

@@ -1,7 +1,6 @@
-admin:
-    resource: @AdminBundle/Controller/
-    type:     annotation
-
 main:
     resource: @MainBundle/Controller/
     type:     annotation
+
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"

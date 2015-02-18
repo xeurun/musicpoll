@@ -23,16 +23,15 @@ class Vote extends BaseEntity
     private $id;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="song", type="integer")
-     */
+     * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\Song\Song", inversedBy="votes")
+     * @ORM\JoinColumn(name="songId", referencedColumnName="id", nullable=false, onDelete="CASCADE")
+     **/
     private $song;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="author", type="string", nullable=false)
+     * Идентификатор автора
+     * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\User", inversedBy="votes")
+     * @ORM\JoinColumn(nullable=true, name="authorId", referencedColumnName="id", onDelete="CASCADE")
      */
     private $author;
 
@@ -55,22 +54,6 @@ class Vote extends BaseEntity
     /**
      * @return int
      */
-    public function getAuthor()
-    {
-        return $this->author;
-    }
-
-    /**
-     * @param int $author
-     */
-    public function setAuthor($author)
-    {
-        $this->author = $author;
-    }
-
-    /**
-     * @return int
-     */
     public function getSong()
     {
         return $this->song;
@@ -82,5 +65,26 @@ class Vote extends BaseEntity
     public function setSong($song)
     {
         $this->song = $song;
+    }
+
+    /**
+     * Set author
+     * @param \Bundle\CommonBundle\Entity\User $author
+     * @return $this
+     */
+    public function setAuthor(\Bundle\CommonBundle\Entity\User $author)
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
+    /**
+     * Get author
+     * @return User
+     */
+    public function getAuthor()
+    {
+        return $this->author;
     }
 }

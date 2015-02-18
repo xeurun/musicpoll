@@ -20,6 +20,7 @@ framework:
     session:         ~
     fragments:       ~
     http_method_override: true
+    translator: ~
 
 # Twig Configuration
 twig:
@@ -30,7 +31,7 @@ twig:
 assetic:
     debug:          "%kernel.debug%"
     use_controller: false
-    bundles:        [ AdminBundle, MainBundle ]
+    bundles:        [ MainBundle ]
     #java: /usr/bin/java
     filters:
         cssrewrite: ~
@@ -69,5 +70,10 @@ swiftmailer:
     spool:     { type: memory }
 
 lz_aztec_notification:
-    realplexor_ns: musicpoll    # Realplexor namespace to use (allowed alphanumeric characters and the underscore character)
-    js_api_host: http://rpl.player.com/  # JS API host to listen for notifications
+    realplexor_ns: %realplexor_ns%    # Realplexor namespace to use (allowed alphanumeric characters and the underscore character)
+    js_api_host: %realplexor_host%  # JS API host to listen for notifications
+
+fos_user:
+    db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
+    firewall_name: main
+    user_class: Bundle\CommonBundle\Entity\User

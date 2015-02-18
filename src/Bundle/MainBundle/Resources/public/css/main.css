@@ -11,9 +11,26 @@ main {
     padding: 10px;
 }
 
+#add-song {
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+
+#popup-message {
+    display: none;
+}
+
+.panel .panel-body,
+.panel .panel-footer {
+    word-break: break-all;
+}
+
 #poll > li {
-    width: 350px;
     list-style: none;
+    max-width: 650px;
+    min-width: 200px;
+    overflow: hidden;
 }
 
 #poll > li.top {

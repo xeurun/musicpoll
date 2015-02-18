@@ -101,12 +101,6 @@ class BaseRepository extends EntityRepository
         $this->start();
         try {
             $em = $this->getEntityManager();
-            $id = $entity->getId();
-
-            /** Удаляем изображения */
-            $this->_checkImageAndRemove($entity);
-            /** Вызывает обработку слушателей событий в репозиториях */
-            $this->preRemove($entity);
 
             $em->remove($entity);
             $em->flush();

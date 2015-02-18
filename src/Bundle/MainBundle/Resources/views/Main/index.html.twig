@@ -1,9 +1,12 @@
 {% extends 'MainBundle::layout.html.twig' %}
 
 {% block body %}
-    <button type="button" class="js-add-song add-song btn btn-primary btn-lg" data-toggle="modal" data-target="#add-modal">
+    <button type="button" id="add-song" class="js-add-song btn btn-primary btn-lg" data-toggle="modal" data-target="#add-modal">
         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
     </button>
+    <div id="popup-message" class="alert pull-right" role="alert">
+        <strong></strong> <span></span>
+    </div>
     <main>
         <section>
             <ul id="poll" class="list-group">
@@ -13,63 +16,74 @@
             </ul>
         </section>
     </main>
-    <div class="modal fade" id="add-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="player">
+        <div class="modal-dialog" style="width: 700px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Player</h4>
+                </div>
+                <div class="modal-body">
+                    <div></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="add-modal" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Добавить музон</h4>
+                    <h4 class="modal-title" id="myModalLabel">Добавить контент</h4>
                 </div>
                 <div class="modal-body">
                     <form action="{{ path('add') }}" method="post">
                         <p>
                             <div class="input-group">
                                 <span class="input-group-addon" id="basic-addon1">name</span>
-                                <input type="text" class="form-control" name="data[name]" placeholder="Name" aria-describedby="basic-addon1">
+                                <input id="song-title" type="text" class="form-control" name="data[name]" placeholder="Name" aria-describedby="basic-addon1">
                             </div>
                         </p>
                         <p>
-                            <select name="data[type]">
-                                <option value="VK">Vkontakte</option>
-                                <option value="YT">YouTube</option>
-                            </select>
+                            <span>
+                                <select id="song-type" name="data[type]" style="width: 30%;">
+                                    <option value="url">URL</option>
+                                    <option value="vk" selected>VK MUSIC</option>
+                                    <option value="img">IMAGE</option>
+                                    <option value="yt">YouTube</option>
+                                </select>
+                            </span>
+                            <span>
+                                <select class="js-ajax-select ajax-select" style="width: 50%;">
+                                    <option></option>
+                                </select>
+                            </span>
+                        </p>
+                        <p>
+                            <span class="label label-info">Для YouTupe ссылка это идентификатор, пример: <ins>ZnuwB35GYMY</ins></span>
                         </p>
                         <p>
                             <div class="input-group">
                                 <span class="input-group-addon" id="basic-addon1">url</span>
-                                <input type="text" class="form-control" name="data[link]" placeholder="Url" aria-describedby="basic-addon1">
+                                <input id="song-url" type="text" class="form-control" name="data[link]" placeholder="Url" aria-describedby="basic-addon1">
                             </div>
+                        </p>
+                        <p>
+                            <audio id="preview-player" controls preload="none">
+                                <source src="http://api.xeurun.ml/uploads/no.mp3" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
                         </p>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary js-ajax-form">Окай</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Неа</button>
+                    <button type="button" class="btn btn-primary js-ajax-form">Добавить</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="modal fade" id="error-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Ошибочка</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-danger" role="alert">
-                        <p class="js-description">
-                        </p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Окай</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <audio style="display:none;" controls>
-        <source src="http://api.xeurun.ml/uploads/no.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
 {% endblock %}
