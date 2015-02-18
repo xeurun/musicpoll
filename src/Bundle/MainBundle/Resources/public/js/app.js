@@ -47,7 +47,7 @@ $(document).ready(function() {
         reindex();
     }
 
-    $('.js-play-song').on('click', function () {
+    $('body').on('click', '.js-play-song', function() {
         $(this).closest('li').find('.panel-footer').clone().replaceAll("#player .modal-body > div");
         $("#player").find('audio').trigger('play');
         $("#player").modal('show');
@@ -94,14 +94,14 @@ $(document).ready(function() {
                 return {
                     results: $.map(data.response.items, function (item) {
                         return {
-                            text: item.title,
+                            text: item.title.length > 30 ? (item.title.substring(0, 30) + '...') : item.title,
                             url: item.url,
                             id: item.id
                         }
                     })
                 };
             },
-            cache: true
+            cache: false
         },
         minimumInputLength: 2
     }).on("select2:select", function (e) {
@@ -179,10 +179,10 @@ $(document).ready(function() {
             });
         e.preventDefault();
     });
-    $('.js-ajax-form').off('click').on('click', function() {
+    $('.js-ajax-form').on('click', function() {
         $("form").submit();
     });
-    $('body').off('click').on('click', '.js-ajax', function() {
+    $('body').on('click', '.js-ajax', function() {
         $.ajax({
             url: $(this).data('url'),
             type: "POST",
