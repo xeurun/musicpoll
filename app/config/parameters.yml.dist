@@ -19,5 +19,7 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
 
-    realplexor_ns: musicpoll
-    realplexor_host: http://rpl.musicpoll.ml/
+    realplexor_url: http://rpl.musicpoll.ml/
+    realplexor_host: 127.0.0.1
+    realplexor_port: 10010
+    realplexor_namespace: musicpoll

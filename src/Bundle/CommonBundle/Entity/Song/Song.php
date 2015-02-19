@@ -25,16 +25,16 @@ class Song extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="text", nullable=false)
+     * @ORM\Column(name="title", type="text", nullable=false)
      */
-    private $name;
+    private $title;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="link", type="text", nullable=false)
+     * @ORM\Column(name="url", type="text", nullable=false)
      */
-    private $link;
+    private $url;
 
     /**
      * @var string
@@ -51,14 +51,14 @@ class Song extends BaseEntity
     private $counter;
 
     /**
-     * @ORM\OneToMany(targetEntity="Bundle\CommonBundle\Entity\Vote\Vote", mappedBy="song", cascade="persist")
+     * @ORM\OneToMany(targetEntity="Bundle\CommonBundle\Entity\Vote\Vote", mappedBy="song")
      **/
     private $votes;
 
     /**
      * Идентификатор автора
      * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\User", inversedBy="songs")
-     * @ORM\JoinColumn(nullable=true, name="authorId", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(nullable=true, name="authorId", referencedColumnName="id")
      */
     private $author;
 
@@ -83,33 +83,33 @@ class Song extends BaseEntity
     /**
      * @return string
      */
-    public function getName()
+    public function getTitle()
     {
-        return $this->name;
+        return $this->title;
     }
 
     /**
-     * @param string $name
+     * @param string $title
      */
-    public function setName($name)
+    public function setTitle($title)
     {
-        $this->name = $name;
+        $this->title = $title;
     }
 
     /**
      * @return string
      */
-    public function getLink()
+    public function getUrl()
     {
-        return $this->link;
+        return $this->url;
     }
 
     /**
-     * @param string $link
+     * @param string $url
      */
-    public function setLink($link)
+    public function setUrl($url)
     {
-        $this->link = $link;
+        $this->url = $url;
     }
 
     /**

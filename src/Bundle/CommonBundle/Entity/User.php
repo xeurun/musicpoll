@@ -19,6 +19,13 @@ class User extends BaseUser
     protected $id;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="fullname", type="text", nullable=false)
+     */
+    protected $fullname;
+
+    /**
      * @ORM\OneToMany(targetEntity="Bundle\CommonBundle\Entity\Song\Song", mappedBy="author")
      **/
     private $songs;
@@ -34,12 +41,31 @@ class User extends BaseUser
     }
 
     /**
+     * @return string
+     */
+    public function getFullname()
+    {
+        return $this->fullname;
+    }
+
+    /**
+     * @param string $fullname
+     * @return User
+     */
+    public function setFullname($fullname)
+    {
+        $this->fullname = $fullname;
+
+        return $this;
+    }
+
+    /**
      * Add vote
      *
      * @param \Bundle\CommonBundle\Entity\Vote\Vote $vote
      * @return User
      */
-    public function addtVote(\Bundle\CommonBundle\Entity\Vote\Vote $vote)
+    public function addVote(\Bundle\CommonBundle\Entity\Vote\Vote $vote)
     {
         $this->votes[] = $vote;
 
@@ -51,7 +77,7 @@ class User extends BaseUser
      *
      * @param \Bundle\CommonBundle\Entity\Vote\Vote $vote
      */
-    public function removetVote(\Bundle\CommonBundle\Entity\Vote\Vote $vote)
+    public function removeVote(\Bundle\CommonBundle\Entity\Vote\Vote $vote)
     {
         $this->votes->removeElement($vote);
     }

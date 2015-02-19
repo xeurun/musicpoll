@@ -1,6 +1,4 @@
 $(document).ready(function() {
-    var token = '71fcc118d02b311e47dbbc57f315952a3080a5fb68cf4f283107d18e971999f5e1fe61f53b1a7b58f39d9',
-        api = 'https://api.vk.com/method/_method_',
         showPopup = function(type, message) {
             $('#popup-message').removeClass('alert-success');
             $('#popup-message').removeClass('alert-info');
@@ -130,30 +128,6 @@ $(document).ready(function() {
             $('#preview-player').show();
         }, 1000);
     });
-    realplexor.registerCallback("Add", function (result) {
-        return function (result, id) {
-            $('#poll').append(result);
-            reindex();
-        };
-    });
-    realplexor.registerCallback("Update", function (result) {
-        return function (result, id) {
-            var selector = '.item-' + result['id'];
-            $(selector).find('.js-counter').text(result['count']);
-            $(selector).attr('data-count', result['count']);
-            reindex();
-        };
-    });
-    realplexor.registerCallback("Remove", function (result) {
-        return function (result, id) {
-            $('.item-' + result['id']).remove();
-            reindex();
-        };
-    });
-    realplexor.subscribeChannel("Add_Song");
-    realplexor.subscribeChannel("Update_Song");
-    realplexor.subscribeChannel("Remove_Song");
-    realplexor.startListen();
     $("form").submit(function(e)
     {
         var postData = $(this).serializeArray();
@@ -181,22 +155,5 @@ $(document).ready(function() {
     });
     $('.js-ajax-form').on('click', function() {
         $("form").submit();
-    });
-    $('body').on('click', '.js-ajax', function() {
-        $.ajax({
-            url: $(this).data('url'),
-            type: "POST",
-            beforeSend: function(){
-            },
-            success: function(data) {
-                if (data.count != undefined) {
-                    showPopup('success', 'Голос учтен!');
-                } else if (data.error) {
-                    showPopup('error', data.error);
-                }
-            },
-            complete: function() {
-            }
-        });
     });
 });

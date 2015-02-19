@@ -2,23 +2,130 @@
 
 {% block stylesheets %}
     {% stylesheets filter='cssrewrite'
-        'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css'
-        'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css'
-        '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-beta.3/css/select2.min.css'
+        '//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css'
+        '@MainBundle/Resources/public/css/select.css'
+        '@MainBundle/Resources/public/css/ng-table.css'
         '@MainBundle/Resources/public/css/main.css'
     output='css/style.css' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
 {% endblock %}
 {% block javascripts %}
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    {{ init_notification('realplexor') }}
     {% javascripts
-        'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js'
-        '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-beta.3/js/select2.min.js'
-        '//cdnjs.cloudflare.com/ajax/libs/tinysort/2.1.1/tinysort.min.js'
-        '//cdnjs.cloudflare.com/ajax/libs/masonry/3.2.2/masonry.pkgd.min.js'
-        '@MainBundle/Resources/public/js/app.js'
+        '@MainBundle/Resources/public/js/lib/dklab_realplexor.js'
+        '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.4/angular.min.js'
+        '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.4/angular-sanitize.js'
+        '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.4/angular-animate.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script>
+        (function() {
+            "use strict";
+
+            angular
+            .module ('musicpoll', [ 'ui.bootstrap', 'ui.select', 'ngAnimate', 'ngSanitize' ])
+            .run(function($rootScope) {
+                $rootScope.realplexor = new Dklab_Realplexor('{{ config.realplexor_url }}', '{{ config.realplexor_namespace }}');
+                $rootScope.realplexor.subscribe("Add_Song", function(data) {
+                    $rootScope.$broadcast('song:add', data);
+                });
+                $rootScope.realplexor.subscribe("Remove_Song", function(data) {
+                    $rootScope.$broadcast('song:remove', data);
+                });
+                $rootScope.realplexor.subscribe("Update_Song", function(data) {
+                    $rootScope.$broadcast('song:update', data);
+                });
+                $rootScope.realplexor.subscribe("Mute_Song", function(data) {
+                    $rootScope.$broadcast('song:mute', data);
+                });
+                $rootScope.realplexor.execute();
+            })
+            .config (function($interpolateProvider, $sceDelegateProvider, $httpProvider) {
+                $interpolateProvider.startSymbol('[[ ').endSymbol(' ]]');
+                $sceDelegateProvider.resourceUrlWhitelist([
+                    'self',
+                    'http://cs*.vk.me/**'
+                ]);
+                $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+                $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+            })
+            .constant ("Config", {
+                Routing: {
+                    vote:       '{{ path('vote', {'id': '_ID_', 'choose': '_CHOOSE_'}) }}',
+                    remove:     '{{ path('remove', {'id': '_ID_'}) }}',
+                    add:        '{{ path('add') }}',
+                    form:       '{{ path('form') }}',
+                    api:        '{{ url('api') }}',
+                    mute:       '{{ path('mute', {'on': '_TYPE_' }) }}',
+                    getPortion: '{{ path('get_portion', {'offset': '_OFFSET_' }) }}',
+                    vk_api:     'https://api.vk.com/method/_method_'
+                },
+                userId: {{ app.user.id }},
+                token:  '71fcc118d02b311e47dbbc57f315952a3080a5fb68cf4f283107d18e971999f5e1fe61f53b1a7b58f39d9',
+            })
+            .filter('orderObjectBy', function() {
+                return function(items, field, reverse) {
+                    var filtered = [];
+
+                    angular.forEach(items, function(item) {
+                        filtered.push(item);
+                    });
+                    filtered.sort(function (a, b) {
+                        return (a[field] > b[field] ? 1 : -1);
+                    });
+                    if(reverse) {
+                        filtered.reverse();
+                    }
+
+                    return filtered;
+                };
+            })
+            .filter('points', function() {
+                return function(input, limit) {
+                    if (Math.abs(Number(limit)) === Infinity) {
+                        limit = Number(limit);
+                    } else {
+                        limit = parseInt(limit);
+                    }
+                    if (isNaN(limit)) return input;
+
+                    if (angular.isNumber(input)) input = input.toString();
+                    if (!angular.isArray(input) && !angular.isString(input)) return input;
+
+                    var result = input.slice(0, limit);
+                    if(input.length > limit + 3) {
+                        result += '...';
+                    }
+                    return result;
+                };
+            })
+            .filter('filterObjectBy', function($filter) {
+                var filter = $filter('filter');
+
+                return function(map, expression, comparator) {
+                    if (!expression) {
+                        return map;
+                    }
+
+                    var result = {};
+                    angular.forEach(map, function(data, index) {
+                        if (filter([data], expression, comparator).length) {
+                            result[index] = data;
+                        }
+                    });
+
+                    return result;
+                }
+            });
+        })();
+    </script>
+    {% javascripts
+        '@MainBundle/Resources/public/js/Modules/*'
+        '@MainBundle/Resources/public/js/Models/*'
+        '@MainBundle/Resources/public/js/Services/*'
+        '@MainBundle/Resources/public/js/Directives/*'
+        '@MainBundle/Resources/public/js/Controllers/*'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}

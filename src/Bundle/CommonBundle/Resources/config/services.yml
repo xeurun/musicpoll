@@ -2,6 +2,15 @@ services:
 #    common.example:
 #        class: Bundle\CommonBundle\Example
 #        arguments: [@service_id, "plain_value", %parameter%]
+    kernel.event_listener.json_request_transformer:
+        class: Bundle\CommonBundle\EventListener\JsonRequestTransformerListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 100 }
+
+    drklab.realplexor.manager:
+        class: Bundle\CommonBundle\Service\RealplexorManager
+        arguments: [ %realplexor.params% ]
+
     base.repository:
         class: Bundle\CommonBundle\Entity\BaseRepository
         factory_service: doctrine.orm.entity_manager

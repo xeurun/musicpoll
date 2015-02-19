@@ -1,38 +1,61 @@
-@font-face {
-    font-family: "Material-Design-Icons";
-    src: url('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/fonts/Material-Design-Icons.eot'); /* IE9 Compat Modes */
-    src: url('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/fonts/Material-Design-Icons.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-    url('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/fonts/Material-Design-Icons.woff') format('woff'), /* Pretty Modern Browsers */
-    url('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/fonts/Material-Design-Icons.ttf')  format('truetype'), /* Safari, Android, iOS */
-    url('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/fonts/Material-Design-Icons.svg') format('svg'); /* Legacy iOS */
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+@-webkit-keyframes fadeOut {
+    0% {opacity: 1;}
+    100% {opacity: 0;}
+}
+
+@keyframes fadeOut {
+    0% {opacity: 1;}
+    100% {opacity: 0;}
 }
 
 main {
     padding: 10px;
+    width: 940px;
+    margin: 0 auto;
 }
 
-#add-song {
+ul > li {
+    list-style: none;
+    overflow: hidden;
+}
+
+.add-new-song {
     margin-left: 10px;
     margin-top: 10px;
 }
 
+.circle-button,
+.circle-button:focus,
+.circle-button:hover,
+.circle-button:active {
+    border-radius: 100px;
+    outline: 0 !important;
+}
+    .circle-button span {
+        line-height: 24px;
+    }
 
-#popup-message {
-    display: none;
+.badge > span {
+    cursor: pointer;
 }
 
-.panel .panel-body,
-.panel .panel-footer {
-    word-break: break-all;
+.alert.ng-hide-add {
+    -webkit-animation: 5s fadeOut ease;
+    animation: 5s fadeOut ease;
 }
 
-#poll > li {
-    list-style: none;
-    max-width: 650px;
-    min-width: 200px;
-    overflow: hidden;
+.player {
+    width: 300px;
+    height: 70px;
+    border-bottom-left-radius: 100px;
+    border-bottom-right-radius: 100px;
+    margin: 0 auto;
+    background: #ADADAD;
+    text-align: center;
 }
 
-#poll > li.top {
-    border: 1px solid red;
-}
+    .player div.btn-group {
+        margin-top: 10px;
+    }

@@ -1,0 +1,53 @@
+<div class="modal-header">
+    <h3 class="modal-title">Добавить музыку</h3>
+</div>
+<div class="modal-body">
+    <form novalidate action="{{ path('add') }}" method="post">
+        <p class="input-group">
+            <span class="input-group-addon">Название:</span>
+            <span>{{ form_widget(songForm.title) }}</span>
+        </p>
+        <p class="clearfix">
+            <ui-select ng-model="form.song.type"
+                       theme="bootstrap"
+                       reset-search-input="false"
+                       class="pull-left"
+                       style="width: 30%;">
+                <ui-select-match placeholder="{{ 'song.placeholder.search.type'|trans }}">[[ $select.selected ]]</ui-select-match>
+                <ui-select-choices repeat="type in types track by $index">
+                    <span ng-bind-html="type | highlight: $select.search"></span>
+                </ui-select-choices>
+            </ui-select>
+            <ui-select ng-model="songs.selected"
+                       theme="bootstrap"
+                       class="pull-right"
+                       style="width: 60%;">
+                <ui-select-match placeholder="{{ 'song.placeholder.search.song'|trans }}">[[ $select.selected.title ]]</ui-select-match>
+                <ui-select-choices repeat="song in songs track by $index"
+                     refresh="refreshSongs($select.search)"
+                     refresh-delay="100">
+                    <span ng-bind-html="song.title | highlight: $select.search | points:30"></span>
+                    </br>
+                    <small ng-bind-html="song.artist | points:30"></small>
+                </ui-select-choices>
+            </ui-select>
+        </p>
+        <p class="input-group">
+            <span class="input-group-addon">Ссылка:</span>
+            <span>{{ form_widget(songForm.url) }}</span>
+            <span class="input-group-addon" ng-class="form.song.url ? '' : 'hidden'">
+                <button style="padding: 0 5px;" type="button" ng-class="playing ? 'btn-danger' : 'btn-success'" class="btn btn-xs"  ng-click="playPreview($event)">
+                    <span class="glyphicon glyphicon-play" ng-hide="playing || !form.song.url"></span>
+                    <span class="glyphicon glyphicon-pause" ng-show="playing"></span>
+                </button>
+            </span>
+        </p>
+        <p class="hidden">
+            <input type="hidden" name="_token" ng-init="form.song._token='{{ songForm._token.vars.value }}'" value="{{ songForm._token.vars.value }}"/>
+        </p>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="ok()">OK</button>
+    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+</div>

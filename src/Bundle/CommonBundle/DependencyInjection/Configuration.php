@@ -19,6 +19,15 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('common');
+        $rootNode
+            ->children()
+            ->arrayNode('realplexor')
+            ->isRequired()
+            ->children()
+            ->scalarNode('url')->isRequired()->cannotBeEmpty()->end()
+            ->scalarNode('host')->isRequired()->cannotBeEmpty()->end()
+            ->scalarNode('port')->defaultValue(10010)->end()
+            ->scalarNode('namespace')->isRequired()->cannotBeEmpty()->end();
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for

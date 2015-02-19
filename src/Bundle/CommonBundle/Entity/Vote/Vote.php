@@ -23,17 +23,27 @@ class Vote extends BaseEntity
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\Song\Song", inversedBy="votes")
-     * @ORM\JoinColumn(name="songId", referencedColumnName="id", nullable=false, onDelete="CASCADE")
+     * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\Song\Song", inversedBy="votes", cascade={"persist"})
+     * @ORM\JoinColumn(name="songId", referencedColumnName="id", onDelete="CASCADE", nullable=false)
      **/
     private $song;
 
     /**
      * Идентификатор автора
-     * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\User", inversedBy="votes")
-     * @ORM\JoinColumn(nullable=true, name="authorId", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\User", inversedBy="votes", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true, name="authorId", referencedColumnName="id", onDelete="CASCADE", nullable=false)
      */
     private $author;
+
+    /**
+     * @param \Bundle\CommonBundle\Entity\Song\Song $song
+     * @param \Bundle\CommonBundle\Entity\User $author
+     */
+    public function __construct($song, $author)
+    {
+        $this->song = $song;
+        $this->author = $author;
+    }
 
     /**
      * @return int
@@ -52,7 +62,7 @@ class Vote extends BaseEntity
     }
 
     /**
-     * @return int
+     * @return \Bundle\CommonBundle\Entity\Song\Song
      */
     public function getSong()
     {
@@ -60,7 +70,7 @@ class Vote extends BaseEntity
     }
 
     /**
-     * @param int $song
+     * @param \Bundle\CommonBundle\Entity\Song\Song $song
      */
     public function setSong($song)
     {

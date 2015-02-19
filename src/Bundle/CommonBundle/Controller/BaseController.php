@@ -3,7 +3,8 @@
 namespace Bundle\CommonBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Form\FormInterface;
+use Bundle\CommonBundle\Response\JsonResponse;
 
 /**
  * Class BaseController
@@ -15,6 +16,8 @@ class BaseController extends Controller
     const ERROR_DOMAIN = 'error';
     /** Окружение разработки */
     const ENV_DEV = 'dev';
+    /** Form domain */
+    const FORM_DOMAIN = 'form';
 
     /**
      * @param $entityName
@@ -47,6 +50,47 @@ class BaseController extends Controller
     }
 
     /**
+     * Возвращает json ответ с ошибкой
+     * @param string $message
+     * @param \Exception $e
+     * @param FormInterface $form
+     * @throws \Exception
+     */
+    protected function getJsonError($message, \Exception $e = null)
+    {
+        $translatedMessage = $this->getTranslate($message, self::ERROR_DOMAIN);
+        if (!is_null($e) && ($this->getEnvironment() == self::ENV_DEV)) {
+            throw new \Exception ($translatedMessage, 0, $e);
+        } else {
+        }
+    }
+
+    /**
+     * Собирает ошибки формы
+     * @param \Bundle\CommonBundle\Controller\FormInterface $form
+     */
+    protected function getFormError(FormInterface $form)
+    {
+        $message = '';
+        foreach ($form->getErrors() as $error) {
+            $message .= sprintf("%s\n", $error->getMessage());
+        }
+        foreach ($form->all() as $children) {
+            $name = $this->getTranslate(sprintf('%s.%s', $form->getName(), $children->getName()), self::FORM_DOMAIN);
+            foreach ($children->getErrors() as $error) {
+                $key = sprintf('%s.%s%s', $form->getName(), $children->getName(), self::FORM_TRANS_POSTFIX);
+                $erm = $this->getTranslate($key, self::FORM_DOMAIN, $error->getMessageParameters());
+                if ($erm == $key) {
+                    $erm = $error->getMessage();
+                };
+                $message .= sprintf("<span>%s:</span> %s\n", $name, $erm);
+            }
+        }
+
+        return $message;
+    }
+
+    /**
      * Генерирование ошибки
      * @param $message
      * @param \Exception $e
@@ -56,35 +100,20 @@ class BaseController extends Controller
      * @return JsonResponse|RedirectResponse
      * @throws \Exception
      */
-    protected function generateError($message, \Exception $e = null, $route_name = 'homepage', FormInterface $form = null, $translateParams = array())
+    protected function generateError($message, \Exception $e = null, FormInterface $form = null, $translateParams = array())
     {
-        /** переводим сообщение */
         $translatedMessage = $this->getTranslate($message, self::ERROR_DOMAIN, $translateParams);
-
-        /** собираем ошибки формы */
-        if (! is_null($form)) {
+        if (!is_null($form)) {
             $formError = $this->getFormError($form);
             $translatedMessage = (empty($message))
                 ? $formError
                 : sprintf('%s<br>%s', $translatedMessage, $formError);
         }
 
-        /** для отладки */
         if (!is_null($e) && ($this->getEnvironment() == self::ENV_DEV)) {
             throw new \Exception ($translatedMessage, 0, $e);
         }
 
-        /** если ajax запрос */
-        if ($this->getRequest()->isXmlHttpRequest()) {
-            $json = new JsonResponse();
-            $json->setError($translatedMessage);
-            $json->setStatusCode(417);//417 Expectation Failed "ожидаемое неприемлемо"
-
-            return $json;
-        } else {
-            $this->_setFlashError($translatedMessage);
-
-            return $this->redirect($this->generateUrl($route_name));
-        }
+        return $translatedMessage;
     }
 }
