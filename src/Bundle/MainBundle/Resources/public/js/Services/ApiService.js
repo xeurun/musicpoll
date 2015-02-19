@@ -47,9 +47,9 @@
             data = data ? this.serializeData(data) : data;
             $http.post(url, data).
                 success(function(response, status, headers, config) {
-                    if (!response.error) {
+                    if (!response.error && response.message) {
                         $rootScope.$broadcast('popup:show', {type: 'success', 'message': response.message});
-                    } else {
+                    }else if(response.error) {
                         $rootScope.$broadcast('popup:show', {type: 'danger', 'message': response.error});
                     }
                 }).

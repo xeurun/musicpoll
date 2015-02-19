@@ -12,26 +12,30 @@
     <div ng-controller="PlayerController as player">
         <div class="player">
             <div class="btn-group" role="group">
-                <a class="btn btn-primary btn-lg" ng-disabled="player.playing == null" ng-click="player.play()">
-                    <span ng-hide="player.playing" class="glyphicon glyphicon-play"></span>
-                    <span ng-show="player.playing" class="glyphicon glyphicon-pause"></span>
-                </a>
-                <a class="btn btn-primary btn-lg" ng-click="player.next()">
-                    <span ng-show="player.song" class="glyphicon glyphicon-forward"></span>
-                    <span ng-hide="player.song" class="glyphicon glyphicon-cd"></span>
-                </a>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a class="btn btn-primary btn-lg" ng-disabled="player.playing == null" ng-click="player.play()">
+                        <span ng-hide="player.playing" class="glyphicon glyphicon-play"></span>
+                        <span ng-show="player.playing" class="glyphicon glyphicon-pause"></span>
+                    </a>
+                    <a class="btn btn-primary btn-lg" ng-click="player.next()">
+                        <span ng-show="player.song" class="glyphicon glyphicon-forward"></span>
+                        <span ng-hide="player.song" class="glyphicon glyphicon-cd"></span>
+                    </a>
+                {% endif %}
                 <a class="btn btn-primary btn-lg" ng-click="player.mute()">
                     <span ng-hide="player.muted" class="glyphicon glyphicon-volume-down"></span>
                     <span ng-show="player.muted" class="glyphicon glyphicon-volume-up"></span>
                 </a>
-                <div class="btn-group-vertical" role="group" style="margin-left: 3px;">
-                    <a style="margin-top: 1px;" ng-disabled="!player.song" class="btn btn-primary btn-xs">
-                        <span class="glyphicon glyphicon-chevron-up" ng-click="player.setVolume(true)"></span>
-                    </a>
-                    <a style="margin-top: 1px;" ng-disabled="!player.song" class="btn btn-primary btn-xs">
-                        <span class="glyphicon glyphicon-chevron-down" ng-click="player.setVolume(false)"></span>
-                    </a>
-                </div>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <div class="btn-group-vertical" role="group" style="margin-left: 3px;">
+                        <a style="margin-top: 1px;" ng-disabled="!player.song" class="btn btn-primary btn-xs">
+                            <span class="glyphicon glyphicon-chevron-up" ng-click="player.setVolume(true)"></span>
+                        </a>
+                        <a style="margin-top: 1px;" ng-disabled="!player.song" class="btn btn-primary btn-xs">
+                            <span class="glyphicon glyphicon-chevron-down" ng-click="player.setVolume(false)"></span>
+                        </a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -81,9 +85,12 @@
                 <ul style="overflow-y: scroll;overflow-x: hidden;height:500px;" class="list-group" lr-infinite-scroll="list.nextBlock" scroll-threshold="200" time-threshold="600">
                     <li ng-repeat="song in list.songs | filterObjectBy:{ 'author': list.authorId } | filterObjectBy:list.searchText:'title' | orderObjectBy:list.top ? 'counter' : 'id':true" class="list-group-item">
                         <span class="badge">
-                            <span ng-click="list.like([[ song.id ]])" class="glyphicon glyphicon-hand-up js-ajax"></span>
-                            <span ng-click="list.dislike([[ song.id ]])" class="glyphicon glyphicon-hand-down js-ajax"></span>
-                            <span ng-click="list.remove([[ song.id ]])" class="glyphicon glyphicon glyphicon-remove js-ajax"></span>
+                            <span ng-click="list.like([[ song.id ]])" class="glyphicon glyphicon-hand-up"></span>
+                            <span ng-click="list.dislike([[ song.id ]])" class="glyphicon glyphicon-hand-down"></span>
+                            <span ng-click="list.play([[ song.id ]])" ng-class="{'glyphicon-play': !list.playing[[[ song.id ]]], 'glyphicon-stop': list.playing[[[ song.id ]]]}" class="glyphicon"></span>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <span ng-click="list.remove([[ song.id ]])" class="glyphicon glyphicon-remove"></span>
+                            {% endif %}
                             [[ song.counter ]]
                         </span>
                         [[ song.title ]]

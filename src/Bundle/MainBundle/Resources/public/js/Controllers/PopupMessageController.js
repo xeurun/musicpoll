@@ -14,7 +14,7 @@
             self.show       = true;
             $timeout(function() {
                 self.show = false;
-            }, 500);
+            }, 3000);
         });
     };
 

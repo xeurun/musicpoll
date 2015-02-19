@@ -52,8 +52,11 @@ ul > li {
     border-bottom-left-radius: 100px;
     border-bottom-right-radius: 100px;
     margin: 0 auto;
-    background: #ADADAD;
+    background: #EFEFEF;
     text-align: center;
+    -webkit-box-shadow: inset 0px 0px 4px 0px #000;
+    -moz-box-shadow: inset 0px 0px 4px 0px #000;
+    box-shadow: inset 0px 0px 4px 0px #000;
 }
 
     .player div.btn-group {

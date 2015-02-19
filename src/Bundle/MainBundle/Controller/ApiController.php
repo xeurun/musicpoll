@@ -90,7 +90,7 @@ class ApiController extends BaseController
         $response = new JsonResponse();
         $jsonData = array();
         try {
-            //if(!$vote = $this->getRepository('vote')->findBy(array('song' => $id, 'author' => $this->getUser()))) {
+            if(!$vote = $this->getRepository('vote')->findBy(array('song' => $id, 'author' => $this->getUser()))) {
                 $repository = $this->getRepository('song');
                 if($song = $repository->find($id)) {
                     $count = $song->getCounter();
@@ -99,14 +99,20 @@ class ApiController extends BaseController
                     $vote = new Vote($song, $this->getUser());
                     $song->addVote($vote);
                     $this->getRepository('vote')->save($vote);
-                    $jsonData['message'] = 'Голос учтен!';
-                    $this->get('drklab.realplexor.manager')->send("Update_Song", array('id' => $song->getId(), 'count' => $count));
+                    $this->get('drklab.realplexor.manager')->send("Update_Song", array(
+                        'id' => $song->getId(),
+                        'count' => $count,
+                        'message' => sprintf("%s проголосовал %s %s!", $this->getUser()->getFullname(),
+                            ($choose === 'true' ? 'за' : 'против'),
+                            $song->getTitle()
+                        )
+                    ));
                 } else {
                     $jsonData['error'] = 'Песня ненайдена!';
                 }
-            //} else {
-            //    $jsonData['error'] = 'Вы уже голосовали!';
-            //}
+            } else {
+                $jsonData['error'] = 'Вы уже голосовали!';
+            }
         } catch (\Exception $ex) {
             $jsonData['error'] = $ex->getMessage();
         }
