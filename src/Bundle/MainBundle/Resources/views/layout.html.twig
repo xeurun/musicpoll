@@ -9,11 +9,16 @@
     output='css/style.css' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
+    <style>[ng-cloak] { display: none; }</style>
 {% endblock %}
 {% block javascripts %}
     {% javascripts
         '@MainBundle/Resources/public/js/lib/dklab_realplexor.js'
-        '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.4/angular.min.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% javascripts
+        '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.4/angular.js'
         '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.4/angular-sanitize.js'
         '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.4/angular-animate.js'
     %}
