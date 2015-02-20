@@ -1,20 +1,22 @@
 (function() {
     "use strict";
 
-    function UserListController(ApiService, Config) {
+    function UserListController($scope, UserManager) {
         var self = this;
 
         this.show = false;
         this.users = [];
 
-        ApiService.get(Config.Routing.getUsers).success(function(data){
-            angular.forEach(data.users, function(value, index) {
-                self.users.push(value);
-            });
+        $scope.$watchCollection(UserManager.getUsers, function(data) {
+            self.users = data;
         });
 
+        this.getCurrentUser = function () {
+            return UserManager.getCurrentUser();
+        };
+
         this.isCurrentUser = function (id) {
-            return id === Config.userId;
+            return UserManager.isCurrentUser(id);
         };
     };
 

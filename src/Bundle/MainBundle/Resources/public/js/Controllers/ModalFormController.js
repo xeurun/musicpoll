@@ -1,16 +1,18 @@
 (function() {
     "use strict";
 
-    function ModalFormController($modal, Config) {
+    function ModalFormController($scope, $rootScope, $modal, Config) {
         this.open = function () {
             $modal.open({
                 templateUrl: Config.Routing.form,
                 controller: 'ModalFormInstanceController'
+            }).result.then(function () {}, function () {
+                $rootScope.$broadcast('modalForm:close');
             });
         };
     };
 
-    function ModalFormInstanceController($scope, $sce, $modalInstance, Config, ApiService, PlayerManager) {
+    function ModalFormInstanceController($scope, $modalInstance, Config, ApiService, PlayerManager) {
         $scope.songs = [];
         $scope.types = ['VK'];
         $scope.form = {
@@ -19,13 +21,15 @@
                 _token: ''
             }
         };
-        $scope.previewPlayer = PlayerManager;
-
-        $scope.$on('player:error', function() {
-            $scope.form.song.url = '';
-            $scope.previewPlayer.pause();
-            $scope.$apply();
-        });
+        $scope.previewPlayer = new PlayerManager(
+            {
+                onerror: function() {
+                    $scope.form.song.url = '';
+                    $scope.previewPlayer.pause();
+                    $scope.$apply();
+                }
+            }
+        );
 
         $scope.$watch('songs.selected', function(newValue) {
             $scope.previewPlayer.pause();
@@ -38,44 +42,43 @@
         });
 
         $scope.save = function () {
-            $scope.previewPlayer.pause();
             ApiService.sendRequest(Config.Routing.add, $scope.form);
-            $scope.song = {};
             $modalInstance.dismiss('save');
         };
 
         $scope.playPreview = function ($event) {
             if($event) $event.preventDefault();
-            if((!$scope.previewPlayer.getState().pause && !$scope.previewPlayer.getState().playing) || $scope.previewPlayer.getState().pause) {
+            if(!$scope.previewPlayer.getState().playing) {
                 $scope.previewPlayer.playByUrl($scope.form.song.url);
             } else {
                 $scope.previewPlayer.pause();
             }
         };
 
-        $scope.trustAsHtml = function(value) {
-            return $sce.trustAsHtml(value);
+        $scope.refreshSongs = function(term) {
+            if(term.length > 2) {
+                ApiService.getJsonP(
+                    Config.Routing.vk_api.replace('_method_', 'audio.search'),
+                    {
+                        callback: 'JSON_CALLBACK',
+                        q: term,
+                        auto_complete: 1,
+                        access_token: Config.token,
+                        v: '5.28'
+                    }
+                ).then(function(response) {
+                    if(response.data.response) {
+                        $scope.songs = response.data.response.items
+                    }
+                });
+            };
         };
 
-        $scope.refreshSongs = function(term) {
-            return ApiService.getJsonP(
-                Config.Routing.vk_api.replace('_method_', 'audio.search'),
-                {
-                    callback: 'JSON_CALLBACK',
-                    q: term,
-                    auto_complete: 1,
-                    access_token: Config.token,
-                    v: '5.28'
-                }
-            ).then(function(response) {
-                if(response.data.response) {
-                    $scope.songs = response.data.response.items
-                }
-            });
-        };
+        $scope.$on('modalForm:close', function() {
+            $scope.previewPlayer.pause();
+        });
 
         $scope.cancel = function () {
-            $scope.previewPlayer.pause();
             $modalInstance.dismiss('cancel');
         };
     };

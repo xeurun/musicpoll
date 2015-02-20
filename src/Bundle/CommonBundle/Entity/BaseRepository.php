@@ -4,10 +4,10 @@ namespace Bundle\CommonBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\ORMException;
-use Symfony\Component\Security\Core\SecurityContext;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Security\Core\SecurityContext;
 
 /**
  * BaseRepository
@@ -16,6 +16,8 @@ class BaseRepository extends EntityRepository
 {
     /** @var Container */
     private $container;
+    /** @var \Bundle\CommonBundle\Entity\User */
+    protected $currentUser;
 
     /**
      * @param $container
@@ -34,6 +36,27 @@ class BaseRepository extends EntityRepository
     public function getContainer()
     {
         return $this->container;
+    }
+
+    /**
+     * Устанавливает авторизованного пользователя в св-во currentUser из SecurityContext
+     * @param SecurityContext $securityContext
+     */
+    public function setSecurityContext(SecurityContext $securityContext)
+    {
+        if ($token = $securityContext->getToken()) {
+            if ($token->getUser() instanceof User) {
+                $this->currentUser = $token->getUser();
+            }
+        }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCurrentUser()
+    {
+        return $this->currentUser;
     }
 
     /**
@@ -64,6 +87,14 @@ class BaseRepository extends EntityRepository
         $em->close();
     }
 
+    /** Событие до вставки сущности */
+    protected function prePersist(BaseEntity $entity) {
+        /** Устанавливает автора для сущности */
+        if (method_exists($entity, 'setAuthor') && $this->getCurrentUser()) {
+            $entity->setAuthor($this->getCurrentUser());
+        }
+    }
+
     /**
      * Сохранение сущности
      * @param $entity
@@ -76,7 +107,9 @@ class BaseRepository extends EntityRepository
             $em = $this->getEntityManager();
             $isNew = is_null($entity->getId());
 
+
             if ($isNew) {
+                $this->prePersist($entity);
                 $entity->prePersist();
                 $em->persist($entity);
             } else {
@@ -114,7 +147,7 @@ class BaseRepository extends EntityRepository
 
     /**
      * Обновление сущности
-     * @param \Bundle\CommonBundle\Entity\Core\BaseEntity $entity
+     * @param \Bundle\CommonBundle\Entity\BaseEntity $entity
      */
     public function refresh(BaseEntity $entity)
     {

@@ -1,89 +1,69 @@
 (function() {
     "use strict";
 
-    function PlayerController($rootScope, $scope, ApiService, SongManager, Config) {
-        var self    = this,
-            player  = document.createElement('audio');
+    function PlayerController($rootScope, $scope, ApiService, PlayerManager, SongManager, Config) {
+        var self = this;
+        this.muted  = false;
+        this.song   = null;
 
-        this.muted      = false;
-        this.playing    = null;
-        this.song       = false;
-        this.volume     = 1;
-
-        function init(url) {
-            player.src = url;
-            player.play();
-            self.playing = true;
-        };
-
-        this.play = function () {
-            if(self.playing) {
-                player.pause();
-            } else {
-                player.play();
-            }
-
-            self.playing = !self.playing;
-        };
-
-        this.setVolume = function (up) {
-            self.volume += up ? .1 : -.1;
-            player.volume = self.volume > 1 ? 1 : self.volume < 0 ? 0 : self.volume;
-        };
-
-        player.onoffline = function () {
-            self.playing = false;
-            self.play();
-        };
-
-        player.ononline = function () {
-            self.playing = true;
-            self.play();
-        };
-
-        player.onended = player.onerror = this.next = function () {
-            if (self.song != false && self.song != null) {
+        this.next = function () {
+            if (angular.isObject(self.song)) {
                 SongManager.deleteSong(self.song.id);
             }
             self.song = SongManager.getTopSong();
-            if(self.song != null) {
-                init(self.song.url);
-                self.song.disabled = true;
+            if(angular.isObject(self.song)) {
+                self.audio.playById(self.song.id);
                 ApiService.sendRequest(Config.Routing.next, {
                     id: self.song.id,
                     title: self.song.title
                 });
             } else {
+                self.audio.clear();
+                self.audio.pause();
                 $rootScope.$broadcast('popup:show', {type: 'danger', message: 'Плейлист пуст!'});
-                if(self.playing) {
-                    this.play();
-                }
-                self.playing = null;
             }
-            console.log(self.song);
         };
 
-        $rootScope.$on('song:next', function(event, data) {
-            self.song = SongManager.getSong(data.id);
-            if(self.song) {
-                self.song.title = data.title;
-                $rootScope.$broadcast('popup:show', {type: 'info', message: data.message});
-                $scope.$apply();
+        this.audio  = new PlayerManager(
+            {
+                onerror: this.next,
+                onended: this.next
             }
-        });
+        );
 
-        $rootScope.$on('song:mute', function(event, data) {
-            self.muted = data == 'false' ? false : true;
-            self.volume = self.muted ? 0.2 : 1;
-            player.volume = self.volume;
-            if(!self.muted) {
-                $rootScope.$broadcast('popup:hide');
+        this.play = function () {
+            if(!self.audio.getState().playing) {
+                self.audio.play();
+            } else {
+                self.audio.pause();
             }
-        });
+        };
 
         this.mute = function () {
             ApiService.sendRequest(Config.Routing.mute.replace('_TYPE_', !this.muted), null, false, !this.muted);
         };
+
+        $rootScope.$on('song:next', function(event, data) {
+            self.song = SongManager.getSong(data.id);
+            if(angular.isObject(self.song)) {
+                SongManager.disable(self.song.id);
+                SongManager.updateCounter(self.song.id, 100000);
+                $rootScope.$broadcast('popup:show', {type: 'info', message: data.message});
+            }
+            $scope.$apply();
+        });
+
+        $rootScope.$on('song:mute', function(event, data) {
+            self.muted = data.on != 'false';
+            self.audio.setVolume(self.muted ? 0.2 : 1);
+            if(self.muted) {
+                $rootScope.$broadcast('popup:show', {type: 'success', message: data.message, save: true});
+            } else {
+                $rootScope.$broadcast('popup:hide');
+                $rootScope.$broadcast('popup:show', {type: 'success', message: data.message, save: false});
+            }
+            $scope.$apply();
+        });
     };
 
     angular.module('musicpoll').controller('PlayerController', PlayerController);

@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    function PopupMessageController ($rootScope, $timeout) {
+    function PopupMessageController ($scope, $rootScope, $timeout) {
         var self = this,
             promise;
 
@@ -29,6 +29,7 @@
 
         $rootScope.$on('popup:hide', function() {
             self.popups.splice(0, self.popups.length);
+            $scope.$apply();
         });
     };
 

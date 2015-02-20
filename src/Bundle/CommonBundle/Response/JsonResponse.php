@@ -27,7 +27,7 @@ class JsonResponse extends Response
     /**
      * Конструктор
      */
-    public function __construct($headers=array())
+    public function __construct($headers = array())
     {
         parent::__construct('', 200, $headers);
 

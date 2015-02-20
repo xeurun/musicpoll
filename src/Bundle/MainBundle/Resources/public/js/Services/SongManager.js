@@ -1,69 +1,70 @@
 (function() {
     "use strict";
 
-    function SongManager($filter, ApiService, Config) {
-        var SongManager = {},
-            offset      = 0,
-            self        = this;
+    function SongManager($filter, ApiService, Config, UserManager) {
+        var offset      = 0,
+            songs       = {};
 
-        self.songs = {};
-
-        SongManager.getNextBlock = function() {
+        this.getNextBlock = function() {
             ApiService.get(Config.Routing.getPortion.replace('_OFFSET_', offset)).success(function(data){
                 angular.forEach(data.entities, function(value, index) {
-                    self.songs[index] = value;
+                    songs[index] = value;
                 });
                 offset += data.count;
             });
         };
 
-        SongManager.getNextBlock();
+        this.getNextBlock();
 
-        SongManager.getSongs = function() {
-            return self.songs;
+        this.getSongs = function() {
+            return songs;
         };
 
-        SongManager.deleteSong = function(id) {
-            ApiService.sendRequest(Config.Routing.remove.replace('_ID_', id), null, true)
-                .success(function(response, status, headers, config) {
-                    if (!response.error) {
-                        SongManager.removeSong(id);
-                    } else {
-                        $rootScope.$broadcast('popup:show', {type: 'danger', 'message': response.error});
-                    }
-                });
+        this.deleteSong = function(id) {
+            this.removeSong(id);
+            ApiService.sendRequest(Config.Routing.remove.replace('_ID_', id));
         };
 
-        SongManager.removeSong = function(key) {
-            delete self.songs[key];
+        this.removeSong = function(key) {
+            delete songs[key];
         };
 
-        SongManager.getTopSong = function() {
-            if(!Object.keys(self.songs).length > 0) {
+        this.getTopSong = function() {
+            if(!Object.keys(songs).length) {
                 return null;
             }
 
-            return $filter('orderObjectBy')(self.songs, 'counter', true)[0];
+            return $filter('orderObjectBy')(songs, 'counter', true)[0];
         };
 
-        SongManager.getSong = function(id) {
-            return self.songs[id];
+        this.getSong = function(id) {
+            return songs[id];
         };
 
-        SongManager.voteForSong = function(id, like) {
+        this.voteForSong = function(id, like) {
             ApiService.sendRequest(Config.Routing.vote.replace('_ID_', id).replace('_CHOOSE_', like));
         };
 
-        SongManager.addSong = function(id, song) {
-            self.songs[id] = song;
+        this.addSong = function(id, song) {
+            songs[id] = song;
         };
 
-        SongManager.updateCounter = function(id, count) {
-            self.songs[id].counter = count;
+        this.isMy = function(id) {
+            return songs[id].authorId === Config.userId;
         };
 
-        return SongManager;
+        this.getAuthor = function(id) {
+            return UserManager.getUser(songs[id].authorId);
+        };
+
+        this.disable = function(id) {
+            songs[id].disabled = true;
+        };
+
+        this.updateCounter = function(id, count) {
+            songs[id].counter = count;
+        };
     };
 
-    angular.module('musicpoll').factory('SongManager', SongManager);
+    angular.module('musicpoll').service('SongManager', SongManager);
 })();

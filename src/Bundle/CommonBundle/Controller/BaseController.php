@@ -50,22 +50,6 @@ class BaseController extends Controller
     }
 
     /**
-     * Возвращает json ответ с ошибкой
-     * @param string $message
-     * @param \Exception $e
-     * @param FormInterface $form
-     * @throws \Exception
-     */
-    protected function getJsonError($message, \Exception $e = null)
-    {
-        $translatedMessage = $this->getTranslate($message, self::ERROR_DOMAIN);
-        if (!is_null($e) && ($this->getEnvironment() == self::ENV_DEV)) {
-            throw new \Exception ($translatedMessage, 0, $e);
-        } else {
-        }
-    }
-
-    /**
      * Собирает ошибки формы
      * @param \Bundle\CommonBundle\Controller\FormInterface $form
      */
@@ -111,7 +95,7 @@ class BaseController extends Controller
         }
 
         if (!is_null($e) && ($this->getEnvironment() == self::ENV_DEV)) {
-            throw new \Exception ($translatedMessage, 0, $e);
+            dump(new \Exception ($translatedMessage, 0, $e));die;
         }
 
         return $translatedMessage;

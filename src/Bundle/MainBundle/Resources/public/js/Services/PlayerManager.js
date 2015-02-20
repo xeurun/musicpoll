@@ -1,72 +1,88 @@
 (function() {
     "use strict";
 
-    function PlayerManager($rootScope, SongManager) {
-        var PlayerManager   = {},
-            songId          = null,
-            playing         = false,
-            pause           = false,
-            volume          = 1,
-            player          = document.createElement('audio');
+    function PlayerManager(SongManager) {
+        var PlayerManager = function(callbacks) {
+            var songId          = null,
+                isPause         = false,
+                player          = document.createElement('audio'),
+                isPlaying       = false,
+                volumeLevel     = 1,
+                volume = function (up) {
+                    volumeLevel += up ? .1 : -.1;
+                    player.volume = volumeLevel > 1 ? 0.99 : volumeLevel < 0 ? 0 : volumeLevel;
+                },
+                setVolume = function (volume) {
+                    volumeLevel = volume;
+                    player.volume = volume;
+                },
+                getSongId = function () {
+                    return songId;
+                },
+                clear = function() {
+                    songId      = null;
+                    isPause     = false;
+                    isPlaying   = false;
+                },
+                getPercent = function () {
+                    return Math.round(player.currentTime / player.duration * 100);
+                },
+                getState = function (id) {
+                    if(!angular.isUndefined(id)) {
+                        if(songId != id) {
+                            return {
+                                playing: false,
+                                pause: false,
+                                id: null
+                            }
+                        }
+                    }
 
-        PlayerManager.volume = function (up) {
-            volume += up ? .1 : -.1;
-            player.volume = volume > 1 ? 0.99 : volume < 0 ? 0 : volume;
-        };
+                    return {
+                        playing: isPause ? false : isPlaying,
+                        pause: isPause,
+                        id: songId
+                    }
+                },
+                playById = function (id) {
+                    var song = SongManager.getSong(id);
+                    songId = song.id;
 
-        PlayerManager.pause = function () {
-            if(playing) {
-                player.pause();
-                pause = true;
-            }
-        };
+                    this.playByUrl(song.url);
+                },
+                playByUrl = function (url) {
+                    if(!angular.equals(player.src, url)) {
+                        player.src = url;
+                    }
+                    this.play();
+                },
+                pause = function () {
+                    isPause = true;
+                    player.pause();
+                },
+                play = function () {
+                    isPause     = false;
+                    isPlaying   = true;
+                    player.play();
+                };
 
-        PlayerManager.getSongId = function () {
-            return songId;
-        };
-
-        PlayerManager.getState = function (id) {
-            if(songId != id) return false;
+            player.onoffline    = (callbacks != undefined && angular.isFunction(callbacks['onoffline'])) ? callbacks['onoffline'] : function () { pause(); };
+            player.ononline     = (callbacks != undefined && angular.isFunction(callbacks['ononline'])) ? callbacks['ononline'] : function () { play(); };
+            player.onended      = (callbacks != undefined && angular.isFunction(callbacks['onended'])) ? callbacks['onended'] : function () {};
+            player.onerror      = (callbacks != undefined && angular.isFunction(callbacks['onerror'])) ? callbacks['onerror'] : function () {};
 
             return {
-                playing: pause ? false : playing,
-                pause: pause
+                getPercent: getPercent,
+                getSongId:  getSongId,
+                playByUrl:  playByUrl,
+                setVolume:  setVolume,
+                getState:   getState,
+                playById:   playById,
+                volume:     volume,
+                pause:      pause,
+                clear:      clear,
+                play:       play
             }
-        };
-
-        PlayerManager.setUrl = function (url) {
-            player.src = url;
-        };
-
-        PlayerManager.playById = function (id) {
-            var song = SongManager.getSong(id);
-            songId = song.id;
-
-            this.playByUrl(song.url);
-        };
-
-        PlayerManager.playByUrl = function (url) {
-            if(!angular.equals(player.src, url)) {
-                this.setUrl(url);
-            }
-            this.play();
-        };
-
-        PlayerManager.play = function () {
-            if(!playing || pause) {
-                player.play();
-                pause      = false;
-                playing    = true;
-            }
-        };
-
-        player.onoffline = function () { PlayerManager.pause(); };
-        player.ononline = function () { PlayerManager.play(); };
-        player.onended = function () {
-            $rootScope.$broadcast('player:end');
-        };
-        player.onerror = function () {
-            $rootScope.$broadcast('player:error');
         };
 
         return PlayerManager;

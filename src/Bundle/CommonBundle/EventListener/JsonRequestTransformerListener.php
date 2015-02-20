@@ -9,6 +9,7 @@
  */
 
 namespace Bundle\CommonBundle\EventListener;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -32,10 +33,12 @@ class JsonRequestTransformerListener
             $event->setResponse($response);
         }
     }
+
     private function isJsonRequest(Request $request)
     {
         return 'json' === $request->getContentType();
     }
+
     private function transformJsonBody(Request $request)
     {
         $data = json_decode($request->getContent(), true);

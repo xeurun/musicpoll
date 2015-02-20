@@ -17,6 +17,7 @@ services:
         factory_method: getRepository
         calls:
             - [ setContainer, [ '@service_container' ] ]
+            - [ setSecurityContext, [ '@security.context' ] ]
 
     song.repository:
         parent: base.repository

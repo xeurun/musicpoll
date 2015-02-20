@@ -25,7 +25,7 @@
                 <ui-select-match placeholder="{{ 'song.placeholder.search.song'|trans }}">[[ $select.selected.title | points:30 ]]</ui-select-match>
                 <ui-select-choices repeat="song in songs track by $index"
                      refresh="refreshSongs($select.search)"
-                     refresh-delay="100">
+                     refresh-delay="250">
                     <span ng-bind-html="song.title | points:30 | highlight: $select.search"></span>
                     </br>
                     <small ng-bind-html="song.artist | points:30"></small>

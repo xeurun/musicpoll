@@ -60,9 +60,9 @@ class Song extends BaseEntity
     /**
      * @var integer
      *
-     * @ORM\Column(name="counter", type="integer", options={"default" = 1})
+     * @ORM\Column(name="counter", type="integer", options={"default" = 0})
      */
-    private $counter;
+    private $counter = 0;
 
     /**
      * @ORM\OneToMany(targetEntity="Bundle\CommonBundle\Entity\Vote\Vote", mappedBy="song")
@@ -75,6 +75,13 @@ class Song extends BaseEntity
      * @ORM\JoinColumn(nullable=true, name="authorId", referencedColumnName="id")
      */
     private $author;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="deleted", type="boolean", options={"default": false})
+     */
+    private $deleted = false;
 
     /*******************************************************/
     /*                   DO NOT REMOVE THIS CODE           */
@@ -156,6 +163,16 @@ class Song extends BaseEntity
     public function setCounter($counter)
     {
         $this->counter = $counter;
+    }
+
+    public function incrementCounter()
+    {
+        $this->counter++;
+    }
+
+    public function decrementCounter()
+    {
+        $this->counter--;
     }
 
     /**
@@ -242,5 +259,21 @@ class Song extends BaseEntity
     public function setDuration($duration)
     {
         $this->duration = $duration;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isDeleted()
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * @param boolean $deleted
+     */
+    public function setDeleted($deleted)
+    {
+        $this->deleted = $deleted;
     }
 }

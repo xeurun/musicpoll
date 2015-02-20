@@ -2,6 +2,7 @@
 
 namespace Bundle\CommonBundle\Entity\Song;
 
+use Bundle\CommonBundle\Entity\BaseEntity;
 use Bundle\CommonBundle\Entity\BaseRepository;
 
 /**
@@ -12,4 +13,13 @@ use Bundle\CommonBundle\Entity\BaseRepository;
  */
 class SongRepository extends BaseRepository
 {
+    /** Событие после вставки сущности
+     * @param BaseEntity $entity
+     */
+    protected function prePersist(BaseEntity $entity)
+    {
+        parent::prePersist($entity);
+
+        $entity->getAuthor()->incrementSongCount();
+    }
 }

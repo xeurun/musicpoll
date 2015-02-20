@@ -9,7 +9,6 @@
     output='css/style.css' %}
     <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
-    <style>[ng-cloak] { display: none; }</style>
 {% endblock %}
 {% block javascripts %}
     {% javascripts
@@ -64,11 +63,11 @@
                     remove:     '{{ path('remove', {'id': '_ID_'}) }}',
                     add:        '{{ path('add') }}',
                     form:       '{{ path('form') }}',
-                    api:        '{{ url('api') }}',
                     mute:       '{{ path('mute', {'on': '_TYPE_'}) }}',
                     getPortion: '{{ path('get_portion', {'offset': '_OFFSET_'}) }}',
                     next:       '{{ path('next_song') }}',
                     getUsers:   '{{ path('get_users') }}',
+                    whoVote:    '{{ path('who_vote', {'id': '_ID_'}) }}',
                     vk_api:     'https://api.vk.com/method/_method_'
                 },
                 userId: {{ app.user.id }},

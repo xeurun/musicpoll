@@ -1,0 +1,12 @@
+<div class="modal-header">
+    <h3 class="modal-title">Cписок проголосовавших</h3>
+</div>
+<div class="modal-body">
+    <ul>
+        {% for vote in voters %}
+            <li>{{ vote.author.fullname }} поставил {{ vote.isDislike ? 'дизлайк' : 'лайк' }}</li>
+        {% endfor %}
+    </ul>
+</div>
+<div class="modal-footer">
+</div>

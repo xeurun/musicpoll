@@ -36,13 +36,20 @@ class Vote extends BaseEntity
     private $author;
 
     /**
-     * @param \Bundle\CommonBundle\Entity\Song\Song $song
-     * @param \Bundle\CommonBundle\Entity\User $author
+     * @var boolean
+     *
+     * @ORM\Column(name="dislike", type="boolean", options={"default": false})
      */
-    public function __construct($song, $author)
+    private $dislike = false;
+
+    /**
+     * @param \Bundle\CommonBundle\Entity\Song\Song $song
+     * @param boolean $choose
+     */
+    public function __construct($song, $choose)
     {
         $this->song = $song;
-        $this->author = $author;
+        $this->dislike = $choose;
     }
 
     /**
@@ -96,5 +103,21 @@ class Vote extends BaseEntity
     public function getAuthor()
     {
         return $this->author;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isDislike()
+    {
+        return $this->dislike;
+    }
+
+    /**
+     * @param boolean $dislike
+     */
+    public function setDislike($dislike)
+    {
+        $this->dislike = $dislike;
     }
 }
