@@ -39,6 +39,20 @@ class Song extends BaseEntity
     /**
      * @var string
      *
+     * @ORM\Column(name="artist", type="text", nullable=true)
+     */
+    private $artist;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="duration", type="integer", nullable=true)
+     */
+    private $duration;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="type", type="text", nullable=false)
      */
     private $type;
@@ -196,5 +210,37 @@ class Song extends BaseEntity
     public function getAuthor()
     {
         return $this->author;
+    }
+
+    /**
+     * @return string
+     */
+    public function getArtist()
+    {
+        return $this->artist;
+    }
+
+    /**
+     * @param string $artist
+     */
+    public function setArtist($artist)
+    {
+        $this->artist = $artist;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDuration()
+    {
+        return $this->duration;
+    }
+
+    /**
+     * @param int $duration
+     */
+    public function setDuration($duration)
+    {
+        $this->duration = $duration;
     }
 }

@@ -26,7 +26,7 @@
                 <ui-select-choices repeat="song in songs track by $index"
                      refresh="refreshSongs($select.search)"
                      refresh-delay="100">
-                    <span ng-bind-html="song.title | highlight: $select.search | points:30"></span>
+                    <span ng-bind-html="song.title | points:30 | highlight: $select.search"></span>
                     </br>
                     <small ng-bind-html="song.artist | points:30"></small>
                 </ui-select-choices>

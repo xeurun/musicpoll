@@ -10,7 +10,7 @@
         };
     };
 
-    function ModalFormInstanceController($scope, $modalInstance, Config, ApiService, PlayerManager) {
+    function ModalFormInstanceController($scope, $sce, $modalInstance, Config, ApiService, PlayerManager) {
         $scope.songs = [];
         $scope.types = ['VK'];
         $scope.form = {
@@ -28,9 +28,12 @@
         });
 
         $scope.$watch('songs.selected', function(newValue) {
+            $scope.previewPlayer.pause();
             if(newValue) {
-                $scope.form.song.title   = newValue.title;
-                $scope.form.song.url     = newValue.url;
+                $scope.form.song.url        = newValue.url;
+                $scope.form.song.title      = newValue.title;
+                $scope.form.song.artist     = newValue.artist;
+                $scope.form.song.duration   = newValue.duration;
             }
         });
 
@@ -50,6 +53,10 @@
             }
         };
 
+        $scope.trustAsHtml = function(value) {
+            return $sce.trustAsHtml(value);
+        };
+
         $scope.refreshSongs = function(term) {
             return ApiService.getJsonP(
                 Config.Routing.vk_api.replace('_method_', 'audio.search'),
@@ -61,11 +68,14 @@
                     v: '5.28'
                 }
             ).then(function(response) {
-                $scope.songs = response.data.response.items;
+                if(response.data.response) {
+                    $scope.songs = response.data.response.items
+                }
             });
         };
 
         $scope.cancel = function () {
+            $scope.previewPlayer.pause();
             $modalInstance.dismiss('cancel');
         };
     };

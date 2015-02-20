@@ -43,19 +43,23 @@
             });
         };
 
-        this.sendRequest = function(url, data) {
+        this.sendRequest = function(url, data, withReturn, savePopup) {
             data = data ? this.serializeData(data) : data;
-            $http.post(url, data).
-                success(function(response, status, headers, config) {
-                    if (!response.error && response.message) {
-                        $rootScope.$broadcast('popup:show', {type: 'success', 'message': response.message});
-                    }else if(response.error) {
-                        $rootScope.$broadcast('popup:show', {type: 'danger', 'message': response.error});
-                    }
-                }).
-                error(function(response, status, headers, config) {
-                    $rootScope.$broadcast('popup:show', {type: 'danger', 'message': 'ERROR!'});
-                });
+            if(withReturn) {
+                return $http.post(url, data);
+            } else {
+                $http.post(url, data).
+                    success(function(response, status, headers, config) {
+                        if (!response.error && response.message) {
+                            $rootScope.$broadcast('popup:show', {type: 'success', message: response.message, save: savePopup});
+                        }else if(response.error) {
+                            $rootScope.$broadcast('popup:show', {type: 'danger', message: response.error});
+                        }
+                    }).
+                    error(function(response, status, headers, config) {
+                        $rootScope.$broadcast('popup:show', {type: 'danger', message: 'ERROR!'});
+                    });
+            }
         };
     };
 

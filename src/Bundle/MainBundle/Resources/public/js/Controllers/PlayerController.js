@@ -48,6 +48,7 @@
             self.song = SongManager.getTopSong();
             if(self.song != null) {
                 init(self.song.url);
+                self.song.disabled = true;
                 ApiService.sendRequest(Config.Routing.next, {
                     id: self.song.id,
                     title: self.song.title
@@ -59,6 +60,7 @@
                 }
                 self.playing = null;
             }
+            console.log(self.song);
         };
 
         $rootScope.$on('song:next', function(event, data) {
@@ -74,11 +76,13 @@
             self.muted = data == 'false' ? false : true;
             self.volume = self.muted ? 0.2 : 1;
             player.volume = self.volume;
-            $scope.$apply();
+            if(!self.muted) {
+                $rootScope.$broadcast('popup:hide');
+            }
         });
 
         this.mute = function () {
-            ApiService.sendRequest(Config.Routing.mute.replace('_TYPE_', !this.muted));
+            ApiService.sendRequest(Config.Routing.mute.replace('_TYPE_', !this.muted), null, false, !this.muted);
         };
     };
 

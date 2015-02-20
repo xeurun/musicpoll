@@ -1,13 +1,12 @@
 (function() {
     "use strict";
 
-    function ListController($rootScope, $scope, ApiService, SongManager, Config) {
-        var self    = this,
-            player  = document.createElement('audio');
+    function ListController($rootScope, $scope, ApiService, SongManager, Config, PlayerManager) {
+        var self    = this;
 
         self.authorId   = '';
-        self.playing    = {};
         self.onlyMy     = false;
+        self.player     = PlayerManager;
         self.songs      = {};
         self.top        = false;
 
@@ -15,53 +14,36 @@
             self.songs = data;
         });
 
-        this.setId = function () {
-            self.authorId = Config.userId;
+        this.setId = function (id) {
+            self.authorId = id != undefined ? id : Config.userId;
         };
-
         this.nextBlock = function() {
             SongManager.getNextBlock();
         };
-
-        this.like = function (id) {
-            ApiService.sendRequest(Config.Routing.vote.replace('_ID_', id).replace('_CHOOSE_', true));
+        this.vote = function (id, like) {
+            SongManager.voteForSong(id, like);
         };
-        this.dislike = function (id) {
-            ApiService.sendRequest(Config.Routing.vote.replace('_ID_', id).replace('_CHOOSE_', false));
-        };
-        this.remove = function (id) {
+        this.delete = function (id) {
             SongManager.deleteSong(id);
         };
         this.play = function (id) {
-            if(self.playing[id] === undefined) {
-                self.playing[id] = false;
-            }
-            angular.forEach(self.playing, function(value, index) {
-                if(index != id) {
-                    self.playing[index] = false;
-                }
-            });
-            if(self.playing[id]) {
-                player.pause();
+            var state = self.player.getState(id);
+            if(state && state.playing) {
+                self.player.pause();
             } else {
-                player.src = self.songs[id].url;
-                player.play();
+                self.player.playById(id);
             }
-
-            self.playing[id] = !self.playing[id];
         };
 
         $rootScope.$on('song:add', function(event, data) {
             SongManager.addSong(data.id, data.song);
         });
-        $rootScope.$on('song:update', function(event, data) {
-            $rootScope.$broadcast('popup:show', {type: 'info', 'message': data.message});
-            console.log(data.message);
-            SongManager.updateCounter(data.id, data.count);
-            $rootScope.$apply();
-        });
         $rootScope.$on('song:remove', function(event, id) {
             SongManager.removeSong(id);
+        });
+        $rootScope.$on('song:update', function(event, data) {
+            $rootScope.$broadcast('popup:show', {type: 'info', 'message': data.message});
+            SongManager.updateCounter(data.id, data.count);
         });
     };
 

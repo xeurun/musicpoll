@@ -19,21 +19,19 @@
 
         SongManager.getNextBlock();
 
-        SongManager.getSongs = function(id) {
+        SongManager.getSongs = function() {
             return self.songs;
         };
 
-        SongManager.popSong = function(id) {
-            var song = self.songs[id];
-
-            delete self.songs[id];
-
-            return song;
-        };
-
         SongManager.deleteSong = function(id) {
-            SongManager.removeSong(id);
-            ApiService.sendRequest(Config.Routing.remove.replace('_ID_', id));
+            ApiService.sendRequest(Config.Routing.remove.replace('_ID_', id), null, true)
+                .success(function(response, status, headers, config) {
+                    if (!response.error) {
+                        SongManager.removeSong(id);
+                    } else {
+                        $rootScope.$broadcast('popup:show', {type: 'danger', 'message': response.error});
+                    }
+                });
         };
 
         SongManager.removeSong = function(key) {
@@ -52,8 +50,12 @@
             return self.songs[id];
         };
 
-        SongManager.addSong = function(id, data) {
-            self.songs[id] = data;
+        SongManager.voteForSong = function(id, like) {
+            ApiService.sendRequest(Config.Routing.vote.replace('_ID_', id).replace('_CHOOSE_', like));
+        };
+
+        SongManager.addSong = function(id, song) {
+            self.songs[id] = song;
         };
 
         SongManager.updateCounter = function(id, count) {

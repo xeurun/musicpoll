@@ -1,5 +1,13 @@
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
 
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}
+
+* {
+    border-radius: 0 !important;
+}
+
 @-webkit-keyframes fadeOut {
     0% {opacity: 1;}
     100% {opacity: 0;}
@@ -10,24 +18,23 @@
     100% {opacity: 0;}
 }
 
-main {
-    padding: 10px;
-    width: 940px;
-    margin: 0 auto;
-}
-
 ul > li {
     list-style: none;
     overflow: hidden;
 }
 
-.btn {
-    border-radius: 0 !important;
+.add-new-song {
+    margin: 10px;
 }
 
-.add-new-song {
-    margin-left: 10px;
-    margin-top: 10px;
+.show-user-list {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+}
+
+.popup-alerts {
+    margin: 10px;
 }
 
 .badge > span {
@@ -37,6 +44,12 @@ ul > li {
 .alert.ng-hide-add {
     -webkit-animation: 5s fadeOut ease;
     animation: 5s fadeOut ease;
+}
+
+.song-list {
+    padding: 10px;
+    width: 940px;
+    margin: 0 auto;
 }
 
 .player {
@@ -57,3 +70,21 @@ ul > li {
     .player div > marquee {
         margin-top: 2px;
     }
+
+.user-list {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 300px;
+    padding-right: 40px;
+}
+
+    .user-list > ul {
+        height: 400px;
+        overflow-y: scroll;
+        margin-bottom: 70px;
+    }
+
+        .user-list > ul > li{
+            margin-right: 10px;
+        }

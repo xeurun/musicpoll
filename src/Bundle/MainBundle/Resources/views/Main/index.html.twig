@@ -1,8 +1,9 @@
 {% extends 'MainBundle::layout.html.twig' %}
 
 {% block body %}
-    <div ng-controller="PopupMessageController as popupMessage" class="pull-right">
-        <alert type="[[ popupMessage.type ]]" ng-show="popupMessage.show">[[ popupMessage.message ]]</alert>
+    <div ng-controller="PopupMessageController as popupMessage" class="pull-right popup-alerts">
+        <alert hg-cloak class="ng-cloak" type="[[ popupMessage.type ]]" ng-show="popupMessage.show">[[ popupMessage.message ]]</alert>
+        <alert hg-cloak class="ng-cloak" ng-repeat="popup in popupMessage.popups" type="[[ popup.type ]]">[[ popup.message ]]</alert>
     </div>
     <div ng-controller="ModalFormController as modalForm" class="pull-left">
         <a class="add-new-song btn btn-primary btn-lg" ng-click="modalForm.open()">
@@ -10,7 +11,7 @@
         </a>
     </div>
     <div ng-controller="PlayerController as player">
-        <div class="player">
+        <div hg-cloak class="ng-cloak player">
             <div class="btn-group" role="group">
                 {% if is_granted('ROLE_ADMIN') %}
                     <a class="btn btn-primary btn-lg" ng-disabled="player.playing == null" ng-click="player.play()">
@@ -42,20 +43,14 @@
             </div>
         </div>
     </div>
-    <main>
-        {% if is_granted('ROLE_PLAYER') %}
-            <section ng-controller="PlayerController as player">
-                <div>
-                </div>
-            </section>
-        {% endif %}
-        <section ng-controller="ListController as list">
+    <div class="container-fluid">
+        <section class="song-list" ng-controller="ListController as list">
             <div>
-                <h2 style="text-align: center">Список</h2>
+                <h2 style="text-align: center">Плейлист</h2>
                 <div class="row">
-                    <div class="col-lg-3">
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                         <div class="btn-group" data-toggle="buttons">
-                            <label class="btn btn-primary" ng-class="{active: !list.onlyMy}" ng-click="list.onlyMy = false; list.authorId = '';">
+                            <label class="btn btn-primary" ng-class="{active: !list.onlyMy}" ng-click="list.onlyMy = false; list.setId('');">
                                 <input type="radio" name="options" autocomplete="off" checked>Все
                             </label>
                             <label class="btn btn-primary" ng-class="{active: list.onlyMy}" ng-click="list.onlyMy = true; list.setId();">
@@ -63,7 +58,7 @@
                             </label>
                         </div>
                     </div>
-                    <div class="col-lg-4">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                         <div class="btn-group" data-toggle="buttons">
                             <label class="btn btn-primary" ng-class="{active: !list.top}" ng-click="list.top = false;">
                                 <input type="radio" name="options" autocomplete="off" checked>Последние
@@ -73,7 +68,7 @@
                             </label>
                         </div>
                     </div>
-                    <div class="col-lg-5">
+                    <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
                         <div class="input-group">
                             <input type="text" class="form-control" ng-model="list.searchText" placeholder="Поиск...">
                             <span class="input-group-btn">
@@ -86,20 +81,38 @@
                 </div>
                 </br>
                 <ul style="overflow-y: scroll;overflow-x: hidden;height:500px;" class="list-group" lr-infinite-scroll="list.nextBlock" scroll-threshold="200" time-threshold="600">
-                    <li ng-repeat="song in list.songs | filterObjectBy:{ 'author': list.authorId } | filterObjectBy:list.searchText:'title' | orderObjectBy:list.top ? 'counter' : 'id':true" class="list-group-item">
-                        <span class="badge">
-                            <span ng-click="list.like([[ song.id ]])" class="glyphicon glyphicon-hand-up"></span>
-                            <span ng-click="list.dislike([[ song.id ]])" class="glyphicon glyphicon-hand-down"></span>
-                            <span ng-click="list.play([[ song.id ]])" ng-class="{'glyphicon-play': !list.playing[[[ song.id ]]], 'glyphicon-stop': list.playing[[[ song.id ]]]}" class="glyphicon"></span>
+                    <li hg-cloak ng-repeat="song in list.songs | filterObjectBy:{ 'author': list.authorId } | filterObjectBy:list.searchText:'title' | orderObjectBy:list.top ? 'counter' : 'id':true" ng-class="{disabled: song.disabled}" class="ng-cloak list-group-item">
+                        <span class="badge" ng-hide>
+                            <span ng-click="list.vote([[ song.id ]], true)" class="glyphicon glyphicon-hand-up"></span>
+                            <span ng-click="list.vote([[ song.id ]], false)" class="glyphicon glyphicon-hand-down"></span>
+                            <span ng-click="list.play([[ song.id ]])" ng-class="{'glyphicon-play': !list.player.getState([[ song.id ]]) || list.player.getState([[ song.id ]]).pause, 'glyphicon-stop': list.player.getState([[ song.id ]]).playing}" class="glyphicon"></span>
                             {% if is_granted('ROLE_ADMIN') %}
-                                <span ng-click="list.remove([[ song.id ]])" class="glyphicon glyphicon-remove"></span>
+                                <span ng-click="list.delete([[ song.id ]])" class="glyphicon glyphicon-remove"></span>
                             {% endif %}
                             [[ song.counter ]]
                         </span>
-                        [[ song.title ]]
+                        <span>[[ song.title ]]</span>
+                        <small class="label label-default" ng-class="{hidden: !song.artist.length}"><br>Исполнитель: [[ song.artist ]]</small>
+                        <small class="label label-default"><br>Добавил: [[ song.author ]]</small>
                     </li>
                 </ul>
             </div>
         </section>
-    </main>
+        <section ng-controller="UserListController as userlist" class="user-list">
+            <ul ng-show="userlist.show">
+                <li hg-cloak ng-repeat="user in userlist.users" class="ng-cloak panel panel-default">
+                    <div class="panel-heading">
+                        <h4><span ng-class="user.admin ? 'label-danger' : userlist.isCurrentUser(user.id) ? 'label-success' : 'label-primary'" class="label">[[ user.fullname ]]</span></h4>
+                    </div>
+                    <div class="panel-body">
+                        <span class="label label-default">Количество голосов: [[ user.votes ]]</span>
+                        <span class="label label-default">Количество добавлений: [[ user.songs ]]</span>
+                    </div>
+                </li>
+            </ul>
+            <a class="show-user-list btn btn-primary btn-lg" ng-click="userlist.show = !userlist.show">
+                <span class="glyphicon glyphicon-user"></span>
+            </a>
+        </section>
+    </div>
 {% endblock %}

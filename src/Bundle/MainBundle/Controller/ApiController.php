@@ -22,14 +22,22 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 class ApiController extends BaseController
 {
     const SONG_LIMIT = 25;
+
+    /**
+     * @param \Bundle\CommonBundle\Entity\Song\Song $entity
+     * @return mixed
+     */
     private function _getSongFileds($entity) {
         return array(
             "id"        => $entity->getId(),
-            "counter"   => $entity->getCounter(),
-            "author"    => $entity->getAuthor()->getId(),
-            "title"     => $entity->getTitle(),
+            "url"       => $entity->getUrl(),
             "type"      => $entity->getType(),
-            "url"       => $entity->getUrl()
+            "title"     => $entity->getTitle(),
+            "artist"    => $entity->getArtist(),
+            "author"    => $entity->getAuthor()->getId(),
+            "counter"   => $entity->getCounter(),
+            "duration"  => $entity->getDuration(),
+            "author"    => $entity->getAuthor()->getFullname()
         );
     }
 
@@ -80,6 +88,29 @@ class ApiController extends BaseController
         $songForm = $this->createForm(new SongType(), new Song());
 
         return array('songForm' => $songForm->createView());
+    }
+
+    /**
+     * @Route("/getUsers", name="get_users")
+     * @Method("GET")
+     * @return mixed
+     */
+    public function getUsersAction()
+    {
+        $response = new JsonResponse();
+        $users = $this->get('fos_user.user_manager')->findUsers();
+        foreach($users as $user) {
+            $jsonData['users'][] = array(
+                'id'        => $user->getId(),
+                'fullname'  => $user->getFullname(),
+                'admin'     => $user->hasRole('ROLE_ADMIN'),
+                'songs'     => count($user->getSongs()),
+                'votes'     => count($user->getVotes())
+            );
+        }
+        $response->setJsonContent($jsonData);
+
+        return $response;
     }
 
     /**

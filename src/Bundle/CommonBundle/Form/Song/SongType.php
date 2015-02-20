@@ -33,11 +33,24 @@ class SongType extends AbstractType
                 'placeholder'   => 'song.placeholder.url'
             ),
         ));
-
         
         $builder->add('type', 'text', array(
             'required' => true,
             'label' => 'group.label.closed',
+        ));
+
+        $builder->add('artist', 'text', array(
+            'required' => false,
+            'attr' => array(
+                'class' => 'hidden'
+            ),
+        ));
+
+        $builder->add('duration', 'text', array(
+            'required' => false,
+            'attr' => array(
+                'class' => 'hidden'
+            ),
         ));
     }
     
