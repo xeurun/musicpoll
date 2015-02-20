@@ -44,6 +44,9 @@
                 $rootScope.realplexor.subscribe("Mute_Song", function(data) {
                     $rootScope.$broadcast('song:mute', data);
                 });
+                $rootScope.realplexor.subscribe("Next_Song", function(data) {
+                    $rootScope.$broadcast('song:next', data);
+                });
                 $rootScope.realplexor.execute();
             })
             .config (function($interpolateProvider, $sceDelegateProvider, $httpProvider) {
@@ -62,8 +65,9 @@
                     add:        '{{ path('add') }}',
                     form:       '{{ path('form') }}',
                     api:        '{{ url('api') }}',
-                    mute:       '{{ path('mute', {'on': '_TYPE_' }) }}',
-                    getPortion: '{{ path('get_portion', {'offset': '_OFFSET_' }) }}',
+                    mute:       '{{ path('mute', {'on': '_TYPE_'}) }}',
+                    getPortion: '{{ path('get_portion', {'offset': '_OFFSET_'}) }}',
+                    next:       '{{ path('next_song') }}',
                     vk_api:     'https://api.vk.com/method/_method_'
                 },
                 userId: {{ app.user.id }},

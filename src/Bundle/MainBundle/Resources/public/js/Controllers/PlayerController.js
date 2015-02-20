@@ -13,7 +13,6 @@
         function init(url) {
             player.src = url;
             player.play();
-            player.volume = self.volume;
             self.playing = true;
         };
 
@@ -27,15 +26,9 @@
             self.playing = !self.playing;
         };
 
-        this.setVolume = function (value) {
-            if(value) {
-                self.volume += .1;
-            } else {
-                self.volume -= .1;
-            }
-            self.volume = self.volume > 1 ? 1 : self.volume < 0 ? 0 : self.volume;
-            console.log(self.volume);
-            player.volume = self.volume;
+        this.setVolume = function (up) {
+            self.volume += up ? .1 : -.1;
+            player.volume = self.volume > 1 ? 1 : self.volume < 0 ? 0 : self.volume;
         };
 
         player.onoffline = function () {
@@ -49,16 +42,36 @@
         };
 
         player.onended = player.onerror = this.next = function () {
-            self.song = SongManager.getTopSong();
-            if (self.song != null) {
-                init(self.song.url);
+            if (self.song != false && self.song != null) {
                 SongManager.deleteSong(self.song.id);
+            }
+            self.song = SongManager.getTopSong();
+            if(self.song != null) {
+                init(self.song.url);
+                ApiService.sendRequest(Config.Routing.next, {
+                    id: self.song.id,
+                    title: self.song.title
+                });
+            } else {
+                $rootScope.$broadcast('popup:show', {type: 'danger', message: 'Плейлист пуст!'});
+                if(self.playing) {
+                    this.play();
+                }
+                self.playing = null;
             }
         };
 
+        $rootScope.$on('song:next', function(event, data) {
+            self.song = SongManager.getSong(data.id);
+            if(self.song) {
+                self.song.title = data.title;
+                $rootScope.$broadcast('popup:show', {type: 'info', message: data.message});
+                $scope.$apply();
+            }
+        });
+
         $rootScope.$on('song:mute', function(event, data) {
             self.muted = data == 'false' ? false : true;
-            console.log(self.muted);
             self.volume = self.muted ? 0.2 : 1;
             player.volume = self.volume;
             $scope.$apply();

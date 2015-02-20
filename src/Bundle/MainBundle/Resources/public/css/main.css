@@ -21,21 +21,14 @@ ul > li {
     overflow: hidden;
 }
 
+.btn {
+    border-radius: 0 !important;
+}
+
 .add-new-song {
     margin-left: 10px;
     margin-top: 10px;
 }
-
-.circle-button,
-.circle-button:focus,
-.circle-button:hover,
-.circle-button:active {
-    border-radius: 100px;
-    outline: 0 !important;
-}
-    .circle-button span {
-        line-height: 24px;
-    }
 
 .badge > span {
     cursor: pointer;
@@ -48,9 +41,7 @@ ul > li {
 
 .player {
     width: 300px;
-    height: 70px;
-    border-bottom-left-radius: 100px;
-    border-bottom-right-radius: 100px;
+    height: 80px;
     margin: 0 auto;
     background: #EFEFEF;
     text-align: center;
@@ -61,4 +52,8 @@ ul > li {
 
     .player div.btn-group {
         margin-top: 10px;
+    }
+
+    .player div > marquee {
+        margin-top: 2px;
     }

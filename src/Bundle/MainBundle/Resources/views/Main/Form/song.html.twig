@@ -22,7 +22,7 @@
                        theme="bootstrap"
                        class="pull-right"
                        style="width: 60%;">
-                <ui-select-match placeholder="{{ 'song.placeholder.search.song'|trans }}">[[ $select.selected.title ]]</ui-select-match>
+                <ui-select-match placeholder="{{ 'song.placeholder.search.song'|trans }}">[[ $select.selected.title | points:30 ]]</ui-select-match>
                 <ui-select-choices repeat="song in songs track by $index"
                      refresh="refreshSongs($select.search)"
                      refresh-delay="100">
@@ -36,9 +36,9 @@
             <span class="input-group-addon">Ссылка:</span>
             <span>{{ form_widget(songForm.url) }}</span>
             <span class="input-group-addon" ng-class="form.song.url ? '' : 'hidden'">
-                <button style="padding: 0 5px;" type="button" ng-class="playing ? 'btn-danger' : 'btn-success'" class="btn btn-xs"  ng-click="playPreview($event)">
-                    <span class="glyphicon glyphicon-play" ng-hide="playing || !form.song.url"></span>
-                    <span class="glyphicon glyphicon-pause" ng-show="playing"></span>
+                <button style="padding: 0 5px;" type="button" ng-class="{'btn-danger':previewPlayer.getState().playing, 'btn-success':!previewPlayer.getState().playing}" class="btn btn-xs" ng-click="playPreview($event)">
+                    <span class="glyphicon glyphicon-play" ng-show="!previewPlayer.getState().playing && form.song.url"></span>
+                    <span class="glyphicon glyphicon-pause" ng-show="previewPlayer.getState().playing"></span>
                 </button>
             </span>
         </p>
@@ -48,6 +48,6 @@
     </form>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="ok()">OK</button>
+    <button class="btn btn-primary" ng-click="save()">OK</button>
     <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
 </div>

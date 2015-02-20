@@ -32,6 +32,7 @@
         };
 
         SongManager.deleteSong = function(id) {
+            SongManager.removeSong(id);
             ApiService.sendRequest(Config.Routing.remove.replace('_ID_', id));
         };
 

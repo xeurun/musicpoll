@@ -10,7 +10,7 @@
         };
     };
 
-    function ModalFormInstanceController($scope, $modalInstance, Config, ApiService) {
+    function ModalFormInstanceController($scope, $modalInstance, Config, ApiService, PlayerManager) {
         $scope.songs = [];
         $scope.types = ['VK'];
         $scope.form = {
@@ -19,8 +19,13 @@
                 _token: ''
             }
         };
-        $scope.playing = false;
-        $scope.previewPlayer = document.createElement('audio');
+        $scope.previewPlayer = PlayerManager;
+
+        $scope.$on('player:error', function() {
+            $scope.form.song.url = '';
+            $scope.previewPlayer.pause();
+            $scope.$apply();
+        });
 
         $scope.$watch('songs.selected', function(newValue) {
             if(newValue) {
@@ -29,29 +34,20 @@
             }
         });
 
-        $scope.ok = function () {
+        $scope.save = function () {
+            $scope.previewPlayer.pause();
             ApiService.sendRequest(Config.Routing.add, $scope.form);
             $scope.song = {};
-            $modalInstance.dismiss('cancel');
+            $modalInstance.dismiss('save');
         };
 
         $scope.playPreview = function ($event) {
-            $event.preventDefault();
-
-            if($scope.playing) {
-                $scope.previewPlayer.pause();
+            if($event) $event.preventDefault();
+            if((!$scope.previewPlayer.getState().pause && !$scope.previewPlayer.getState().playing) || $scope.previewPlayer.getState().pause) {
+                $scope.previewPlayer.playByUrl($scope.form.song.url);
             } else {
-                $scope.previewPlayer.src = $scope.form.song.url;
-                $scope.previewPlayer.play();
+                $scope.previewPlayer.pause();
             }
-
-            $scope.playing = !$scope.playing;
-        };
-
-        $scope.previewPlayer.onended = $scope.previewPlayer.onerror = function () {
-            $scope.form.song.url = '';
-            $scope.playing = false;
-            $scope.$apply();
         };
 
         $scope.refreshSongs = function(term) {

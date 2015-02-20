@@ -12,6 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Bundle\CommonBundle\Entity\Song\SongRepository;
 use Bundle\CommonBundle\Entity\Vote\Vote;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * Class ApiController
@@ -167,7 +168,7 @@ class ApiController extends BaseController
         $jsonData = array();
         try {
             if (!$this->getUser()->hasRole('ROLE_ADMIN')) {
-                throw $this->createAccessDeniedException();
+                throw new AccessDeniedException();
             }
             /** @var Songrepository $songRepository */
             $songRepository = $this->getRepository('song');
@@ -190,7 +191,7 @@ class ApiController extends BaseController
      * @Route("/mute/{on}", requirements={"on" = "false|true|_TYPE_"}, name="mute")
      * @Method("POST")
      */
-    public function muteAction($on)
+    public function muteAction(Request $request, $on)
     {
         $this->get('drklab.realplexor.manager')->send("Mute_Song", $on);
         $response = new JsonResponse();
@@ -201,6 +202,29 @@ class ApiController extends BaseController
         } else {
             $jsonData['message'] = "$fullname восстановил звук!";
         }
+        $response->setJsonContent($jsonData);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/nextSong", name="next_song")
+     * @Method("POST")
+     */
+    public function nextSongAction(Request $request)
+    {
+        if (!$this->getUser()->hasRole('ROLE_ADMIN')) {
+            throw new AccessDeniedException();
+        }
+        $id = $request->get('id');
+        $title = $request->get('title');
+        $this->get('drklab.realplexor.manager')->send("Next_Song", array(
+            'id' => $id,
+            'title' => $title,
+            'message' => "Сейчас играет: $title!"
+        ));
+        $response = new JsonResponse();
+        $jsonData = array();
         $response->setJsonContent($jsonData);
 
         return $response;

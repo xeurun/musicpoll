@@ -5,7 +5,7 @@
         <alert type="[[ popupMessage.type ]]" ng-show="popupMessage.show">[[ popupMessage.message ]]</alert>
     </div>
     <div ng-controller="ModalFormController as modalForm" class="pull-left">
-        <a class="add-new-song circle-button btn btn-primary btn-lg" ng-click="modalForm.open()">
+        <a class="add-new-song btn btn-primary btn-lg" ng-click="modalForm.open()">
             <span class="glyphicon glyphicon-plus"></span>
         </a>
     </div>
@@ -37,6 +37,9 @@
                     </div>
                 {% endif %}
             </div>
+            <div>
+                <marquee scrollamount="3">[[ player.song.title ]]</marquee>
+            </div>
         </div>
     </div>
     <main>
@@ -47,7 +50,7 @@
             </section>
         {% endif %}
         <section ng-controller="ListController as list">
-            <div class="pull-left">
+            <div>
                 <h2 style="text-align: center">Список</h2>
                 <div class="row">
                     <div class="col-lg-3">
