@@ -81,12 +81,12 @@
                             <span ng-hide="song.voted" ng-click="list.songManager.voteForSong(song.id, true)" class="glyphicon glyphicon-hand-up"></span>
                             <span ng-hide="song.voted" ng-click="list.songManager.voteForSong(song.id, false)" class="glyphicon glyphicon-hand-down"></span>
                             <span ng-hide="song.disabled" ng-click="list.play(song.id)" ng-class="{'glyphicon-play': !list.player.getState(song.id).id || !list.player.getState(song.id).isPlaying, 'glyphicon-stop': list.player.getState(song.id).isPlaying}" class="glyphicon"></span>
-                            <span ng-show="(list.songManager.isMy(song.id) || list.user.admin) && !song.disabled" ng-click="list.songManager.deleteSong(song.id)" class="glyphicon glyphicon-remove"></span>
+                            <span ng-show="(list.songManager.getSong(song.id).isMy() || list.user.admin) && !song.disabled" ng-click="list.songManager.deleteSong(song.id)" class="glyphicon glyphicon-remove"></span>
                             <span ng-click="list.open(song.id)">[[ song.counter ]]</span>
                         </span>
                         <span class="song-title">[[ song.title ]]</span>
                         <small class="label label-default" ng-class="{hidden: !song.artist.length}"><br>Исполнитель: [[ song.artist ]]</small>
-                        <small class="label label-default"><br>Добавил: [[ list.userManager.getUser(song.authorId).fullname ]]</small>
+                        <small class="label label-default"><br>Добавил: [[ list.userManager.getUser(song.authorId).getFullname() ]]</small>
                     </li>
                 </ul>
             </div>

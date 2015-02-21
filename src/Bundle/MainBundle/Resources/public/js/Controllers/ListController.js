@@ -25,11 +25,14 @@
 
         $scope.$on('song:remove', function(event, id) {
             SongManager.removeSong(id);
+
             $scope.$apply();
         });
         $scope.$on('song:update', function(event, data) {
             $rootScope.$broadcast('popup:show', {type: 'info', 'message': data.message});
-            SongManager.updateCounter(data.id, data.count);
+            SongManager.getSong(data.id).vote();
+            SongManager.getSong(data.id).updateCounter(data.count);
+
             $scope.$apply();
         });
     };

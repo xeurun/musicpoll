@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    function PlayerManager($document, $q, SongManager, Config, ApiService) {
+    function PlayerManager($rootScope, $document, $q, SongManager, Config, ApiService) {
         var PlayerManager = function(callbacks, isMainPLayer) {
             var player = $document[0].createElement('audio'),
                 getDefaultState = function() {
@@ -22,38 +22,48 @@
                     volumeLevel     = volumeLevel > 1 ? 1 : volumeLevel < 0 ? 0 : volumeLevel;
                     player.volume   = volumeLevel;
                 },
+                setPause = function (pause) {
+                    state.isPlaying = pause;
+                },
                 setDefaultState = function() {
                     state = getDefaultState();
                 },
                 setTime = function (second) {
-                    ApiService.put(Config.Routing.rewind.replace('_TIME_', second)).then(function() {
-                        player.currentTime = second;
-                    });
+                    player.currentTime = second;
                 },
-                getPercent = function () {
-                    return Math.round(player.currentTime / player.duration * 100);
+                getPercent = function (currentTime, duration) {
+                    currentTime = angular.isUndefined(currentTime)  ? (player.currentTime ? player.currentTime : 1) : currentTime;
+                    duration    = angular.isUndefined(duration)     ? (player.duration ? player.duration : 2)       : duration;
+
+                    return Math.round(currentTime / duration * 100);
                 },
                 changeStatusRequest = function () {
                     if(isMainPLayer) {
-                        return ApiService.put(Config.Routing.pause.replace('_TYPE_', !state.isPlaying));
+                        return ApiService.put(Config.Routing.pause.replace('_TYPE_', state.isPlaying));
                     } else {
                         var deferred = $q.defer();
                         deferred.resolve();
+                        state.isPlaying = !state.isPlaying;
 
                         return deferred.promise;
                     }
                 },
                 pause = function () {
                     changeStatusRequest().then(function() {
-                        state.isPlaying = false;
+                        setPause(false);
                         player.pause();
                     });
                 },
                 play = function () {
                     changeStatusRequest().then(function() {
-                        state.isPlaying = true;
+                        setPause(true);
                         player.play();
                     });
+                },
+                setState = function (key, value) {
+                    if(!angular.isUndefined(state[key])) {
+                        state[key] = value;
+                    }
                 },
                 getState = function (id) {
                     if(!angular.isUndefined(id)) {
@@ -75,6 +85,10 @@
                     playByUrl(SongManager.getSong(id).url);
                 };
 
+            $rootScope.$on('song:pause', function(event, data) {
+                setPause(!data.pause);
+            });
+
             player.addEventListener('offline', (!angular.isUndefined(callbacks) && angular.isFunction(callbacks['onoffline'])) ? callbacks['onoffline'] : function () { pause(); });
             player.addEventListener('online', (!angular.isUndefined(callbacks) && angular.isFunction(callbacks['ononline'])) ? callbacks['ononline']    : function () { play(); });
             player.addEventListener('ended', (!angular.isUndefined(callbacks) && angular.isFunction(callbacks['onended'])) ? callbacks['onended']       : function () {});
@@ -86,6 +100,7 @@
                 playByUrl:          playByUrl,
                 setVolume:          setVolume,
                 getState:           getState,
+                setState:           setState,
                 playById:           playById,
                 setTime:            setTime,
                 pause:              pause,

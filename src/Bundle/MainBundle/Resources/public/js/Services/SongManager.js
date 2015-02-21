@@ -2,14 +2,26 @@
     "use strict";
 
     function SongManager($filter, ApiService, Config, UserManager) {
-        var offset  = 0,
-            songs   = {},
+        var offset          = 0,
+            songs           = {},
             songPrototype   = {
                 disable: function() {
                     this.disabled = true;
                 },
                 getDuration: function() {
                     return this.duration;
+                },
+                getAuthor: function() {
+                    return UserManager.getUser(this.authorId);
+                },
+                updateCounter: function(count) {
+                    this.counter = count;
+                },
+                isMy: function() {
+                    return this.authorId === Config.userId
+                },
+                vote: function() {
+                    this.voted = true;
                 }
             };
 
@@ -42,7 +54,7 @@
                 return null;
             }
 
-            var temp    = $filter('orderObjectBy')(songs, 'counter', true),
+            var temp    = $filter('orderObjectBy')(songs, 'counter', false),
                 result  = null;
 
             angular.forEach(temp, function(value, index) {
@@ -63,25 +75,11 @@
         };
 
         this.voteForSong = function(id, like) {
-            ApiService.put(Config.Routing.vote.replace('_ID_', id).replace('_CHOOSE_', like)).then(function() {
-                songs[id].voted = true;
-            });
+            ApiService.put(Config.Routing.vote.replace('_ID_', id).replace('_CHOOSE_', like));
         };
 
         this.addSong = function(id, song) {
-            songs[id] = song;
-        };
-
-        this.isMy = function(id) {
-            return songs[id].authorId === Config.userId;
-        };
-
-        this.getAuthor = function(id) {
-            return UserManager.getUser(songs[id].authorId);
-        };
-
-        this.updateCounter = function(id, count) {
-            songs[id].counter = count;
+            songs[id] = angular.extend(song, songPrototype);;
         };
     };
 

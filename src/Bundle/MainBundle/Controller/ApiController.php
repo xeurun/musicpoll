@@ -122,7 +122,7 @@ class ApiController extends BaseController
                     $vote       = new Vote($song, $dislike);
                     $this->getRepository('vote')->save($vote);
                     $this->getRepository('song')->refresh($song);
-                    $this->get('drklab.realplexor.manager')->send("Update_Song", array(
+                    $this->get('drklab.realplexor.manager')->send('Update_Song', array(
                         'id' => $song->getId(),
                         'count' => $song->getCounter(),
                         'message' => sprintf("%s проголосовал %s %s!", $this->getUser()->getFullname(),
@@ -160,7 +160,7 @@ class ApiController extends BaseController
             try {
                 $this->getRepository('song')->save($song);
                 $jsonData['message'] = 'Песня добавлена!';
-                $this->get('drklab.realplexor.manager')->send("Add_Song", array(
+                $this->get('drklab.realplexor.manager')->send('Add_Song', array(
                     'id' => $song->getId(),
                     'song' => $this->_getSongFileds($song, null)
                 ));
@@ -207,7 +207,7 @@ class ApiController extends BaseController
                 $song->setDeleted(true);
                 $songRepository->save($song);
                 $jsonData['message'] = 'Песня удалена!';
-                $this->get('drklab.realplexor.manager')->send("Remove_Song", $id);
+                $this->get('drklab.realplexor.manager')->send('Remove_Song', $id);
             } else {
                 $jsonData['error'] = 'Песня ненайдена!';
             }
@@ -230,9 +230,9 @@ class ApiController extends BaseController
         $jsonData = array();
         $on = $on === "true";
 
-        $this->get('drklab.realplexor.manager')->send("Mute_Song", array(
+        $this->get('drklab.realplexor.manager')->send('Mute_Song', array(
             'on' => $on,
-            'message' => sprintf("%s %s", $this->getUser()->getFullname(), $on ? "убавил звук!" : "восстановил звук!"),
+            'message' => sprintf("%s %s", $this->getUser()->getFullname(), $on ? 'убавил звук!' : 'восстановил звук!'),
             'save' => $on
         ));
 
@@ -250,23 +250,7 @@ class ApiController extends BaseController
         $response = new JsonResponse();
         $jsonData = array();
 
-        $this->get('drklab.realplexor.manager')->send("Rewind_Song", $time);
-
-        $response->setJsonContent($jsonData);
-
-        return $response;
-    }
-
-    /**
-     * @Route("/pause/{on}", requirements={"on" = "false|true|_TYPE_"}, name="pause")
-     * @Method("PUT")
-     */
-    public function pauseAction(Request $request, $on)
-    {
-        $response = new JsonResponse();
-        $jsonData = array();
-
-        $this->get('drklab.realplexor.manager')->send("Pause_Song", $on === "true");
+        $this->get('drklab.realplexor.manager')->send('Rewind_Song', $time);
 
         $response->setJsonContent($jsonData);
 
@@ -288,9 +272,28 @@ class ApiController extends BaseController
 
         $id = $request->get('id');
         $title = $request->get('title');
-        $this->get('drklab.realplexor.manager')->send("Next_Song", array(
+        $this->get('drklab.realplexor.manager')->send('Next_Song', array(
             'id' => $id,
             'message' => "Сейчас играет: $title!"
+        ));
+
+        $response->setJsonContent($jsonData);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/pause/{on}", requirements={"on" = "false|true|_TYPE_"}, name="pause")
+     * @Method("PUT")
+     */
+    public function pauseAction(Request $request, $on)
+    {
+        $response = new JsonResponse();
+        $jsonData = array();
+        $on = $on === 'true';
+
+        $this->get('drklab.realplexor.manager')->send('Pause_Song', array(
+            'pause'     => $on
         ));
 
         $response->setJsonContent($jsonData);

@@ -7,6 +7,15 @@
             userPrototype   = {
                 isPlayer: function() {
                     return this.admin;
+                },
+                isAdmin: function() {
+                    return this.admin;
+                },
+                isCurrent: function() {
+                    return this.id === Config.userId;
+                },
+                getFullname: function() {
+                    return this.fullname;
                 }
             };
 
@@ -31,11 +40,11 @@
         };
 
         UserManager.isAdmin = function (id) {
-            return users[id].admin;
+            return this.getUser(id).isAdmin();
         };
 
         UserManager.isCurrentUser = function (id) {
-            return id === Config.userId;
+            return this.getUser(id).isCurrent();
         };
 
         $interval(function() {

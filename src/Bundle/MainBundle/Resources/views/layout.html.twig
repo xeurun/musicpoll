@@ -90,6 +90,7 @@
                     angular.forEach(items, function(item) {
                         filtered.push(item);
                     });
+                    filtered.reverse();
                     filtered.sort(function (a, b) {
                         return (a[field] > b[field] ? 1 : -1);
                     });

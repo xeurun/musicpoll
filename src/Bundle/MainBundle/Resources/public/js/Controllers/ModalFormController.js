@@ -26,7 +26,6 @@
                 onerror: function() {
                     $scope.form.song.url = '';
                     $scope.previewPlayer.pause();
-                    $scope.$apply();
                 }
             }
         );
