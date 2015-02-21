@@ -46,8 +46,14 @@ ul > li {
 }
 
 .popup-alerts {
-    margin: 10px;
+    position: fixed;
+    top: 10px;
+    right: 10px;
 }
+
+    .popup-alerts > div {
+        max-width: 400px;
+    }
 
 .badge > span {
     cursor: pointer;
@@ -60,7 +66,6 @@ ul > li {
 
 .player {
     width: 300px;
-    height: 90px;
     padding: 5px;
     margin: 0 auto;
     background: #EFEFEF;
@@ -70,11 +75,30 @@ ul > li {
     box-shadow: inset 0px 0px 4px 0px #000;
 }
 
-    .player div.btn-group {
-        margin-top: 5px;
+    .player .song-progress {
+        height: 20px;
+        width: 290px;
     }
 
-    .player .progress-striped {
+        .player .song-progress input[type="range"] {
+            -webkit-appearance: none !important;
+            background-color: transparent;
+            position: absolute;
+            height: 20px;
+            width: 290px;
+        }
+
+        .player .song-progress input[type="range"]:focus {
+            outline: none;
+        }
+
+        .player .song-progress input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none !important;
+            width: 0;
+            height: 0;
+        }
+
+    .player div.btn-group {
         margin: 5px 0;
     }
 

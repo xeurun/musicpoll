@@ -3,32 +3,38 @@
 
     function PopupMessageController ($scope, $rootScope, $timeout) {
         var self = this,
-            promise;
+            hidePopup = function(index) {
+                $timeout(function() {}, 3000 + 3500 * (self.popups.length - 1)).then(function() {
+                    self.popups[index].show = false;
+                    $timeout(function() {}, 3500).then(function() {
+                        self.popups.splice(index, 1);
+                    });
+                });
+            };
 
-        this.type       = 'info';
-        this.show       = false;
         this.popups     = [];
-        this.message    = '';
 
         $rootScope.$on('popup:show', function(event, data) {
-            if(data.save) {
-                self.popups.push({
-                    type: data.type,
-                    message: data.message
-                });
-            } else {
-                $timeout.cancel(promise);
-                self.type       = data.type;
-                self.message    = data.message;
-                self.show       = true;
-                promise = $timeout(function() {
-                    self.show = false;
-                }, 3000);
+            var save = angular.isUndefined(data.save) ? false : data.save;
+
+            self.popups.push({
+                message:    data.message,
+                type:       data.type,
+                save:       save,
+                show:       true
+            });
+
+            if(!save) {
+                hidePopup(0);
             }
         });
 
         $rootScope.$on('popup:hide', function() {
-            self.popups.splice(0, self.popups.length);
+            angular.forEach(self.popups, function(value, index) {
+                if(value.save) {
+                    hidePopup(index);
+                }
+            });
             $scope.$apply();
         });
     };

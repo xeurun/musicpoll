@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    function ModalFormController($scope, $rootScope, $modal, Config) {
+    function ModalFormController($rootScope, $modal, Config) {
         this.open = function () {
             $modal.open({
                 templateUrl: Config.Routing.form,
@@ -15,9 +15,9 @@
     function ModalFormInstanceController($scope, $modalInstance, Config, ApiService, PlayerManager) {
         $scope.songs = [];
         $scope.types = ['VK'];
-        $scope.form = {
+        $scope.form  = {
             song: {
-                type: 'VK',
+                type:   'VK',
                 _token: ''
             }
         };
@@ -42,13 +42,13 @@
         });
 
         $scope.save = function () {
-            ApiService.sendRequest(Config.Routing.add, $scope.form);
+            ApiService.post(Config.Routing.add, $scope.form);
             $modalInstance.dismiss('save');
         };
 
-        $scope.playPreview = function ($event) {
+        $scope.play = function ($event) {
             if($event) $event.preventDefault();
-            if(!$scope.previewPlayer.getState().playing) {
+            if(!$scope.previewPlayer.getState().isPlaying) {
                 $scope.previewPlayer.playByUrl($scope.form.song.url);
             } else {
                 $scope.previewPlayer.pause();
@@ -57,18 +57,15 @@
 
         $scope.refreshSongs = function(term) {
             if(term.length > 2) {
-                ApiService.getJsonP(
-                    Config.Routing.vk_api.replace('_method_', 'audio.search'),
-                    {
-                        callback: 'JSON_CALLBACK',
-                        q: term,
-                        auto_complete: 1,
-                        access_token: Config.token,
-                        v: '5.28'
-                    }
-                ).then(function(response) {
-                    if(response.data.response) {
-                        $scope.songs = response.data.response.items
+                ApiService.jsonp(Config.Routing.vk_api.replace('_method_', 'audio.search'), {
+                    callback: 'JSON_CALLBACK',
+                    q: term,
+                    auto_complete: 1,
+                    access_token: Config.token,
+                    v: '5.28'
+                }).then(function(data) {
+                    if(!angular.isUndefined(data.response)) {
+                        $scope.songs = data.response.items
                     }
                 });
             };

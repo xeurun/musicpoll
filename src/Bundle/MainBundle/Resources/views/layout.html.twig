@@ -17,9 +17,9 @@
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
     {% javascripts
-        '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.4/angular.js'
-        '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.4/angular-sanitize.js'
-        '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.4/angular-animate.js'
+        '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.5/angular.js'
+        '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.5/angular-sanitize.js'
+        '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.5/angular-animate.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
@@ -46,6 +46,12 @@
                 $rootScope.realplexor.subscribe("Next_Song", function(data) {
                     $rootScope.$broadcast('song:next', data);
                 });
+                $rootScope.realplexor.subscribe("Rewind_Song", function(data) {
+                    $rootScope.$broadcast('song:rewind', data);
+                });
+                $rootScope.realplexor.subscribe("Pause_Song", function(data) {
+                    $rootScope.$broadcast('song:pause', data);
+                });
                 $rootScope.realplexor.execute();
             })
             .config (function($interpolateProvider, $sceDelegateProvider, $httpProvider) {
@@ -68,10 +74,14 @@
                     next:       '{{ path('next_song') }}',
                     getUsers:   '{{ path('get_users') }}',
                     whoVote:    '{{ path('who_vote', {'id': '_ID_'}) }}',
+                    rewind:     '{{ path('rewind', {'time': '_TIME_'}) }}',
+                    pause:      '{{ path('pause', {'on': '_TYPE_'}) }}',
                     vk_api:     'https://api.vk.com/method/_method_'
                 },
                 userId: {{ app.user.id }},
+                player: {{ is_granted('ROLE_ADMIN') != true ? 0 : 1 }},
                 token:  '71fcc118d02b311e47dbbc57f315952a3080a5fb68cf4f283107d18e971999f5e1fe61f53b1a7b58f39d9',
+                UPDATE_USERS_INTERVAL: 300000 // 5 minutes
             })
             .filter('orderObjectBy', function() {
                 return function(items, field, reverse) {
@@ -109,6 +119,11 @@
                     return result;
                 };
             })
+            .filter('reverse', function() {
+                return function(items) {
+                    return items.slice().reverse();
+                };
+            })
             .filter('filterObjectBy', function($filter) {
                 var filter = $filter('filter');
 
@@ -131,7 +146,6 @@
     </script>
     {% javascripts
         '@MainBundle/Resources/public/js/Modules/*'
-        '@MainBundle/Resources/public/js/Models/*'
         '@MainBundle/Resources/public/js/Services/*'
         '@MainBundle/Resources/public/js/Directives/*'
         '@MainBundle/Resources/public/js/Controllers/*'

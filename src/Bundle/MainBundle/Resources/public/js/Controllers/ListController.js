@@ -2,43 +2,19 @@
     "use strict";
 
     function ListController($rootScope, $scope, $modal, SongManager, UserManager, PlayerManager, Config) {
-        var self    = this;
+        var self = this;
 
-        this.onlyMy     = false;
-        this.player     = new PlayerManager();
-        this.songs      = {};
-        this.user       = {};
-        this.top        = false;
+        this.songManager    = SongManager;
+        this.userManager    = UserManager;
+        this.player         = new PlayerManager();
+        this.onlyMy         = false;
+        this.top            = false;
 
-        $scope.$watchCollection(UserManager.getCurrentUser, function(data) {
-            self.user = data;
-        });
-
-        $scope.$watchCollection(SongManager.getSongs, function(data) {
-            self.songs = data;
-        });
-
-        this.nextBlock = function() {
-            SongManager.getNextBlock();
-        };
-        this.vote = function (id, like) {
-            SongManager.voteForSong(id, like);
-        };
-        this.delete = function (id) {
-            SongManager.deleteSong(id);
-        };
-        this.isMy = function (id) {
-            return SongManager.isMy(id);
-        };
-        this.getUser = function (id) {
-            return UserManager.getUser(id);
-        };
         this.play = function (id) {
-            var state = self.player.getState(id);
-            if(state && state.playing) {
-                self.player.pause();
-            } else {
+            if(!self.player.getState(id).isPlaying) {
                 self.player.playById(id);
+            } else {
+                self.player.pause();
             }
         };
         this.open = function (id) {
@@ -47,15 +23,11 @@
             });
         };
 
-        $rootScope.$on('song:add', function(event, data) {
-            SongManager.addSong(data.id, data.song);
-            $scope.$apply();
-        });
-        $rootScope.$on('song:remove', function(event, id) {
+        $scope.$on('song:remove', function(event, id) {
             SongManager.removeSong(id);
             $scope.$apply();
         });
-        $rootScope.$on('song:update', function(event, data) {
+        $scope.$on('song:update', function(event, data) {
             $rootScope.$broadcast('popup:show', {type: 'info', 'message': data.message});
             SongManager.updateCounter(data.id, data.count);
             $scope.$apply();

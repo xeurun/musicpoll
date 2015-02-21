@@ -209,6 +209,22 @@ class Song extends BaseEntity
     }
 
     /**
+     * Get boolean
+     *
+     * @return hasCurrentUserVote
+     */
+    public function hasCurrentUserVote($id)
+    {
+        foreach($this->votes as $vote) {
+            if($id === $vote->getAuthor()->getId()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Set author
      * @param \Bundle\CommonBundle\Entity\User $author
      * @return Song

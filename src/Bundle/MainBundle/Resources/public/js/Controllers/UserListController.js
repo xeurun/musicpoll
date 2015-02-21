@@ -1,23 +1,9 @@
 (function() {
     "use strict";
 
-    function UserListController($scope, UserManager) {
-        var self = this;
-
+    function UserListController(UserManager) {
         this.show = false;
-        this.users = [];
-
-        $scope.$watchCollection(UserManager.getUsers, function(data) {
-            self.users = data;
-        });
-
-        this.getCurrentUser = function () {
-            return UserManager.getCurrentUser();
-        };
-
-        this.isCurrentUser = function (id) {
-            return UserManager.isCurrentUser(id);
-        };
+        this.userManager = UserManager;
     };
 
     angular.module('musicpoll').controller('UserListController', UserListController);

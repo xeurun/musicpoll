@@ -2,31 +2,39 @@
     "use strict";
 
     function SongManager($filter, ApiService, Config, UserManager) {
-        var offset      = 0,
-            songs       = {};
+        var offset  = 0,
+            songs   = {},
+            songPrototype   = {
+                disable: function() {
+                    this.disabled = true;
+                },
+                getDuration: function() {
+                    return this.duration;
+                }
+            };
 
         this.getNextBlock = function() {
-            ApiService.get(Config.Routing.getPortion.replace('_OFFSET_', offset)).success(function(data){
+            ApiService.get(Config.Routing.getPortion.replace('_OFFSET_', offset)).then(function(data) {
                 angular.forEach(data.entities, function(value, index) {
-                    songs[index] = value;
+                    songs[index] = angular.extend(value, songPrototype);
                 });
                 offset += data.count;
             });
         };
-
-        this.getNextBlock();
 
         this.getSongs = function() {
             return songs;
         };
 
         this.deleteSong = function(id) {
-            this.removeSong(id);
-            ApiService.sendRequest(Config.Routing.remove.replace('_ID_', id));
+            var self = this;
+            ApiService.delete(Config.Routing.remove.replace('_ID_', id)).then(function() {
+                self.removeSong(id);
+            });
         };
 
-        this.removeSong = function(key) {
-            delete songs[key];
+        this.removeSong = function(id) {
+            delete songs[id];
         };
 
         this.getTopSong = function() {
@@ -34,15 +42,30 @@
                 return null;
             }
 
-            return $filter('orderObjectBy')(songs, 'counter', true)[0];
+            var temp    = $filter('orderObjectBy')(songs, 'counter', true),
+                result  = null;
+
+            angular.forEach(temp, function(value, index) {
+                if(angular.isUndefined(value.disabled) || !value.disabled) {
+                    result = value;
+
+                    return;
+                }
+            });
+
+            return result;
         };
 
         this.getSong = function(id) {
+            if(!angular.isNumber(id)) return null;
+
             return songs[id];
         };
 
         this.voteForSong = function(id, like) {
-            ApiService.sendRequest(Config.Routing.vote.replace('_ID_', id).replace('_CHOOSE_', like));
+            ApiService.put(Config.Routing.vote.replace('_ID_', id).replace('_CHOOSE_', like)).then(function() {
+                songs[id].voted = true;
+            });
         };
 
         this.addSong = function(id, song) {
@@ -57,14 +80,8 @@
             return UserManager.getUser(songs[id].authorId);
         };
 
-        this.disable = function(id) {
-            songs[id].disabled = true;
-        };
-
         this.updateCounter = function(id, count) {
-            if(!songs[id].disabled) {
-                songs[id].counter = count;
-            }
+            songs[id].counter = count;
         };
     };
 

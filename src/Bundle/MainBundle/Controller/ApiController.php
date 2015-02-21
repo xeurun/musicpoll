@@ -27,21 +27,23 @@ class ApiController extends BaseController
      * @param \Bundle\CommonBundle\Entity\Song\Song $entity
      * @return mixed
      */
-    private function _getSongFileds($entity) {
+    private function _getSongFileds($song, $userId = null) {
         return array(
-            "id"        => $entity->getId(),
-            "url"       => $entity->getUrl(),
-            "type"      => $entity->getType(),
-            "title"     => $entity->getTitle(),
-            "artist"    => $entity->getArtist(),
-            "counter"   => $entity->getCounter(),
-            "duration"  => $entity->getDuration(),
-            "authorId"  => $entity->getAuthor()->getId()
+            "id"        => $song->getId(),
+            "url"       => $song->getUrl(),
+            "type"      => $song->getType(),
+            "title"     => $song->getTitle(),
+            "voted"     => is_null($userId) ? false : $song->hasCurrentUserVote($userId),
+            "artist"    => $song->getArtist(),
+            "counter"   => $song->getCounter(),
+            "duration"  => $song->getDuration(),
+            "authorId"  => $song->getAuthor()->getId()
         );
     }
 
     /**
      * @Route("/getPortion/{offset}", requirements={"offset" = "\d+|_OFFSET_"}, name="get_portion")
+     * @Method("GET")
      */
     public function getPortion(Request $request, $offset)
     {
@@ -50,10 +52,11 @@ class ApiController extends BaseController
 
         /** @var var SongRepository $repository */
         $repository = $this->getRepository('song');
-        $entities = $repository->findBy(array('deleted' => false), array(), self::SONG_LIMIT, $offset);
+        $entities   = $repository->findBy(array('deleted' => false), array(), self::SONG_LIMIT, $offset);
+        $userId     = $this->getUser()->getId();
         /** @var var Song $entity */
         foreach ($entities as $entity) {
-            $jsonData['entities'][$entity->getId()] = $this->_getSongFileds($entity);
+            $jsonData['entities'][$entity->getId()] = $this->_getSongFileds($entity, $userId);
         }
         $jsonData['count'] = count($entities);
 
@@ -104,7 +107,7 @@ class ApiController extends BaseController
 
     /**
      * @Route("/vote/{id}/{choose}", requirements={"id" = "\d+|_ID_"}, name="vote")
-     * @Method("POST")
+     * @Method("PUT")
      */
     public function voteAction(Request $request, $id, $choose)
     {
@@ -159,7 +162,7 @@ class ApiController extends BaseController
                 $jsonData['message'] = 'Песня добавлена!';
                 $this->get('drklab.realplexor.manager')->send("Add_Song", array(
                     'id' => $song->getId(),
-                    'song' => $this->_getSongFileds($song)
+                    'song' => $this->_getSongFileds($song, null)
                 ));
             } catch (\Exception $ex) {
                 $jsonData['error'] = $this->generateError('repository.save', $ex);
@@ -187,7 +190,7 @@ class ApiController extends BaseController
 
     /**
      * @Route("/remove/{id}", requirements={"id" = "\d+|_ID_"}, name="remove")
-     * @Method("POST")
+     * @Method("DELETE")
      */
     public function removeAction(Request $request, $id)
     {
@@ -219,16 +222,18 @@ class ApiController extends BaseController
 
     /**
      * @Route("/mute/{on}", requirements={"on" = "false|true|_TYPE_"}, name="mute")
-     * @Method("POST")
+     * @Method("PUT")
      */
     public function muteAction(Request $request, $on)
     {
         $response = new JsonResponse();
         $jsonData = array();
+        $on = $on === "true";
 
         $this->get('drklab.realplexor.manager')->send("Mute_Song", array(
             'on' => $on,
-            'message' => sprintf("%s %s", $this->getUser()->getFullname(), $on === "true" ? "убавил звук!" : "восстановил звук!")
+            'message' => sprintf("%s %s", $this->getUser()->getFullname(), $on ? "убавил звук!" : "восстановил звук!"),
+            'save' => $on
         ));
 
         $response->setJsonContent($jsonData);
@@ -237,8 +242,40 @@ class ApiController extends BaseController
     }
 
     /**
+     * @Route("/rewind/{time}", requirements={"time" = "\d+|_TIME_"}, name="rewind")
+     * @Method("PUT")
+     */
+    public function rewindAction(Request $request, $time)
+    {
+        $response = new JsonResponse();
+        $jsonData = array();
+
+        $this->get('drklab.realplexor.manager')->send("Rewind_Song", $time);
+
+        $response->setJsonContent($jsonData);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/pause/{on}", requirements={"on" = "false|true|_TYPE_"}, name="pause")
+     * @Method("PUT")
+     */
+    public function pauseAction(Request $request, $on)
+    {
+        $response = new JsonResponse();
+        $jsonData = array();
+
+        $this->get('drklab.realplexor.manager')->send("Pause_Song", $on === "true");
+
+        $response->setJsonContent($jsonData);
+
+        return $response;
+    }
+
+    /**
      * @Route("/nextSong", name="next_song")
-     * @Method("POST")
+     * @Method("PUT")
      */
     public function nextSongAction(Request $request)
     {

@@ -36,9 +36,9 @@
             <span class="input-group-addon">Ссылка:</span>
             <span>{{ form_widget(songForm.url) }}</span>
             <span class="input-group-addon" ng-class="form.song.url ? '' : 'hidden'">
-                <button style="padding: 0 5px;" type="button" ng-class="{'btn-danger':previewPlayer.getState().playing, 'btn-success':!previewPlayer.getState().playing}" class="btn btn-xs" ng-click="playPreview($event)">
-                    <span class="glyphicon glyphicon-play" ng-show="!previewPlayer.getState().playing && form.song.url"></span>
-                    <span class="glyphicon glyphicon-pause" ng-show="previewPlayer.getState().playing"></span>
+                <button style="padding: 0 5px;" type="button" ng-class="{'btn-danger':previewPlayer.getState().isPlaying, 'btn-success':!previewPlayer.getState().isPlaying}" class="btn btn-xs" ng-click="play($event)">
+                    <span class="glyphicon glyphicon-play" ng-show="!previewPlayer.getState().isPlaying && form.song.url"></span>
+                    <span class="glyphicon glyphicon-pause" ng-show="previewPlayer.getState().isPlaying"></span>
                 </button>
             </span>
         </p>

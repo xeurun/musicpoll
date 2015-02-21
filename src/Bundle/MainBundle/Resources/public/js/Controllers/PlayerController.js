@@ -1,10 +1,22 @@
 (function() {
     "use strict";
 
-    function PlayerController($rootScope, $scope, ApiService, PlayerManager, SongManager, Config) {
-        var self = this;
-        this.muted  = false;
-        this.song   = null;
+    function PlayerController($rootScope, $scope, $interval, ApiService, PlayerManager, SongManager, Config) {
+        var self = this,
+            interval,
+            duration    = 0,
+            second      = 0,
+            play        = true;
+
+        this.started    = false;
+        this.percent    = 0;
+        this.muted      = false;
+        this.song       = null;
+
+        this.changeTime = function ($event) {
+            self.audio.setTime(angular.element($event.target).val());
+            self.percent = self.audio.getPercent();
+        };
 
         this.next = function () {
             if (angular.isObject(self.song)) {
@@ -12,27 +24,29 @@
             }
             self.song = SongManager.getTopSong();
             if(angular.isObject(self.song)) {
+                self.started = true;
                 self.audio.playById(self.song.id);
-                ApiService.sendRequest(Config.Routing.next, {
-                    id: self.song.id,
-                    title: self.song.title
-                });
             } else {
-                self.audio.clear();
+                self.audio.setDefaultState();
                 self.audio.pause();
                 $rootScope.$broadcast('popup:show', {type: 'danger', message: 'Плейлист пуст!'});
             }
+            ApiService.put(Config.Routing.next, {
+                id: self.song ? self.song.id : null,
+                title: self.song ? self.song.title : null
+            });
         };
 
-        this.audio  = new PlayerManager(
+        this.audio = new PlayerManager(
             {
                 onerror: this.next,
                 onended: this.next
-            }
+            },
+            true
         );
 
         this.play = function () {
-            if(!self.audio.getState().playing) {
+            if(!self.audio.getState().isPlaying) {
                 self.audio.play();
             } else {
                 self.audio.pause();
@@ -40,21 +54,52 @@
         };
 
         this.mute = function () {
-            ApiService.sendRequest(Config.Routing.mute.replace('_TYPE_', !this.muted), null, false, !this.muted);
+            ApiService.put(Config.Routing.mute.replace('_TYPE_', !this.muted));
         };
 
-        $rootScope.$on('song:next', function(event, data) {
+        $scope.$on('song:add', function(event, data) {
+            SongManager.addSong(data.id, data.song);
+            $scope.$apply();
+            if(self.started && !self.song) {
+                self.next();
+            }
+        });
+
+        $scope.$on('song:rewind', function(event, data) {
+            $scope.$apply(second = data);
+        });
+
+        $scope.$on('song:pause', function(event, data) {
+            play = data;
+        });
+
+        $scope.$on('song:next', function(event, data) {
             self.song = SongManager.getSong(data.id);
             if(angular.isObject(self.song)) {
-                SongManager.disable(self.song.id);
-                SongManager.updateCounter(self.song.id, 100000);
+                self.song.disable();
+                if(!Config.player) {
+                    $scope.$apply(self.started = true);
+                    second      = 0;
+                    duration    = self.song.getDuration();
+                    play        = true;
+                }
+                $interval.cancel(interval);
+                interval = $interval(function() {
+                    if(play && self.percent < 100) {
+                        if(Config.player) {
+                            self.percent = self.audio.getPercent();
+                        } else {
+                            self.percent = Math.round(++second / duration * 100);
+                        }
+                    }
+                }, 1000);
                 $rootScope.$broadcast('popup:show', {type: 'info', message: data.message});
             }
             $scope.$apply();
         });
 
-        $rootScope.$on('song:mute', function(event, data) {
-            self.muted = data.on != 'false';
+        $scope.$on('song:mute', function(event, data) {
+            self.muted = data.on;
             self.audio.setVolume(self.muted ? 0.2 : 1);
             if(self.muted) {
                 $rootScope.$broadcast('popup:show', {type: 'success', message: data.message, save: true});

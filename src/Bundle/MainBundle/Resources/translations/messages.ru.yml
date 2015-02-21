@@ -1,3 +1,6 @@
+error:
+  repository.save: При сохранении произошла ошибка
+
 song:
   placeholder:
     title: введите название песни

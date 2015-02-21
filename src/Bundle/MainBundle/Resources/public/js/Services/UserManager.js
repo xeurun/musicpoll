@@ -1,14 +1,19 @@
 (function() {
     "use strict";
 
-    function UserManager($timeout, ApiService, Config) {
-        var UserManager = {},
-            users = {};
+    function UserManager($interval, ApiService, Config) {
+        var UserManager     = {},
+            users           = {},
+            userPrototype   = {
+                isPlayer: function() {
+                    return this.admin;
+                }
+            };
 
         UserManager.loadUsers = function() {
-            ApiService.get(Config.Routing.getUsers).success(function(data){
+            ApiService.get(Config.Routing.getUsers).then(function(data) {
                 angular.forEach(data.entities, function(value, index) {
-                    users[index] = value;
+                    users[index] = angular.extend(value, userPrototype);
                 });
             });
         };
@@ -33,11 +38,9 @@
             return id === Config.userId;
         };
 
-        UserManager.loadUsers();
-
-        $timeout(function() {
+        $interval(function() {
             UserManager.loadUsers();
-        }, 300000);
+        }, Config.UPDATE_USERS_INTERVAL);
 
         return UserManager;
     };
