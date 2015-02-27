@@ -62,7 +62,9 @@
         };
 
         this.updateCounter = function(id, count) {
-            songs[id].counter = count;
+            if(!songs[id].disabled) {
+                songs[id].counter = count;
+            }
         };
     };
 

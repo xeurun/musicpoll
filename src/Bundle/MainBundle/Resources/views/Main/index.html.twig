@@ -77,7 +77,7 @@
                             <span ng-click="list.vote([[ song.id ]], true)" class="glyphicon glyphicon-hand-up"></span>
                             <span ng-click="list.vote([[ song.id ]], false)" class="glyphicon glyphicon-hand-down"></span>
                             <span ng-hide="song.disabled" ng-click="list.play([[ song.id ]])" ng-class="{'glyphicon-play': !list.player.getState([[ song.id ]]).id || list.player.getState([[ song.id ]]).pause, 'glyphicon-stop': list.player.getState([[ song.id ]]).playing}" class="glyphicon"></span>
-                            <span ng-hide="song.disabled" ng-show="list.isMy([[ song.id ]]) || list.user.admin" ng-click="list.delete([[ song.id ]])" class="glyphicon glyphicon-remove"></span>
+                            <span ng-show="(list.isMy([[ song.id ]]) || list.user.admin) && !song.disabled" ng-click="list.delete([[ song.id ]])" class="glyphicon glyphicon-remove"></span>
                             <span ng-click="list.open([[ song.id ]])">[[ song.counter ]]</span>
                         </span>
                         <span class="song-title">[[ song.title ]]</span>
