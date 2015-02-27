@@ -73,11 +73,11 @@
                 </br>
                 <ul class="list-group song-list" lr-infinite-scroll="list.nextBlock" scroll-threshold="200" time-threshold="600">
                     <li hg-cloak ng-repeat="song in list.songs | filterObjectBy:{ 'authorId': list.onlyMy ? list.user.id : '' } | filterObjectBy:list.searchText:'title' | orderObjectBy:list.top ? 'counter' : 'id':true" ng-class="{disabled: song.disabled}" class="ng-cloak list-group-item">
-                        <span class="badge" ng-hide="song.disabled">
+                        <span class="badge">
                             <span ng-click="list.vote([[ song.id ]], true)" class="glyphicon glyphicon-hand-up"></span>
                             <span ng-click="list.vote([[ song.id ]], false)" class="glyphicon glyphicon-hand-down"></span>
-                            <span ng-click="list.play([[ song.id ]])" ng-class="{'glyphicon-play': !list.player.getState([[ song.id ]]).id || list.player.getState([[ song.id ]]).pause, 'glyphicon-stop': list.player.getState([[ song.id ]]).playing}" class="glyphicon"></span>
-                            <span ng-show="list.isMy([[ song.id ]]) || list.user.admin" ng-click="list.delete([[ song.id ]])" class="glyphicon glyphicon-remove"></span>
+                            <span ng-hide="song.disabled" ng-click="list.play([[ song.id ]])" ng-class="{'glyphicon-play': !list.player.getState([[ song.id ]]).id || list.player.getState([[ song.id ]]).pause, 'glyphicon-stop': list.player.getState([[ song.id ]]).playing}" class="glyphicon"></span>
+                            <span ng-hide="song.disabled" ng-show="list.isMy([[ song.id ]]) || list.user.admin" ng-click="list.delete([[ song.id ]])" class="glyphicon glyphicon-remove"></span>
                             <span ng-click="list.open([[ song.id ]])">[[ song.counter ]]</span>
                         </span>
                         <span class="song-title">[[ song.title ]]</span>
