@@ -75,9 +75,10 @@
         };
 
         this.voteForSong = function(id, like) {
+var self = this;
             ApiService.put(Config.Routing.vote.replace('_ID_', id).replace('_CHOOSE_', like)).then(function() {
-		SongManager.getSong(id).vote();
-	    );
+		self.getSong(id).vote();
+	    });
         };
 
         this.addSong = function(id, song) {
