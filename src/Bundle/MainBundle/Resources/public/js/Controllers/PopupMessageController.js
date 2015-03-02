@@ -1,18 +1,20 @@
 (function() {
     "use strict";
 
-    function PopupMessageController ($scope, $rootScope, $timeout) {
+    function PopupMessageController ($scope, $rootScope, $timeout, Config) {
         var self = this,
             hidePopup = function(index) {
-                $timeout(function() {}, 3000 + 3500 * (self.popups.length - 1)).then(function() {
+                // DELAY_FOR_POPUP for delay and POPUP_ANIMATION_DURATION for animation * count
+                // (individual animation for every next)
+                $timeout(function() {}, Config.DELAY_FOR_POPUP + Config.POPUP_ANIMATION_DURATION * (self.popups.length - 1)).then(function() {
                     self.popups[index].show = false;
-                    $timeout(function() {}, 3500).then(function() {
+                    $timeout(function() {}, Config.POPUP_ANIMATION_DURATION).then(function() {
                         self.popups.splice(index, 1);
                     });
                 });
             };
 
-        this.popups     = [];
+        this.popups = [];
 
         $rootScope.$on('popup:show', function(event, data) {
             var save = angular.isUndefined(data.save) ? false : data.save;
@@ -25,6 +27,7 @@
             });
 
             if(!save) {
+                //if not saved start remove process for first popup
                 hidePopup(0);
             }
         });
@@ -32,7 +35,8 @@
         $rootScope.$on('popup:hide', function() {
             angular.forEach(self.popups, function(value, index) {
                 if(value.save) {
-                    hidePopup(index);
+                    //if saved popup remove it
+                    self.popups.splice(index, 1);
                 }
             });
             $scope.$apply();

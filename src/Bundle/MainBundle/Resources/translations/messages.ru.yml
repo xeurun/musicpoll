@@ -1,5 +1,6 @@
 error:
   repository.save: При сохранении произошла ошибка
+  repository.get: Не удалось получить элемент
 
 song:
   placeholder:

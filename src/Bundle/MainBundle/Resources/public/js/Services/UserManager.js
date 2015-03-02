@@ -5,6 +5,9 @@
         var UserManager     = {},
             users           = {},
             userPrototype   = {
+                getId: function() {
+                    return this.id;
+                },
                 isPlayer: function() {
                     return this.admin;
                 },
@@ -12,7 +15,7 @@
                     return this.admin;
                 },
                 isCurrent: function() {
-                    return this.id === Config.userId;
+                    return this.id === Config.USERID;
                 },
                 getFullname: function() {
                     return this.fullname;
@@ -20,7 +23,7 @@
             };
 
         UserManager.loadUsers = function() {
-            ApiService.get(Config.Routing.getUsers).then(function(data) {
+            ApiService.get(Config.ROUTING.getUsers).then(function(data) {
                 angular.forEach(data.entities, function(value, index) {
                     users[index] = angular.extend(value, userPrototype);
                 });
@@ -36,15 +39,7 @@
         };
 
         UserManager.getCurrentUser = function() {
-            return users[Config.userId];
-        };
-
-        UserManager.isAdmin = function (id) {
-            return this.getUser(id).isAdmin();
-        };
-
-        UserManager.isCurrentUser = function (id) {
-            return this.getUser(id).isCurrent();
+            return users[Config.USERID];
         };
 
         $interval(function() {

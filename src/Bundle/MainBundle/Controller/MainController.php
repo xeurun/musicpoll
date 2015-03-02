@@ -19,9 +19,11 @@ class MainController extends BaseController
      */
     public function indexAction()
     {
-        return array('config' => array(
-            'realplexor_url' => $this->container->getParameter('realplexor_url'),
-            'realplexor_namespace' => $this->container->getParameter('realplexor_namespace'),
-        ));
+        return array(
+            'config' => array(
+                'realplexor_url'        => $this->container->getParameter('realplexor_url'),
+                'realplexor_namespace'  => $this->container->getParameter('realplexor_namespace'),
+            )
+        );
     }
 }

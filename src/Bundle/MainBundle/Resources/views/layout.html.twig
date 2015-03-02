@@ -31,26 +31,8 @@
             .module ('musicpoll', [ 'ui.bootstrap', 'ui.select', 'ngAnimate', 'ngSanitize' ])
             .run(function($rootScope) {
                 $rootScope.realplexor = new Dklab_Realplexor('{{ config.realplexor_url }}', '{{ config.realplexor_namespace }}');
-                $rootScope.realplexor.subscribe("Add_Song", function(data) {
-                    $rootScope.$broadcast('song:add', data);
-                });
-                $rootScope.realplexor.subscribe("Remove_Song", function(data) {
-                    $rootScope.$broadcast('song:remove', data);
-                });
-                $rootScope.realplexor.subscribe("Update_Song", function(data) {
-                    $rootScope.$broadcast('song:update', data);
-                });
-                $rootScope.realplexor.subscribe("Mute_Song", function(data) {
-                    $rootScope.$broadcast('song:mute', data);
-                });
-                $rootScope.realplexor.subscribe("Next_Song", function(data) {
-                    $rootScope.$broadcast('song:next', data);
-                });
-                $rootScope.realplexor.subscribe("Rewind_Song", function(data) {
-                    $rootScope.$broadcast('song:rewind', data);
-                });
-                $rootScope.realplexor.subscribe("Pause_Song", function(data) {
-                    $rootScope.$broadcast('song:pause', data);
+                $rootScope.realplexor.subscribe("Song", function(data, id, cursor) {
+                    $rootScope.$broadcast('song:' + data.channel, data.result);
                 });
                 $rootScope.realplexor.execute();
             })
@@ -64,24 +46,26 @@
                 $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
             })
             .constant ("Config", {
-                Routing: {
+                ROUTING: {
                     vote:       '{{ path('vote', {'id': '_ID_', 'choose': '_CHOOSE_'}) }}',
                     remove:     '{{ path('remove', {'id': '_ID_'}) }}',
                     add:        '{{ path('add') }}',
                     form:       '{{ path('form') }}',
                     mute:       '{{ path('mute', {'on': '_TYPE_'}) }}',
                     getPortion: '{{ path('get_portion', {'offset': '_OFFSET_'}) }}',
-                    next:       '{{ path('next_song') }}',
+                    next:       '{{ path('next_song', {'id': '_ID_'}) }}',
                     getUsers:   '{{ path('get_users') }}',
                     whoVote:    '{{ path('who_vote', {'id': '_ID_'}) }}',
                     rewind:     '{{ path('rewind', {'time': '_TIME_'}) }}',
-                    pause:      '{{ path('pause', {'on': '_TYPE_'}) }}',
+                    play:       '{{ path('play', {'on': '_TYPE_'}) }}',
                     vk_api:     'https://api.vk.com/method/_method_'
                 },
-                userId: {{ app.user.id }},
-                player: {{ is_granted('ROLE_ADMIN') != true ? 0 : 1 }},
-                token:  '71fcc118d02b311e47dbbc57f315952a3080a5fb68cf4f283107d18e971999f5e1fe61f53b1a7b58f39d9',
-                UPDATE_USERS_INTERVAL: 300000 // 5 minutes
+                USERID: {{ app.user.id }},
+                PLAYER: {{ is_granted('ROLE_ADMIN') != true ? 0 : 1 }},
+                TOKEN:  '71fcc118d02b311e47dbbc57f315952a3080a5fb68cf4f283107d18e971999f5e1fe61f53b1a7b58f39d9',
+                UPDATE_USERS_INTERVAL: 300000,  // 5 minutes
+                DELAY_FOR_POPUP: 3000,          // 3 second
+                POPUP_ANIMATION_DURATION: 3500  // 3.5 second
             })
             .filter('orderObjectBy', function() {
                 return function(items, field, reverse) {

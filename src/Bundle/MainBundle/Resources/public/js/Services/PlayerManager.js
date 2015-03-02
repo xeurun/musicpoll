@@ -7,7 +7,16 @@
                 getDefaultState = function() {
                     return {
                         songId:     null,
-                        isPlaying:  false
+                        playing:    false,
+                        getSongId:  function() {
+                            return this.songId;
+                        },
+                        isPlaying:  function() {
+                            return this.playing;
+                        },
+                        setPlaying: function(playing) {
+                            this.playing = playing;
+                        }
                     };
                 },
                 state           = getDefaultState(),
@@ -22,9 +31,6 @@
                     volumeLevel     = volumeLevel > 1 ? 1 : volumeLevel < 0 ? 0 : volumeLevel;
                     player.volume   = volumeLevel;
                 },
-                setPause = function (pause) {
-                    state.isPlaying = pause;
-                },
                 setDefaultState = function() {
                     state = getDefaultState();
                 },
@@ -37,33 +43,27 @@
 
                     return Math.round(currentTime / duration * 100);
                 },
-                changeStatusRequest = function () {
+                sendPlay = function (pause) {
                     if(isMainPLayer) {
-                        return ApiService.put(Config.Routing.pause.replace('_TYPE_', state.isPlaying));
+                        return ApiService.put(Config.ROUTING.play.replace('_TYPE_', pause));
                     } else {
                         var deferred = $q.defer();
+
                         deferred.resolve();
-                        state.isPlaying = !state.isPlaying;
+                        state.setPlaying(pause);
 
                         return deferred.promise;
                     }
                 },
                 pause = function () {
-                    changeStatusRequest().then(function() {
-                        setPause(false);
+                    sendPlay(false).then(function() {
                         player.pause();
                     });
                 },
                 play = function () {
-                    changeStatusRequest().then(function() {
-                        setPause(true);
+                    sendPlay(true).then(function() {
                         player.play();
                     });
-                },
-                setState = function (key, value) {
-                    if(!angular.isUndefined(state[key])) {
-                        state[key] = value;
-                    }
                 },
                 getState = function (id) {
                     if(!angular.isUndefined(id)) {
@@ -85,14 +85,10 @@
                     playByUrl(SongManager.getSong(id).url);
                 };
 
-            $rootScope.$on('song:pause', function(event, data) {
-                setPause(!data.pause);
-            });
-
-            player.addEventListener('offline', (!angular.isUndefined(callbacks) && angular.isFunction(callbacks['onoffline'])) ? callbacks['onoffline'] : function () { pause(); });
-            player.addEventListener('online', (!angular.isUndefined(callbacks) && angular.isFunction(callbacks['ononline'])) ? callbacks['ononline']    : function () { play(); });
-            player.addEventListener('ended', (!angular.isUndefined(callbacks) && angular.isFunction(callbacks['onended'])) ? callbacks['onended']       : function () {});
-            player.addEventListener('error', (!angular.isUndefined(callbacks) && angular.isFunction(callbacks['onerror'])) ? callbacks['onerror']       : function () {});
+            player.addEventListener('offline',  (!angular.isUndefined(callbacks)    && angular.isFunction(callbacks['onoffline']))  ? callbacks['onoffline']    : function () { pause(); });
+            player.addEventListener('online',   (!angular.isUndefined(callbacks)    && angular.isFunction(callbacks['ononline']))   ? callbacks['ononline']     : function () { play(); });
+            player.addEventListener('ended',    (!angular.isUndefined(callbacks)    && angular.isFunction(callbacks['onended']))    ? callbacks['onended']      : function () {});
+            player.addEventListener('error',    (!angular.isUndefined(callbacks)    && angular.isFunction(callbacks['onerror']))    ? callbacks['onerror']      : function () {});
 
             return {
                 setDefaultState:    setDefaultState,
@@ -100,7 +96,6 @@
                 playByUrl:          playByUrl,
                 setVolume:          setVolume,
                 getState:           getState,
-                setState:           setState,
                 playById:           playById,
                 setTime:            setTime,
                 pause:              pause,

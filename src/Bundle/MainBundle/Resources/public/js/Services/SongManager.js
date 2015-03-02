@@ -5,20 +5,32 @@
         var offset          = 0,
             songs           = {},
             songPrototype   = {
+                getId: function() {
+                    return this.id;
+                },
                 disable: function() {
                     this.disabled = true;
                 },
                 getDuration: function() {
                     return this.duration;
                 },
+                getTitle: function() {
+                    return this.title;
+                },
+                getArtist: function() {
+                    return this.artist;
+                },
                 getAuthor: function() {
                     return UserManager.getUser(this.authorId);
+                },
+                isDisabled: function() {
+                    return this.disabled;
                 },
                 updateCounter: function(count) {
                     this.counter = count;
                 },
                 isMy: function() {
-                    return this.authorId === Config.userId
+                    return this.authorId === Config.USERID
                 },
                 vote: function() {
                     this.voted = true;
@@ -26,7 +38,7 @@
             };
 
         this.getNextBlock = function() {
-            ApiService.get(Config.Routing.getPortion.replace('_OFFSET_', offset)).then(function(data) {
+            ApiService.get(Config.ROUTING.getPortion.replace('_OFFSET_', offset)).then(function(data) {
                 angular.forEach(data.entities, function(value, index) {
                     songs[index] = angular.extend(value, songPrototype);
                 });
@@ -39,10 +51,7 @@
         };
 
         this.deleteSong = function(id) {
-            var self = this;
-            ApiService.delete(Config.Routing.remove.replace('_ID_', id)).then(function() {
-                self.removeSong(id);
-            });
+            ApiService.delete(Config.ROUTING.remove.replace('_ID_', id));
         };
 
         this.removeSong = function(id) {
@@ -69,16 +78,11 @@
         };
 
         this.getSong = function(id) {
-            if(!angular.isNumber(id)) return null;
-
             return songs[id];
         };
 
         this.voteForSong = function(id, like) {
-var self = this;
-            ApiService.put(Config.Routing.vote.replace('_ID_', id).replace('_CHOOSE_', like)).then(function() {
-		self.getSong(id).vote();
-	    });
+            ApiService.put(Config.ROUTING.vote.replace('_ID_', id).replace('_CHOOSE_', like));
         };
 
         this.addSong = function(id, song) {

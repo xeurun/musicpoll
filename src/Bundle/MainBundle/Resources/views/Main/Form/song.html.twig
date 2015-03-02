@@ -4,7 +4,7 @@
 <div class="modal-body">
     <form novalidate action="{{ path('add') }}" method="post">
         <p class="input-group">
-            <span class="input-group-addon">Название:</span>
+            <span class="input-group-addon">Название</span>
             <span>{{ form_widget(songForm.title) }}</span>
         </p>
         <p class="clearfix">
@@ -33,12 +33,12 @@
             </ui-select>
         </p>
         <p class="input-group">
-            <span class="input-group-addon">Ссылка:</span>
+            <span class="input-group-addon">Ссылка</span>
             <span>{{ form_widget(songForm.url) }}</span>
             <span class="input-group-addon" ng-class="form.song.url ? '' : 'hidden'">
-                <button style="padding: 0 5px;" type="button" ng-class="{'btn-danger':previewPlayer.getState().isPlaying, 'btn-success':!previewPlayer.getState().isPlaying}" class="btn btn-xs" ng-click="play($event)">
-                    <span class="glyphicon glyphicon-play" ng-show="!previewPlayer.getState().isPlaying && form.song.url"></span>
-                    <span class="glyphicon glyphicon-pause" ng-show="previewPlayer.getState().isPlaying"></span>
+                <button style="padding: 0 5px;" type="button" ng-class="previewPlayer.getState().isPlaying() ? 'btn-danger' : 'btn-success'" class="btn btn-xs" ng-click="play($event)">
+                    <span class="glyphicon glyphicon-play" ng-show="!previewPlayer.getState().isPlaying() && form.song.url"></span>
+                    <span class="glyphicon glyphicon-pause" ng-show="previewPlayer.getState().isPlaying()"></span>
                 </button>
             </span>
         </p>

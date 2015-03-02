@@ -13,7 +13,7 @@
         this.song       = null;
 
         this.changeTime = function ($event) {
-            ApiService.put(Config.Routing.rewind.replace('_TIME_', angular.element($event.target).val()));
+            ApiService.put(Config.ROUTING.rewind.replace('_TIME_', angular.element($event.target).val()));
         };
 
         this.next = function () {
@@ -21,10 +21,7 @@
                 SongManager.deleteSong(self.song.id);
             }
             var song = SongManager.getTopSong();
-            ApiService.put(Config.Routing.next, {
-                id: song ? song.id : null,
-                title: song ? song.title : null
-            });
+            ApiService.put(Config.ROUTING.next.replace('_ID_', song ? song.id : null));
         };
 
         this.audio = new PlayerManager(
@@ -32,11 +29,11 @@
                 onerror: this.next,
                 onended: this.next
             },
-            true
+            Config.PLAYER
         );
 
         this.play = function () {
-            if(!self.audio.getState().isPlaying) {
+            if(!self.audio.getState().isPlaying()) {
                 self.audio.play();
             } else {
                 self.audio.pause();
@@ -44,18 +41,56 @@
         };
 
         this.mute = function () {
-            ApiService.put(Config.Routing.mute.replace('_TYPE_', !this.muted));
+            ApiService.put(Config.ROUTING.mute.replace('_TYPE_', !this.muted));
         };
+
+        $scope.$on('song:next', function(event, data) {
+            self.song = SongManager.getSong(data);
+            if(angular.isObject(self.song)) {
+                self.started = true;
+                self.song.disable();
+                if(!Config.PLAYER) {
+                    self.audio.getState().setPlaying(true);
+                } else {
+                    self.audio.playById(self.song.id);
+                }
+                second      = 0;
+                duration    = self.song.getDuration();
+                $interval.cancel(interval);
+                interval = $interval(function() {
+                    if(self.audio.getState().isPlaying()) {
+                        self.percent = self.audio.getPercent(++second, duration);
+                    }
+                }, 1000);
+                $rootScope.$broadcast('popup:show', {
+                    type: 'info',
+                    message: 'Сейчас играет ' + self.song.title
+                });
+            } else {
+                self.audio.pause();
+                self.audio.setDefaultState();
+                $rootScope.$broadcast('popup:show', {type: 'danger', message: 'Плейлист пуст!'});
+            }
+
+            $scope.$apply();
+        });
 
         $scope.$on('song:add', function(event, data) {
             SongManager.addSong(data.id, data.song);
-            if(self.started && !self.song) {
+            var song = SongManager.getSong(data.id);
+            $rootScope.$broadcast('popup:show', {
+                type: 'success',
+                message: (angular.isObject(song) ? (song.getAuthor().getFullname() + ' добавил ') : 'Добавлена ') + data.song.title
+            });
+            if(Config.PLAYER && self.started && !self.song) {
                 self.next();
             }
+
+            $scope.$apply();
         });
 
         $scope.$on('song:rewind', function(event, data) {
-            if(Config.player) {
+            if(Config.PLAYER) {
                 self.audio.setTime(data);
             }
             second          = data;
@@ -64,34 +99,6 @@
             $scope.$apply();
         });
 
-        $scope.$on('song:next', function(event, data) {
-            self.song = SongManager.getSong(data.id);
-            if(angular.isObject(self.song)) {
-                self.started = true;
-                self.song.disable();
-                if(!Config.player) {
-                    self.audio.setState('isPlaying', true);
-                    $scope.$apply();
-                } else {
-                    self.audio.playById(self.song.id);
-                }
-                second      = 0;
-                duration    = self.song.getDuration();
-                $interval.cancel(interval);
-                interval = $interval(function() {
-                    if(self.audio.getState().isPlaying) {
-                        self.percent = self.audio.getPercent(++second, duration);
-                    }
-                }, 1000);
-                $rootScope.$broadcast('popup:show', {type: 'info', message: data.message});
-            } else {
-                self.audio.setDefaultState();
-                self.audio.pause();
-                $rootScope.$broadcast('popup:show', {type: 'danger', message: 'Плейлист пуст!'});
-            }
-
-            $scope.$apply();
-        });
 
         $scope.$on('song:mute', function(event, data) {
             self.muted = data.on;
@@ -99,7 +106,17 @@
             if(!self.muted) {
                 $rootScope.$broadcast('popup:hide');
             }
-            $rootScope.$broadcast('popup:show', {type: 'success', message: data.message, save: self.muted});
+            $rootScope.$broadcast('popup:show', {
+                type:       'success',
+                save:       self.muted,
+                message:    data.author + (self.muted ? ' убавил ' : ' восстановил ') + 'звук!'
+            });
+
+            $scope.$apply();
+        });
+
+        $scope.$on('song:play', function(event, data) {
+            self.audio.getState().setPlaying(data);
 
             $scope.$apply();
         });

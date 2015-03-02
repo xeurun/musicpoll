@@ -13,9 +13,9 @@
         <div hg-cloak class="ng-cloak player">
             <div class="btn-group" role="group">
                 {% if is_granted('ROLE_ADMIN') %}
-                    <a class="btn btn-primary btn-lg" ng-class="{active: player.audio.getState().isPlaying}" ng-disabled="!player.started || !player.audio.getState().songId" ng-click="player.play()">
-                        <span ng-show="!player.audio.getState().isPlaying || !player.started" class="glyphicon glyphicon-play"></span>
-                        <span ng-show="player.audio.getState().isPlaying" class="glyphicon glyphicon-pause"></span>
+                    <a class="btn btn-primary btn-lg" ng-class="{active: player.audio.getState().isPlaying()}" ng-disabled="!player.started || !player.audio.getState().getSongId()" ng-click="player.play()">
+                        <span ng-show="!player.audio.getState().isPlaying() || !player.started" class="glyphicon glyphicon-play"></span>
+                        <span ng-show="player.audio.getState().isPlaying()" class="glyphicon glyphicon-pause"></span>
                     </a>
                     <a class="btn btn-primary btn-lg" ng-click="player.next()">
                         <span ng-show="player.started" class="glyphicon glyphicon-forward"></span>
@@ -39,11 +39,11 @@
             </div>
             <div class="song-progress" ng-show="player.started">
                 {% if is_granted('ROLE_ADMIN') %}
-                    <input ng-click="player.changeTime($event)" type="range" min="0" step="1" max="[[ player.song.duration ]]"/>
+                    <input ng-click="player.changeTime($event)" type="range" min="0" step="1" max="[[ player.song.getDuration() ]]"/>
                 {% endif %}
                 <progressbar class="progress-striped progress-bar-danger active" value="[[ player.percent ]]" type="success"></progressbar>
             </div>
-            <marquee scrollamount="3" ng-show="player.started">[[ player.song.title ]]</marquee>
+            <marquee scrollamount="3" ng-show="player.started">[[ player.song.getTitle() ]]</marquee>
         </div>
     </div>
     <div class="container-fluid">
@@ -76,26 +76,26 @@
                 </div>
                 </br>
                 <ul class="list-group song-list" lr-infinite-scroll="list.songManager.getNextBlock" scroll-threshold="200" time-threshold="600" ng-init="list.songManager.getNextBlock()">
-                    <li hg-cloak ng-repeat="song in list.songManager.getSongs() | filterObjectBy:{ 'authorId': list.onlyMy ? list.userManager.getCurrentUser().id : '' } | filterObjectBy:list.searchText:'title' | orderObjectBy:list.top ? 'counter' : 'id':list.top" ng-class="{disabled: song.disabled}" class="ng-cloak list-group-item">
+                    <li hg-cloak ng-repeat="song in list.songManager.getSongs() | filterObjectBy:{ 'authorId': list.onlyMy ? list.userManager.getCurrentUser().getId() : '' } | filterObjectBy:list.searchText:'title' | orderObjectBy:list.top ? 'counter' : 'id':list.top" ng-class="{disabled: song.isDisabled()}" class="ng-cloak list-group-item">
                         <span class="badge">
                             <span ng-hide="song.voted" ng-click="list.songManager.voteForSong(song.id, true)" class="glyphicon glyphicon-hand-up"></span>
                             <span ng-hide="song.voted" ng-click="list.songManager.voteForSong(song.id, false)" class="glyphicon glyphicon-hand-down"></span>
-                            <span ng-hide="song.disabled" ng-click="list.play(song.id)" ng-class="{'glyphicon-play': !list.player.getState(song.id).id || !list.player.getState(song.id).isPlaying, 'glyphicon-stop': list.player.getState(song.id).isPlaying}" class="glyphicon"></span>
-                            <span ng-show="(list.songManager.getSong(song.id).isMy() || list.user.admin) && !song.disabled" ng-click="list.songManager.deleteSong(song.id)" class="glyphicon glyphicon-remove"></span>
-                            <span ng-click="list.open(song.id)">[[ song.counter ]]</span>
+                            <span ng-hide="song.disabled" ng-click="list.play(song.id)" ng-class="{'glyphicon-play': !list.player.getState(song.getId()).getSongId() || !list.player.getState(song.getId()).isPlaying(), 'glyphicon-stop': list.player.getState(song.getId()).isPlaying()}" class="glyphicon"></span>
+                            <span ng-show="(list.songManager.getSong(song.getId()).isMy() || list.userManager.getCurrentUser().isAdmin()) && !song.isDisabled()" ng-click="list.songManager.deleteSong(song.getId())" class="glyphicon glyphicon-remove"></span>
+                            <span ng-click="list.open(song.getId())">[[ song.counter ]]</span>
                         </span>
                         <span class="song-title">[[ song.title ]]</span>
-                        <small class="label label-default" ng-class="{hidden: !song.artist.length}"><br>Исполнитель: [[ song.artist ]]</small>
+                        <small class="label label-default" ng-class="{hidden: !song.getArtist().length}"><br>Исполнитель: [[ song.getArtist() ]]</small>
                         <small class="label label-default"><br>Добавил: [[ list.userManager.getUser(song.authorId).getFullname() ]]</small>
                     </li>
                 </ul>
             </div>
         </section>
-        <section hg-cloak ng-controller="UserListController as userlist" class="user-list ng-cloak" ng-init="userlist.userManager.loadUsers()">
+        <section hg-cloak ng-controller="UserListController as userlist" class="user-list ng-cloak" ng-init="userlist.userManager.loadUsers();">
             <ul ng-show="userlist.show">
                 <li ng-repeat="user in userlist.userManager.getUsers()" class="ng-cloak panel panel-default">
                     <div class="panel-heading">
-                        <h4><span ng-class="user.admin ? 'label-danger' : userlist.userManager.isCurrentUser(user.id) ? 'label-success' : 'label-primary'" class="label">[[ user.fullname ]]</span></h4>
+                        <h4><span ng-class="userlist.userManager.getCurentUser().isAdmin() ? 'label-danger' : userlist.userManager.getUser(user.getId()).isCurrent() ? 'label-success' : 'label-primary'" class="label">[[ user.fullname ]]</span></h4>
                     </div>
                     <div class="panel-body">
                         <span class="label label-default">Отправленных лайков: [[ user.sendLikes ]]</span>

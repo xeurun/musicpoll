@@ -4,7 +4,7 @@
     function ModalFormController($rootScope, $modal, Config) {
         this.open = function () {
             $modal.open({
-                templateUrl: Config.Routing.form,
+                templateUrl: Config.ROUTING.form,
                 controller: 'ModalFormInstanceController'
             }).result.then(function () {}, function () {
                 $rootScope.$broadcast('modalForm:close');
@@ -31,8 +31,8 @@
         );
 
         $scope.$watch('songs.selected', function(newValue) {
-            $scope.previewPlayer.pause();
             if(newValue) {
+                $scope.previewPlayer.pause();
                 $scope.form.song.url        = newValue.url;
                 $scope.form.song.title      = newValue.title;
                 $scope.form.song.artist     = newValue.artist;
@@ -41,13 +41,13 @@
         });
 
         $scope.save = function () {
-            ApiService.post(Config.Routing.add, $scope.form);
+            ApiService.post(Config.ROUTING.add, $scope.form);
             $modalInstance.dismiss('save');
         };
 
         $scope.play = function ($event) {
             if($event) $event.preventDefault();
-            if(!$scope.previewPlayer.getState().isPlaying) {
+            if(!$scope.previewPlayer.getState().isPlaying()) {
                 $scope.previewPlayer.playByUrl($scope.form.song.url);
             } else {
                 $scope.previewPlayer.pause();
@@ -56,11 +56,11 @@
 
         $scope.refreshSongs = function(term) {
             if(term.length > 2) {
-                ApiService.jsonp(Config.Routing.vk_api.replace('_method_', 'audio.search'), {
+                ApiService.jsonp(Config.ROUTING.vk_api.replace('_method_', 'audio.search'), {
                     callback: 'JSON_CALLBACK',
                     q: term,
                     auto_complete: 1,
-                    access_token: Config.token,
+                    access_token: Config.TOKEN,
                     v: '5.28'
                 }).then(function(data) {
                     if(!angular.isUndefined(data.response)) {
