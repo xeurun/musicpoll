@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    function ListController($rootScope, $scope, $modal, SongManager, UserManager, PlayerManager, Config) {
+    function ListController($rootScope, $scope, $modal, $templateCache, SongManager, UserManager, PlayerManager, Config) {
         var self = this;
 
         this.songManager    = SongManager;
@@ -18,8 +18,11 @@
             }
         };
         this.open = function (id) {
+            var url = Config.ROUTING.whoVote.replace('_ID_', id);
             $modal.open({
-                templateUrl: Config.ROUTING.whoVote.replace('_ID_', id)
+                templateUrl: url
+            }).result.then(function () {}, function () {
+                $templateCache.remove(url);
             });
         };
 
