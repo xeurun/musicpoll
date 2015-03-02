@@ -79,7 +79,7 @@
                 duration    = self.song.getDuration();
                 $interval.cancel(interval);
                 interval = $interval(function() {
-                    if(self.audio.getState().isPlaying && self.percent < 100) {
+                    if(self.audio.getState().isPlaying) {
                         self.percent = self.audio.getPercent(++second, duration);
                     }
                 }, 1000);

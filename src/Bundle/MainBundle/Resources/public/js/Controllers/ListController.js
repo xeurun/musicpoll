@@ -30,7 +30,6 @@
         });
         $scope.$on('song:update', function(event, data) {
             $rootScope.$broadcast('popup:show', {type: 'info', 'message': data.message});
-            SongManager.getSong(data.id).vote();
             SongManager.getSong(data.id).updateCounter(data.count);
 
             $scope.$apply();
