@@ -2,9 +2,14 @@
     <h3 class="modal-title">{{ 'votes.title'|trans }}</h3>
 </div>
 <div class="modal-body">
-    <ul>
+    <ul class="list-group">
         {% for vote in votes %}
-            <li>{{ vote.author.fullname }} {{ 'votes.send'|trans }} {{ vote.isDislike ? 'votes.dislike'|trans : 'votes.like'|trans }}</li>
+            <li class="list-group-item">
+                <span class="badge">
+                    <span>{{ vote.isDislike ? 'votes.dislike'|trans : 'votes.like'|trans }}</span>
+                </span>
+                {{ vote.author.fullname }}
+            </li>
         {% endfor %}
     </ul>
 </div>

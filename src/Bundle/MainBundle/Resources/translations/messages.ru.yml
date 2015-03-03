@@ -4,7 +4,6 @@ song:
   notFound: Песня ненайдена!
 votes:
   title: Cписок проголосовавших
-  send: поставил
   like: лайк
   dislike: дизлайк
 userStatistics:
