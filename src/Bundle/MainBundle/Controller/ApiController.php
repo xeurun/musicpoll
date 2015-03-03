@@ -25,16 +25,15 @@ class ApiController extends BaseController
     const SONG_LIMIT = 25;
 
     /**
-     * @param \Bundle\CommonBundle\Entity\Song\Song $song
+     * @param Song $song
      * @param integer $userId
      *
-     * @return mixed
+     * @return array
      */
     private function _getSongFileds($song, $userId = null) {
         return array(
             "id"        => $song->getId(),
             "url"       => $song->getUrl(),
-            "type"      => $song->getType(),
             "title"     => $song->getTitle(),
             "voted"     => is_null($userId) ? false : $song->hasCurrentUserVote($userId),
             "artist"    => $song->getArtist(),
@@ -54,39 +53,20 @@ class ApiController extends BaseController
      */
     public function getPortion(Request $request, $offset)
     {
-        $response = new JsonResponse();
-        $jsonData = array();
-
+        $result = array();
         try {
             /** @var var SongRepository $repository */
             $repository = $this->getRepository('song');
-            $entities   = $repository->findBy(array('deleted' => false), array(), self::SONG_LIMIT, $offset);
-            $userId     = $this->getUser()->getId();
+            $entities   = $repository->getSongPortion($offset, self::SONG_LIMIT);
             foreach ($entities as $entity) {
-                $jsonData['entities'][$entity->getId()] = $this->_getSongFileds($entity, $userId);
+                $result['entities'][$entity->getId()] = $this->_getSongFileds($entity, $this->getUser()->getId());
             }
-            $jsonData['count'] = count($entities);
+            $result['count'] = count($entities);
         } catch (\Exception $ex) {
-            $jsonData['error'] = $ex->getMessage();
+            $result['error'] = $ex->getMessage();
         }
 
-        $response->setJsonContent($jsonData);
-
-        return $response;
-    }
-
-    /**
-     * @Route("/getForm", name="form")
-     * @Method("GET")
-     * @Template("MainBundle:Main/Form:song.html.twig")
-     *
-     * @return Responce
-     */
-    public function formAction()
-    {
-        $songForm = $this->createForm(new SongType(), new Song());
-
-        return array('songForm' => $songForm->createView());
+        return new JsonResponse($result);
     }
 
     /**
@@ -97,27 +77,17 @@ class ApiController extends BaseController
      */
     public function getUsersAction()
     {
-        $response = new JsonResponse();
-        $jsonData = array();
-
-        $users = $this->get('fos_user.user_manager')->findUsers();
-
+        $result = array();
+        $users = $this->getUser()->getRoom()->getUsers();
         foreach($users as $user) {
-            $jsonData['entities'][$user->getId()] = array(
-                'id'                => $user->getId(),
-                'fullname'          => $user->getFullname(),
-                'admin'             => $user->hasRole('ROLE_ADMIN'),
-                'songs'             => $user->getSongCount(),
-                'sendLikes'         => $user->getLikeSendCount(),
-                'sendDislikes'      => $user->getDislikeSendCount(),
-                'receivedLikes'     => $user->getLikeReceiveCount(),
-                'receivedDislikes'  => $user->getDislikeReceiveCount()
+            $result['entities'][$user->getId()] = array(
+                'id'        => $user->getId(),
+                'admin'     => $user->hasRole('ROLE_ADMIN'),
+                'fullname'  => $user->getFullname()
             );
         }
 
-        $response->setJsonContent($jsonData);
-
-        return $response;
+        return new JsonResponse($result);
     }
 
     /**
@@ -131,19 +101,20 @@ class ApiController extends BaseController
      */
     public function voteAction(Request $request, $id, $choose)
     {
-        $response = new JsonResponse();
-        $jsonData = array();
+        $result = array();
 
         try {
             if(!$vote = $this->getRepository('vote')->findBy(array('song' => $id, 'author' => $this->getUser()))) {
                 $repository = $this->getRepository('song');
+                /** @var Song $song */
                 if($song = $repository->find($id)) {
                     $dislike    = ($choose != "true");
                     $vote       = new Vote($song, $dislike);
+                    $roomId     = $this->getUser()->getRoom()->getId();
                     $this->getRepository('vote')->save($vote);
                     $this->getRepository('song')->refresh($song);
-                    $this->get('drklab.realplexor.manager')->send('Song', array (
-                        'channel'   => 'update',
+                    $this->get('drklab.realplexor.manager')->send("Room$roomId", array (
+                        'action'    => 'update',
                         'result'    => array(
                             'id'        => $song->getId(),
                             'count'     => $song->getCounter(),
@@ -152,18 +123,16 @@ class ApiController extends BaseController
                         )
                     ));
                 } else {
-                    $jsonData['error'] = 'Песня ненайдена!';
+                    $result['error'] = $this->translate('song.notFound');
                 }
             } else {
-                $jsonData['error'] = 'Вы уже голосовали!';
+                $result['error'] = $this->translate('vote.alreadyVote');
             }
         } catch (\Exception $ex) {
-            $jsonData['error'] = $ex->getMessage();
+            $result['error'] = $ex->getMessage();
         }
 
-        $response->setJsonContent($jsonData);
-
-        return $response;
+        return new JsonResponse($result);
     }
 
     /**
@@ -175,47 +144,30 @@ class ApiController extends BaseController
      */
     public function addAction(Request $request)
     {
-        $response   = new JsonResponse();
-        $jsonData   = array();
-        $song       = new Song();
+        $result     = array();
+        $room       = $this->getUser()->getRoom();
+        $song       = new Song($room);
         $form       = $this->createForm(new SongType(), $song);
         $form->handleRequest($request);
         if ($form->isValid()) {
             try {
+                $roomId = $room->getId();
                 $this->getRepository('song')->save($song);
-                $this->get('drklab.realplexor.manager')->send('Song', array (
-                    'channel'   => 'add',
+                $this->get('drklab.realplexor.manager')->send("Room$roomId", array (
+                    'action'    => 'add',
                     'result'    => array(
                         'id' => $song->getId(),
-                        'song' => $this->_getSongFileds($song, null)
+                        'song' => $this->_getSongFileds($song)
                     )
                 ));
             } catch (\Exception $ex) {
-                $jsonData['error'] = $this->generateError('repository.save', $ex);
+                $result['error'] = $this->translate('repository.save', 'error');
             }
         } else {
-            $jsonData['error'] = $this->generateError(null, null, $form);
+            $result['error'] = $this->getFormErrors($form);
         }
 
-        $response->setJsonContent($jsonData);
-
-        return $response;
-    }
-
-    /**
-     * @Route("/whoVote/{id}", requirements={"id" = "\d+|_ID_"}, name="who_vote")
-     * @Method("GET")
-     * @Template("MainBundle:Main/Include:voters.html.twig")
-     * @param Request $request
-     * @param integer $id
-     *
-     * @return Responce
-     */
-    public function whoVoteAction(Request $request, $id)
-    {
-        $voters = $this->getRepository('vote')->findBy(array('song' => $id));
-
-        return array('voters' => $voters);
+        return new JsonResponse($result);
     }
 
     /**
@@ -228,35 +180,36 @@ class ApiController extends BaseController
      */
     public function removeAction(Request $request, $id)
     {
-        $response = new JsonResponse();
-        $jsonData = array();
+        $result = array();
 
         try {
-            /** @var Songrepository $songRepository */
+            /** @var SongRepository $songRepository */
             $songRepository = $this->getRepository('song');
+            /** @var Song $song */
             if($song = $songRepository->find($id)) {
-                if ($this->getUser() != $song->getAuthor() && !$this->getUser()->hasRole('ROLE_ADMIN')) {
+                $user   = $this->getUser();
+                $room   = $user->getRoom();
+                $roomId = $room->getId();
+                if (!$room->isAuthor($user) && $user != $song->getAuthor()) {
                     throw new AccessDeniedException();
                 }
                 $song->setDeleted(true);
                 $songRepository->save($song);
-                $this->get('drklab.realplexor.manager')->send('Song', array (
-                    'channel'   => 'remove',
+                $this->get('drklab.realplexor.manager')->send("Room$roomId", array (
+                    'action'    => 'remove',
                     'result'    => array(
                         'id'        => $id,
-                        'authorId'  => $this->getUser()->getId()
+                        'authorId'  => $user->getId()
                     )
                 ));
             } else {
-                $jsonData['error'] = 'Песня ненайдена!';
+                $result['error'] = $this->translate('song.notFound');
             }
         } catch (\Exception $ex) {
-            $jsonData['error'] = $this->generateError('repository.get', $ex);
+            $result['error'] = $this->translate('repository.get', 'error');
         }
 
-        $response->setJsonContent($jsonData);
-
-        return $response;
+        return new JsonResponse($result);
     }
 
     /**
@@ -269,12 +222,11 @@ class ApiController extends BaseController
      */
     public function muteAction(Request $request, $on)
     {
-        $response = new JsonResponse();
-        $jsonData = array();
-
-        $on = ($on != "false");
-        $this->get('drklab.realplexor.manager')->send('Song', array (
-            'channel'   => 'mute',
+        $result = array();
+        $on     = ($on != "false");
+        $roomId = $this->getUser()->getRoom()->getId();
+        $this->get('drklab.realplexor.manager')->send("Room$roomId", array (
+            'action'   => 'mute',
             'result'    => array(
                 'on'        => $on,
                 'save'      => $on,
@@ -282,9 +234,7 @@ class ApiController extends BaseController
             )
         ));
 
-        $response->setJsonContent($jsonData);
-
-        return $response;
+        return new JsonResponse($result);
     }
 
     /**
@@ -297,21 +247,26 @@ class ApiController extends BaseController
      */
     public function rewindAction(Request $request, $time)
     {
-        $response = new JsonResponse();
-        $jsonData = array();
+        $result = array();
 
-        if (!$this->getUser()->hasRole('ROLE_ADMIN')) {
-            throw new AccessDeniedException();
+        try {
+            $user   = $this->getUser();
+            $room   = $user->getRoom();
+            $roomId = $room->getId();
+
+            if (!$room->isAuthor($user)) {
+                throw new AccessDeniedException();
+            }
+
+            $this->get('drklab.realplexor.manager')->send("Room$roomId", array (
+                'action'    => 'rewind',
+                'result'    => $time
+            ));
+        } catch (\Exception $ex) {
+            $result['error'] = $this->translate('repository.get', 'error');
         }
 
-        $this->get('drklab.realplexor.manager')->send('Song', array (
-            'channel'   => 'rewind',
-            'result'    => $time
-        ));
-
-        $response->setJsonContent($jsonData);
-
-        return $response;
+        return new JsonResponse($result);
     }
 
     /**
@@ -324,21 +279,33 @@ class ApiController extends BaseController
      */
     public function nextSongAction(Request $request, $id)
     {
-        $response = new JsonResponse();
-        $jsonData = array();
+        $result = array();
 
-        if (!$this->getUser()->hasRole('ROLE_ADMIN')) {
-            throw new AccessDeniedException();
+        try {
+            $user   = $this->getUser();
+            $room   = $user->getRoom();
+            $roomId = $room->getId();
+
+            if (!$room->isAuthor($user)) {
+                throw new AccessDeniedException();
+            }
+
+            if($song = $this->getRepository('song')->find($id)) {
+                $room->setSong($song);
+                $this->getRepository('room')->save($room);
+
+                $this->get('drklab.realplexor.manager')->send("Room$roomId", array (
+                    'action'    => 'next',
+                    'result'    => $id
+                ));
+            } else {
+                $result['error'] = $this->translate('song.notFound');
+            }
+        } catch (\Exception $ex) {
+            $result['error'] = $this->translate('repository.get', 'error');
         }
 
-        $this->get('drklab.realplexor.manager')->send('Song', array (
-            'channel'   => 'next',
-            'result'    => $id
-        ));
-
-        $response->setJsonContent($jsonData);
-
-        return $response;
+        return new JsonResponse($result);
     }
 
     /**
@@ -351,21 +318,78 @@ class ApiController extends BaseController
      */
     public function playAction(Request $request, $on)
     {
-        $response = new JsonResponse();
-        $jsonData = array();
+        $result = array();
 
-        if (!$this->getUser()->hasRole('ROLE_ADMIN')) {
-            throw new AccessDeniedException();
+        try {
+            $play   = ($on != "false");
+            $user   = $this->getUser();
+            $room   = $user->getRoom();
+            $roomId = $room->getId();
+
+            if (!$room->isAuthor($user)) {
+                throw new AccessDeniedException();
+            }
+
+            $this->get('drklab.realplexor.manager')->send("Room$roomId", array (
+                'action'    => 'play',
+                'result'    => $play
+            ));
+        } catch (\Exception $ex) {
+            $result['error'] = $this->translate('repository.get', 'error');
         }
 
-        $play = ($on != "false");
-        $this->get('drklab.realplexor.manager')->send('Song', array (
-            'channel'   => 'play',
-            'result'    => $play
-        ));
+        return new JsonResponse($result);
+    }
 
-        $response->setJsonContent($jsonData);
+    /**
+     * @Route("/userStatistics/{id}", requirements={"id" = "\d+|_ID_"}, name="user_statistics")
+     * @Method("GET")
+     * @Template("MainBundle:Main/Popup:userStatistics.html.twig")
+     * @param Request $request
+     * @param integer $id
+     *
+     * @return Responce
+     */
+    public function userStatisticsAction(Request $request, $id)
+    {
+        $user = $this->get('fos_user.user_manager')->findUserBy(array('id' => $id));
 
-        return $response;
+        return array(
+            'user' => $user
+        );
+    }
+
+    /**
+     * @Route("/whoVote/{id}", requirements={"id" = "\d+|_ID_"}, name="who_vote")
+     * @Method("GET")
+     * @Template("MainBundle:Main/Popup:votes.html.twig")
+     * @param Request $request
+     * @param integer $id
+     *
+     * @return Responce
+     */
+    public function whoVoteAction(Request $request, $id)
+    {
+        $votes = $this->getRepository('vote')->findBy(array('song' => $id));
+
+        return array(
+            'votes' => $votes
+        );
+    }
+
+    /**
+     * @Route("/getForm", name="form")
+     * @Method("GET")
+     * @Template("MainBundle:Main/Form:song.html.twig")
+     *
+     * @return Responce
+     */
+    public function formAction()
+    {
+        $songForm = $this->createForm(new SongType(), new Song($this->getUser()->getRoom()));
+
+        return array(
+            'songForm' => $songForm->createView()
+        );
     }
 }

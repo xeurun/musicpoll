@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    function UserManager($interval, ApiService, Config) {
+    function UserManager(ApiService, Config) {
         var UserManager     = {},
             users           = {},
             userPrototype   = {
@@ -9,7 +9,7 @@
                     return this.id;
                 },
                 isPlayer: function() {
-                    return this.admin;
+                    return this.id === Config.OWNERID;
                 },
                 isAdmin: function() {
                     return this.admin;
@@ -41,10 +41,6 @@
         UserManager.getCurrentUser = function() {
             return users[Config.USERID];
         };
-
-        $interval(function() {
-            UserManager.loadUsers();
-        }, Config.UPDATE_USERS_INTERVAL);
 
         return UserManager;
     };

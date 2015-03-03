@@ -2,19 +2,52 @@
 
 namespace Bundle\CommonBundle\Service;
 
+use Bundle\CommonBundle\Service\DklabRealplexor;
+
 class RealplexorManager
 {
-    private $params, $connect;
 
-    public function __construct(array $params) {
-        $this->params = $params;
+    /**
+     * @var DklabRealplexor
+    */
+    private $_realplexor;
+
+    /**
+     * Конструктор
+     *
+     * @param DklabRealplexor $realplexor
+     */
+    public function __construct(DklabRealplexor $realplexor)
+    {
+        $this->_realplexor = $realplexor;
     }
 
+    /**
+     * @return DklabRealplexor
+     */
+    public function getRealplexor()
+    {
+        return $this->_realplexor;
+    }
+
+    /**
+     * @param string $channel
+     * @param mixed $data
+     * @throws \Exception
+     *
+     * @return mixed
+     */
     public function send($channel, $data)
     {
-        if(is_null($this->connect)) {
-            $this->connect = new \Dklab_Realplexor($this->params['host'], $this->params['port'], $this->params['namespace']);
+        if (empty($data)) {
+            return; // TODO: Maybe use exception here?
         }
-        $this->connect->send($channel, $data);
+
+        try {
+            $this->_realplexor->send($channel, $data);
+        }
+        catch(DklabRealplexorException $ex) {
+            throw new \Exception($ex->getMessage(), 0, $ex);
+        }
     }
 }

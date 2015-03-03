@@ -1,0 +1,35 @@
+services:
+    base.repository:
+        class: Bundle\CommonBundle\Entity\BaseRepository
+        factory_service: doctrine.orm.entity_manager
+        factory_method: getRepository
+        calls:
+            - [ setSecurityContext, [ '@security.context' ] ]
+
+    song.repository:
+        parent: base.repository
+        class: Bundle\CommonBundle\Entity\Song\SongRepository
+        factory_service: doctrine.orm.entity_manager
+        factory_method: getRepository
+        arguments: [ CommonBundle:Song\Song ]
+
+    vote.repository:
+        parent: base.repository
+        class: Bundle\CommonBundle\Entity\Vote\VoteRepository
+        factory_service: doctrine.orm.entity_manager
+        factory_method: getRepository
+        arguments: [ CommonBundle:Vote\Vote ]
+
+    room.repository:
+        parent: base.repository
+        class: Bundle\CommonBundle\Entity\Room\RoomRepository
+        factory_service: doctrine.orm.entity_manager
+        factory_method: getRepository
+        arguments: [ CommonBundle:Room\Room ]
+
+    user.repository:
+        parent: base.repository
+        class: Bundle\CommonBundle\Entity\UserRepository
+        factory_service: doctrine.orm.entity_manager
+        factory_method: getRepository
+        arguments: [ CommonBundle:User ]

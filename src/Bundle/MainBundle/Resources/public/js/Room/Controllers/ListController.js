@@ -17,6 +17,7 @@
                 self.player.pause();
             }
         };
+
         this.open = function (id) {
             var url = Config.ROUTING.whoVote.replace('_ID_', id);
             $modal.open({
@@ -26,7 +27,7 @@
             });
         };
 
-        $scope.$on('song:remove', function(event, data) {
+        $scope.$on('room:remove', function(event, data) {
             var song = SongManager.getSong(data.id);
             if(angular.isObject(song)) {
                 var user = UserManager.getUser(data.authorId);
@@ -39,7 +40,7 @@
 
             $scope.$apply();
         });
-        $scope.$on('song:update', function(event, data) {
+        $scope.$on('room:update', function(event, data) {
             var song = SongManager.getSong(data.id);
             if(angular.isObject(song)) {
                 var user = UserManager.getUser(data.authorId);

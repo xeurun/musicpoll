@@ -1,0 +1,12 @@
+<div class="modal-header">
+    <h3 class="modal-title">{{ 'votes.title'|trans }}</h3>
+</div>
+<div class="modal-body">
+    <ul>
+        {% for vote in votes %}
+            <li>{{ vote.author.fullname }} {{ 'votes.send'|trans }} {{ vote.isDislike ? 'votes.dislike'|trans : 'votes.like'|trans }}</li>
+        {% endfor %}
+    </ul>
+</div>
+<div class="modal-footer">
+</div>

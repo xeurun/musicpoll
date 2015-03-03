@@ -1,0 +1,36 @@
+<div class="modal-header">
+    <h3 class="modal-title">
+        {{ user.fullname }}
+        {% if user.hasRole('ROLE_ADMIN') %} {{ 'userStatistics.admin'|trans }} {% endif %}
+        {% if user.room.isAuthor(user) %} {{ 'userStatistics.owner'|trans }} {% endif %}
+    </h3>
+</div>
+<div class="modal-body">
+    <ul class="list-group">
+        <li class="list-group-item">
+            {{ 'userStatistics.added'|trans }} <span class="badge">{{ user.songCount }}</span>
+        </li>
+        <hr>
+        <li class="list-group-item">
+            {{ 'userStatistics.like.send'|trans }} <span class="badge">{{ user.likeSendCount }}</span>
+        </li>
+        <li class="list-group-item">
+            {{ 'userStatistics.dislike.send'|trans }} <span class="badge">{{ user.dislikeSendCount }}</span>
+        </li>
+        <li class="list-group-item" style="padding-left:5em; font-weight: bold;">
+            {{ 'userStatistics.percent'|trans }} <span class="badge">[[ ({{ user.dislikeSendCount }} / {{ user.likeSendCount }} * 100) | number:0 ]]%</span>
+        </li>
+        <hr>
+        <li class="list-group-item">
+            {{ 'userStatistics.like.recive'|trans }} <span class="badge">{{ user.likeReceiveCount }}</span>
+        </li>
+        <li class="list-group-item">
+            {{ 'userStatistics.dislike.recive'|trans }} <span class="badge">{{ user.dislikeReceiveCount }}</span>
+        </li>
+        <li class="list-group-item" style="padding-left:5em; font-weight: bold;">
+            {{ 'userStatistics.percent'|trans }} <span class="badge">[[ ({{ user.dislikeReceiveCount }} / {{ user.likeReceiveCount }} * 100) | number:0 ]]%</span>
+        </li>
+    </ul>
+</div>
+<div class="modal-footer">
+</div>

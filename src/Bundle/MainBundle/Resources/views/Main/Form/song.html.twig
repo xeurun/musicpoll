@@ -4,36 +4,40 @@
 <div class="modal-body">
     <form novalidate action="{{ path('add') }}" method="post">
         <p class="input-group">
-            <span class="input-group-addon">Название</span>
+            <span class="input-group-addon">Вконтакте</span>
+            <span>
+                <ui-select ng-model="songs.selected"
+                           theme="bootstrap">
+                    <ui-select-match placeholder="{{ 'song.placeholder.search.song'|trans({}, "form") }}">[[ $select.selected.title | points:70 ]]</ui-select-match>
+                    <ui-select-choices repeat="song in songs track by $index"
+                                       refresh="refreshSongs($select.search)"
+                                       refresh-delay="250">
+                        <span ng-bind-html="song.title | points:70 | highlight: $select.search"></span>
+                        </br>
+                        <small ng-bind-html="song.artist | points:70"></small>
+                    </ui-select-choices>
+                </ui-select>
+            </span>
+        </p>
+        <hr>
+        <p class="input-group">
+            <span class="input-group-addon" style="padding-right: 15px;">Название</span>
             <span>{{ form_widget(songForm.title) }}</span>
         </p>
-        <p class="clearfix">
+        <p class="clearfix hidden">
             <ui-select ng-model="form.song.type"
                        theme="bootstrap"
                        reset-search-input="false"
                        class="pull-left"
                        style="width: 30%;">
-                <ui-select-match placeholder="{{ 'song.placeholder.search.type'|trans }}">[[ $select.selected ]]</ui-select-match>
+                <ui-select-match placeholder="{{ 'song.placeholder.search.type'|trans({}, "form") }}">[[ $select.selected ]]</ui-select-match>
                 <ui-select-choices repeat="type in types track by $index">
                     <span ng-bind-html="type | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
-            <ui-select ng-model="songs.selected"
-                       theme="bootstrap"
-                       class="pull-right"
-                       style="width: 60%;">
-                <ui-select-match placeholder="{{ 'song.placeholder.search.song'|trans }}">[[ $select.selected.title | points:30 ]]</ui-select-match>
-                <ui-select-choices repeat="song in songs track by $index"
-                     refresh="refreshSongs($select.search)"
-                     refresh-delay="250">
-                    <span ng-bind-html="song.title | points:30 | highlight: $select.search"></span>
-                    </br>
-                    <small ng-bind-html="song.artist | points:30"></small>
-                </ui-select-choices>
-            </ui-select>
         </p>
         <p class="input-group">
-            <span class="input-group-addon">Ссылка</span>
+            <span class="input-group-addon" style="padding-right: 28px;">Ссылка</span>
             <span>{{ form_widget(songForm.url) }}</span>
             <span class="input-group-addon" ng-class="form.song.url ? '' : 'hidden'">
                 <button style="padding: 0 5px;" type="button" ng-class="previewPlayer.getState().isPlaying() ? 'btn-danger' : 'btn-success'" class="btn btn-xs" ng-click="play($event)">

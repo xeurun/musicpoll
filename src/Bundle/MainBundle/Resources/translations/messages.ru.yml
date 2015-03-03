@@ -1,11 +1,20 @@
-error:
-  repository.save: При сохранении произошла ошибка
-  repository.get: Не удалось получить элемент
-
+vote:
+  alreadyVote: Вы уже голосовали!
 song:
-  placeholder:
-    title: введите название песни
-    url: введите ссылку на песню
-    search:
-      type: начните вводить тип
-      song: начните вводить название песни
+  notFound: Песня ненайдена!
+votes:
+  title: Cписок проголосовавших
+  send: поставил
+  like: лайк
+  dislike: дизлайк
+userStatistics:
+  admin: - администратор
+  owner: - владелец комнаты
+  added: Добавленых песен
+  percent: Коэффициент
+  dislike:
+    send: Отправленных дизлайков
+    recive: Полученных дизлайков
+  like:
+    send: Отправленных лайков
+    recive: Полученных лайков

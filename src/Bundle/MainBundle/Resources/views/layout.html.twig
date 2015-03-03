@@ -1,28 +1,6 @@
 {% extends "::base.html.twig" %}
 
-{% block stylesheets %}
-    {% stylesheets filter='cssrewrite'
-        '//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css'
-        '@MainBundle/Resources/public/css/select.css'
-        '@MainBundle/Resources/public/css/ng-table.css'
-        '@MainBundle/Resources/public/css/main.css'
-    output='css/style.css' %}
-    <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
-{% endblock %}
 {% block javascripts %}
-    {% javascripts
-        '@MainBundle/Resources/public/js/lib/dklab_realplexor.js'
-    %}
-    <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-    {% javascripts
-        '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.5/angular.js'
-        '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.5/angular-sanitize.js'
-        '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.5/angular-animate.js'
-    %}
-    <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
     <script>
         (function() {
             "use strict";
@@ -31,8 +9,8 @@
             .module ('musicpoll', [ 'ui.bootstrap', 'ui.select', 'ngAnimate', 'ngSanitize' ])
             .run(function($rootScope) {
                 $rootScope.realplexor = new Dklab_Realplexor('{{ config.realplexor_url }}', '{{ config.realplexor_namespace }}');
-                $rootScope.realplexor.subscribe("Song", function(data, id, cursor) {
-                    $rootScope.$broadcast('song:' + data.channel, data.result);
+                $rootScope.realplexor.subscribe('Room{{ app.user.room.id }}', function(data, id, cursor) {
+                    $rootScope.$broadcast('room:' + data.action, data.result);
                 });
                 $rootScope.realplexor.execute();
             })
@@ -47,23 +25,24 @@
             })
             .constant ("Config", {
                 ROUTING: {
-                    vote:       '{{ path('vote', {'id': '_ID_', 'choose': '_CHOOSE_'}) }}',
-                    remove:     '{{ path('remove', {'id': '_ID_'}) }}',
-                    add:        '{{ path('add') }}',
-                    form:       '{{ path('form') }}',
-                    mute:       '{{ path('mute', {'on': '_TYPE_'}) }}',
-                    getPortion: '{{ path('get_portion', {'offset': '_OFFSET_'}) }}',
-                    next:       '{{ path('next_song', {'id': '_ID_'}) }}',
-                    getUsers:   '{{ path('get_users') }}',
-                    whoVote:    '{{ path('who_vote', {'id': '_ID_'}) }}',
-                    rewind:     '{{ path('rewind', {'time': '_TIME_'}) }}',
-                    play:       '{{ path('play', {'on': '_TYPE_'}) }}',
-                    vk_api:     'https://api.vk.com/method/_method_'
+                    vote:           '{{ path('vote', {'id': '_ID_', 'choose': '_CHOOSE_'}) }}',
+                    remove:         '{{ path('remove', {'id': '_ID_'}) }}',
+                    add:            '{{ path('add') }}',
+                    form:           '{{ path('form') }}',
+                    mute:           '{{ path('mute', {'on': '_TYPE_'}) }}',
+                    getPortion:     '{{ path('get_portion', {'offset': '_OFFSET_'}) }}',
+                    next:           '{{ path('next_song', {'id': '_ID_'}) }}',
+                    getUsers:       '{{ path('get_users') }}',
+                    whoVote:        '{{ path('who_vote', {'id': '_ID_'}) }}',
+                    userStatistics: '{{ path('user_statistics', {'id': '_ID_'}) }}',
+                    rewind:         '{{ path('rewind', {'time': '_TIME_'}) }}',
+                    play:           '{{ path('play', {'on': '_TYPE_'}) }}',
+                    vk_api:         'https://api.vk.com/method/_method_'
                 },
                 USERID: {{ app.user.id }},
-                PLAYER: {{ is_granted('ROLE_ADMIN') != true ? 0 : 1 }},
+                OWNERID: {{ room.author.id }},
+                PLAYER: {{ app.user != room.author ? 0 : 1 }},
                 TOKEN:  '71fcc118d02b311e47dbbc57f315952a3080a5fb68cf4f283107d18e971999f5e1fe61f53b1a7b58f39d9',
-                UPDATE_USERS_INTERVAL: 300000,  // 5 minutes
                 DELAY_FOR_POPUP: 3000,          // 3 second
                 POPUP_ANIMATION_DURATION: 3500  // 3.5 second
             })
@@ -130,10 +109,10 @@
         })();
     </script>
     {% javascripts
-        '@MainBundle/Resources/public/js/Modules/*'
-        '@MainBundle/Resources/public/js/Services/*'
-        '@MainBundle/Resources/public/js/Directives/*'
-        '@MainBundle/Resources/public/js/Controllers/*'
+        '@MainBundle/Resources/public/js/Room/Modules/*'
+        '@MainBundle/Resources/public/js/Room/Services/*'
+        '@MainBundle/Resources/public/js/Room/Directives/*'
+        '@MainBundle/Resources/public/js/Room/Controllers/*'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}

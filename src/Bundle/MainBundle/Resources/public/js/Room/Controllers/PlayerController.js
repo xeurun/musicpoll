@@ -1,16 +1,17 @@
 (function() {
     "use strict";
 
-    function PlayerController($rootScope, $scope, $timeout, $interval, ApiService, PlayerManager, SongManager, Config) {
+    function PlayerController($rootScope, $scope, $interval, UserManager, ApiService, PlayerManager, SongManager, Config) {
         var self = this,
             interval,
             duration    = 0,
             second      = 0;
 
-        this.started    = false;
-        this.percent    = 0;
-        this.muted      = false;
-        this.song       = null;
+        this.started        = false;
+        this.percent        = 0;
+        this.muted          = false;
+        this.song           = null;
+        this.userManager    = UserManager;
 
         this.changeTime = function ($event) {
             ApiService.put(Config.ROUTING.rewind.replace('_TIME_', angular.element($event.target).val()));
@@ -44,7 +45,7 @@
             ApiService.put(Config.ROUTING.mute.replace('_TYPE_', !this.muted));
         };
 
-        $scope.$on('song:next', function(event, data) {
+        $scope.$on('room:next', function(event, data) {
             self.song = SongManager.getSong(data);
             if(angular.isObject(self.song)) {
                 self.started = true;
@@ -75,7 +76,7 @@
             $scope.$apply();
         });
 
-        $scope.$on('song:add', function(event, data) {
+        $scope.$on('room:add', function(event, data) {
             SongManager.addSong(data.id, data.song);
             var song = SongManager.getSong(data.id);
             $rootScope.$broadcast('popup:show', {
@@ -89,7 +90,7 @@
             $scope.$apply();
         });
 
-        $scope.$on('song:rewind', function(event, data) {
+        $scope.$on('room:rewind', function(event, data) {
             if(Config.PLAYER) {
                 self.audio.setTime(data);
             }
@@ -99,8 +100,13 @@
             $scope.$apply();
         });
 
+        $scope.$on('room:state', function(event, data) {
+            if(Config.PLAYER) {
+                //TODO: send status data
+            }
+        });
 
-        $scope.$on('song:mute', function(event, data) {
+        $scope.$on('room:mute', function(event, data) {
             self.muted = data.on;
             self.audio.setVolume(self.muted ? 0.2 : 1);
             if(!self.muted) {
@@ -115,7 +121,7 @@
             $scope.$apply();
         });
 
-        $scope.$on('song:play', function(event, data) {
+        $scope.$on('room:play', function(event, data) {
             self.audio.getState().setPlaying(data);
 
             $scope.$apply();

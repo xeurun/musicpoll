@@ -43,14 +43,14 @@
 
                     return Math.round(currentTime / duration * 100);
                 },
-                sendPlay = function (pause) {
+                sendPlay = function (playing) {
                     if(isMainPLayer) {
-                        return ApiService.put(Config.ROUTING.play.replace('_TYPE_', pause));
+                        return ApiService.put(Config.ROUTING.play.replace('_TYPE_', playing));
                     } else {
                         var deferred = $q.defer();
 
                         deferred.resolve();
-                        state.setPlaying(pause);
+                        state.setPlaying(playing);
 
                         return deferred.promise;
                     }
@@ -82,12 +82,12 @@
                 },
                 playById = function (id) {
                     state.songId = id;
-                    playByUrl(SongManager.getSong(id).url);
+                    playByUrl(SongManager.getSong(state.songId).url);
                 };
 
             player.addEventListener('offline',  (!angular.isUndefined(callbacks)    && angular.isFunction(callbacks['onoffline']))  ? callbacks['onoffline']    : function () { pause(); });
             player.addEventListener('online',   (!angular.isUndefined(callbacks)    && angular.isFunction(callbacks['ononline']))   ? callbacks['ononline']     : function () { play(); });
-            player.addEventListener('ended',    (!angular.isUndefined(callbacks)    && angular.isFunction(callbacks['onended']))    ? callbacks['onended']      : function () {});
+            player.addEventListener('ended',    (!angular.isUndefined(callbacks)    && angular.isFunction(callbacks['onended']))    ? callbacks['onended']      : function () { pause(); });
             player.addEventListener('error',    (!angular.isUndefined(callbacks)    && angular.isFunction(callbacks['onerror']))    ? callbacks['onerror']      : function () {});
 
             return {

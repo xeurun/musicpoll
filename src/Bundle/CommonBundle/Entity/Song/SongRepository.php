@@ -13,7 +13,7 @@ use Bundle\CommonBundle\Entity\BaseRepository;
  */
 class SongRepository extends BaseRepository
 {
-    /** Событие после вставки сущности
+    /** Event before save entity
      * @param BaseEntity $entity
      */
     protected function prePersist(BaseEntity $entity)
@@ -21,5 +21,42 @@ class SongRepository extends BaseRepository
         parent::prePersist($entity);
 
         $entity->getAuthor()->incrementSongCount();
+    }
+
+    /**
+     * Get song portion by counter
+     * @param integer $offset
+     * @param integer $limit
+     *
+     * @return mixed
+     */
+    public function getSongPortion($offset, $limit)
+    {
+        $query = $this->createQueryBuilder('s');
+        $query
+            ->where('s.deleted = 0')
+            ->andWhere('s.room = :room')
+                ->setParameter('room', $this->getCurrentUser()->getRoom())
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+        $query->addOrderBy('s.createdAt', 'DESC');
+
+        return $query->getQuery()->getResult();
+    }
+
+    /**
+     * Get top songs
+     *
+     * @return mixed
+     */
+    public function getTopSongs()
+    {
+        $query = $this->createQueryBuilder('s');
+        $query
+            ->setMaxResults(10)
+            ->addOrderBy('s.counter', 'DESC');
+
+        return $query->getQuery()->getResult();
     }
 }

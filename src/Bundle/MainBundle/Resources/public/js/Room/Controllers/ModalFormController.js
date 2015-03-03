@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    function ModalFormController($rootScope, $modal, Config) {
+    function NewSongFormController($rootScope, $modal, Config) {
         this.open = function () {
             $modal.open({
                 templateUrl: Config.ROUTING.form,
@@ -80,5 +80,5 @@
     };
 
     angular.module('musicpoll').controller('ModalFormInstanceController', ModalFormInstanceController);
-    angular.module('musicpoll').controller('ModalFormController', ModalFormController);
+    angular.module('musicpoll').controller('NewSongFormController', NewSongFormController);
 })();

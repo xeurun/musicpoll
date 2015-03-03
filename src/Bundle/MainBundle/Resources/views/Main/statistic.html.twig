@@ -1,0 +1,63 @@
+{% extends "::base.html.twig" %}
+
+{% block body %}
+    <div class="statistic container-fluid>" ng-controller="StatisticController as statistic">
+        <a class="leave-btn btn btn-warning btn-lg" href="{{ path('homepage') }}">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-4">
+                <h3 style="text-align: center">Топовые песни</h3>
+                <ul>
+                    {% for song in songs %}
+                        <li class="list-group-item">
+                            <span class="badge">
+                                <span>{{ song.counter }}</span>
+                            </span>
+                            <span class="song-title">{{ song.title }}</span>
+                            <small class="label label-default"><br>Добавил: {{ song.author.fullname }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h3 style="text-align: center">Топовые пользователи</h3>
+                <ul>
+                    {% for user in users %}
+                        <li class="list-group-item">
+                            <span class="badge">
+                                <span>{{ user.likeReceiveCount }}</span>
+                            </span>
+                            <span class="song-title">{{ user.fullname }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        (function() {
+            "use strict";
+
+            angular
+            .module ('musicpoll', [ 'toaster' ])
+            .config (function($interpolateProvider) {
+                $interpolateProvider.startSymbol('[[ ').endSymbol(' ]]');
+            })
+            .constant ("Config", {
+                ROUTING: { },
+                USERID: {{ app.user.id }}
+            });
+        })();
+    </script>
+    {% javascripts
+        '@MainBundle/Resources/public/js/Statistic/Controllers/*'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

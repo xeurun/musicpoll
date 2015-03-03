@@ -1,8 +1,7 @@
-.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
-
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
     display: none !important;
 }
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
 
 ::-webkit-scrollbar {
     width: 10px;
@@ -38,19 +37,59 @@
     }
 }
 
-ul > li {
-    list-style: none;
-    overflow: hidden;
+ul {
+    padding-left: 0;
 }
 
+    ul > li {
+        list-style: none;
+        overflow: hidden;
+    }
+
+.homepage {
+    width: 350px;
+    height: 330px;
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    margin: auto;
+}
+
+    .homepage > p {
+        margin-top: 10px;
+    }
+
+    .homepage > p:first-child {
+        margin-top: 0;
+    }
+
 .add-new-song {
-    margin: 10px;
+    position: fixed;
+    top: 70px;
+    left: 10px;
+}
+
+.leave-btn,
+.statistic-btn {
+    position: fixed;
+    top: 10px;
+    left: 10px;
 }
 
 .show-user-list {
     position: fixed;
     bottom: 10px;
     right: 10px;
+}
+
+.settongs-btn {
+    position: fixed;
+    top: 130px;
+    left: 10px;
 }
 
 .popup-alerts {
@@ -146,10 +185,11 @@ ul > li {
         margin-bottom: 70px;
     }
 
-        .user-list > ul > li{
+        .user-list > ul > li {
             margin-right: 10px;
+            margin-bottom: 10px;
         }
 
-            .user-list > ul > li .panel-heading{
-                text-align: center;
+            .user-list > ul > li > button{
+                width: 100%;
             }

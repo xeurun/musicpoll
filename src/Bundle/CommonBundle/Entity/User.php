@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  * @ORM\Table("People")
+ * @ORM\Entity(repositoryClass="Bundle\CommonBundle\Entity\UserRepository")
  */
 class User extends BaseUser
 {
@@ -23,17 +24,7 @@ class User extends BaseUser
      *
      * @ORM\Column(name="fullname", type="text", nullable=false)
      */
-    protected $fullname;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Bundle\CommonBundle\Entity\Song\Song", mappedBy="author")
-     **/
-    private $songs;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Bundle\CommonBundle\Entity\Vote\Vote", mappedBy="author")
-     **/
-    private $votes;
+    private $fullname;
 
     /**
      * @var integer
@@ -70,9 +61,36 @@ class User extends BaseUser
      */
     private $songCount;
 
-    public function __construct()
-    {
-        parent::__construct();
+    /**
+     * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\Room\Room", cascade={"persist"})
+     * @ORM\JoinColumn(name="roomId", referencedColumnName="id", onDelete="SET NULL", nullable=true)
+     **/
+    private $room;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Bundle\CommonBundle\Entity\Song\Song", mappedBy="author")
+     **/
+    private $songs;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Bundle\CommonBundle\Entity\Vote\Vote", mappedBy="author")
+     **/
+    private $votes;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Bundle\CommonBundle\Entity\Room\Room", mappedBy="author")
+     **/
+    private $rooms;
+
+    /*******************************************************/
+    /*                   DO NOT REMOVE THIS CODE           */
+    /*******************************************************/
+
+    public function __construct($password) {
+        $this->password = $password;
+        $this->songs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->votes = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -85,6 +103,7 @@ class User extends BaseUser
 
     /**
      * @param string $fullname
+     *
      * @return User
      */
     public function setFullname($fullname)
@@ -95,8 +114,6 @@ class User extends BaseUser
     }
 
     /**
-     * Add vote
-     *
      * @param \Bundle\CommonBundle\Entity\Vote\Vote $vote
      * @return User
      */
@@ -108,8 +125,6 @@ class User extends BaseUser
     }
 
     /**
-     * Remove vote
-     *
      * @param \Bundle\CommonBundle\Entity\Vote\Vote $vote
      */
     public function removeVote(\Bundle\CommonBundle\Entity\Vote\Vote $vote)
@@ -118,8 +133,6 @@ class User extends BaseUser
     }
 
     /**
-     * Get votes
-     *
      * @return \Doctrine\Common\Collections\Collection
      */
     public function getVotes()
@@ -128,8 +141,6 @@ class User extends BaseUser
     }
 
     /**
-     * Add song
-     *
      * @param \Bundle\CommonBundle\Entity\Song\Song $song
      * @return User
      */
@@ -141,8 +152,6 @@ class User extends BaseUser
     }
 
     /**
-     * Remove vote
-     *
      * @param \Bundle\CommonBundle\Entity\Song\Song $song
      */
     public function removeSong(\Bundle\CommonBundle\Entity\Song\Song $song)
@@ -151,8 +160,6 @@ class User extends BaseUser
     }
 
     /**
-     * Get songs
-     *
      * @return \Doctrine\Common\Collections\Collection
      */
     public function getSongs()
@@ -169,11 +176,15 @@ class User extends BaseUser
     }
 
     /**
-     * @param mixed $likeSendCount
+     * @param int $likeSendCount
+     *
+     * @return User
      */
     public function setLikeSendCount($likeSendCount)
     {
         $this->likeSendCount = $likeSendCount;
+
+        return $this;
     }
 
     /**
@@ -185,11 +196,15 @@ class User extends BaseUser
     }
 
     /**
-     * @param mixed $dislikeSendCount
+     * @param int $dislikeSendCount
+     *
+     * @return User
      */
     public function setDislikeSendCount($dislikeSendCount)
     {
         $this->dislikeSendCount = $dislikeSendCount;
+
+        return $this;
     }
 
     /**
@@ -202,10 +217,14 @@ class User extends BaseUser
 
     /**
      * @param int $dislikeReceiveCount
+     *
+     * @return User
      */
     public function setDislikeReceiveCount($dislikeReceiveCount)
     {
         $this->dislikeReceiveCount = $dislikeReceiveCount;
+
+        return $this;
     }
 
     /**
@@ -218,10 +237,14 @@ class User extends BaseUser
 
     /**
      * @param int $likeReceiveCount
+     *
+     * @return User
      */
     public function setLikeReceiveCount($likeReceiveCount)
     {
         $this->likeReceiveCount = $likeReceiveCount;
+
+        return $this;
     }
 
     /**
@@ -234,10 +257,44 @@ class User extends BaseUser
 
     /**
      * @param mixed $songCount
+     *
+     * @return User
      */
     public function setSongCount($songCount)
     {
         $this->songCount = $songCount;
+
+        return $this;
+    }
+
+    /**
+     * @param Room $room
+     *
+     * @return boolean
+     */
+    public function inRoom($room)
+    {
+        return $this->room === $room;
+    }
+
+    /**
+     * @return Room
+     */
+    public function getRoom()
+    {
+        return $this->room;
+    }
+
+    /**
+     * @param Room $room
+     *
+     * @return User
+     */
+    public function setRoom($room)
+    {
+        $this->room = $room;
+
+        return $this;
     }
 
     public function incrementSongCount()
@@ -263,5 +320,13 @@ class User extends BaseUser
     public function incrementDislikeReceiveCount()
     {
         $this->dislikeReceiveCount++;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRooms()
+    {
+        return $this->rooms;
     }
 }

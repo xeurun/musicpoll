@@ -3,7 +3,7 @@ parameters:
     database_driver:   pdo_mysql
     database_host:     127.0.0.1
     database_port:     ~
-    database_name:     symfony
+    database_name:     musicpoll
     database_user:     root
     database_password: ~
     # You should uncomment this if you want use pdo_sqlite
@@ -14,12 +14,12 @@ parameters:
     mailer_user:       ~
     mailer_password:   ~
 
-    locale:            en
+    locale: en
 
     # A secret key that's used to generate certain security-related tokens
-    secret:            ThisTokenIsNotSoSecretChangeIt
+    secret: ThisTokenIsNotSoSecretChangeIt
 
-    realplexor_url: http://rpl.musicpoll.ml/
-    realplexor_host: 127.0.0.1
-    realplexor_port: 10010
-    realplexor_namespace: musicpoll
+    realplexor_url:         'http://rpl.musicpoll.ml/'
+    realplexor_host:        127.0.0.1
+    realplexor_port:        10010
+    realplexor_namespace:   musicpoll

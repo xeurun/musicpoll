@@ -1,10 +1,13 @@
 <?php
+
+namespace Bundle\CommonBundle\Service;
+
 /**
  * Dklab_Realplexor PHP API.
  *
  * @version 1.31
  */
-class Dklab_Realplexor
+class DklabRealplexor
 {
 	private $_timeout = 5;
 	private $_host;
@@ -20,6 +23,7 @@ class Dklab_Realplexor
 	 * @param string $port        Port of IN line (if 443, SSL is used).
 	 * @param strinf $namespace   Namespace to use. 
 	 * @param string $identifier  Use this "identifier" marker instead of the default one.
+	 * @throws DklabRealplexorException
 	 */
 	public function __construct($host, $port, $namespace = null, $identifier = "identifier")
 	{
@@ -28,7 +32,7 @@ class Dklab_Realplexor
 		$this->_namespace = $namespace;
 		$this->_identifier = $identifier;
 		if (version_compare(PHP_VERSION, "5.2.1", "<")) {
-			throw new Dklab_Realplexor_Exception("You should use PHP 5.2.1 and higher to run this library");
+			throw new DklabRealplexorException("You should use PHP 5.2.1 and higher to run this library");
 		}
 	}
 	
@@ -38,6 +42,7 @@ class Dklab_Realplexor
 	 *
 	 * @param string $login
 	 * @param string $password
+	 *
 	 * @return void
 	 */
 	public function logon($login, $password)
@@ -50,7 +55,7 @@ class Dklab_Realplexor
 
 	/**
 	 * Send data to realplexor.
-	 * Throw Dklab_Realplexor_Exception in case of error.
+	 * Throw DklabRealplexorException in case of error.
 	 *
 	 * @param mixed $idsAndCursors    Target IDs in form of: array(id1 => cursor1, id2 => cursor2, ...)
 	 *                               of array(id1, id2, id3, ...). If sending to a single ID,
@@ -60,6 +65,8 @@ class Dklab_Realplexor
 	 *                               This parameter may be used to limit the visibility to a closed
 	 *                               number of cliens: give each client an unique ID and enumerate
 	 *                               client IDs in $showOnlyForIds to not to send messages to others.
+	 * @throws DklabRealplexorException
+	 *
 	 * @return void
 	 */                              
 	public function send($idsAndCursors, $data, $showOnlyForIds = null)
@@ -72,12 +79,12 @@ class Dklab_Realplexor
 				$cursor = null;
 			}
 			if (!preg_match('/^\w+$/', $id)) {
-				throw new Dklab_Realplexor_Exception("Identifier must be alphanumeric, \"$id\" given");
+				throw new DklabRealplexorException("Identifier must be alphanumeric, \"$id\" given");
 			}
 			$id = $this->_namespace . $id;
 			if ($cursor !== null) {
 				if (!is_numeric($cursor)) {
-					throw new Dklab_Realplexor_Exception("Cursor must be numeric, \"$cursor\" given");
+					throw new DklabRealplexorException("Cursor must be numeric, \"$cursor\" given");
 				}
 				$pairs[] = "$cursor:$id";
 			} else {
@@ -98,6 +105,7 @@ class Dklab_Realplexor
 	 * very approximate; more precision is in TODO.)
 	 *
 	 * @param array $idPrefixes   If set, only online IDs with these prefixes are returned.
+	 *
 	 * @return array              List of matched online IDs (keys) and online counters (values).
 	 */
 	public function cmdOnlineWithCounters($idPrefixes = null)
@@ -130,6 +138,7 @@ class Dklab_Realplexor
 	 * Return list of online IDs.
 	 *
 	 * @param array $idPrefixes   If set, only online IDs with these prefixes are returned.
+	 *
 	 * @return array              List of matched online IDs.
 	 */
 	public function cmdOnline($idPrefixes = null)
@@ -143,6 +152,8 @@ class Dklab_Realplexor
 	 *
 	 * @param string $fromPos        Start watching from this cursor.
 	 * @param array $idPrefixes        Watch only changes of IDs with these prefixes.
+	 * @throws DklabRealplexorException
+	 *
 	 * @return array                   List of array("event" => ..., "cursor" => ..., "id" => ...).
 	 */
 	public function cmdWatch($fromPos, $idPrefixes = null)
@@ -152,7 +163,7 @@ class Dklab_Realplexor
 			$fromPos = 0;
 		}
 		if (!preg_match('/^[\d.]+$/', $fromPos)) {
-			throw new Dklab_Realplexor_Exception("Position value must be numeric, \"$fromPos\" given");
+			throw new DklabRealplexorException("Position value must be numeric, \"$fromPos\" given");
 		}
 		// Add namespaces.
 		if (strlen($this->_namespace)) {
@@ -191,6 +202,7 @@ class Dklab_Realplexor
 	 * Send IN command.
 	 *
 	 * @param string $cmd   Command to send.
+	 *
 	 * @return string       Server IN response.
 	 */
 	private function _sendCmd($cmd)
@@ -201,10 +213,13 @@ class Dklab_Realplexor
 	/**
 	 * Internal method.
 	 * Send specified data to IN channel. Return response data.
-	 * Throw Dklab_Realplexor_Exception in case of error.
+	 * Throw DklabRealplexorException in case of error.
 	 *
 	 * @param string $identifier  If set, pass this identifier string.
-	 * @param string $data        Data to be sent.
+	 * @param string $body        Data to be sent.
+	 * @throws DklabRealplexorException
+	 * @throws Exception
+	 *
 	 * @return string             Response from IN line.
 	 */
 	private function _send($identifier, $body)
@@ -229,20 +244,20 @@ class Dklab_Realplexor
 			$host = $this->_port == 443? "ssl://" . $this->_host : $this->_host;
 			$f = @fsockopen($host, $this->_port, $errno, $errstr, $this->_timeout);
 			if (!$f) {
-				throw new Dklab_Realplexor_Exception("Error #$errno: $errstr");
+				throw new DklabRealplexorException("Error #$errno: $errstr");
 			}
 			if (@fwrite($f, $data) === false) {
-				throw new Dklab_Realplexor_Exception($php_errormsg);
+				throw new DklabRealplexorException($php_errormsg);
 			}
 			if (!@stream_socket_shutdown($f, STREAM_SHUT_WR)) {
-				throw new Dklab_Realplexor_Exception($php_errormsg);
+				throw new DklabRealplexorException($php_errormsg);
 			}
 			$result = @stream_get_contents($f);
 			if ($result === false) {
-				throw new Dklab_Realplexor_Exception($php_errormsg);
+				throw new DklabRealplexorException($php_errormsg);
 			}
 			if (!@fclose($f)) {
-				throw new Dklab_Realplexor_Exception($php_errormsg);
+				throw new DklabRealplexorException($php_errormsg);
 			}
 			ini_set('track_errors', $old);
 		} catch (Exception $e) {
@@ -253,18 +268,18 @@ class Dklab_Realplexor
 		if ($result) {
 			@list ($headers, $body) = preg_split('/\r?\n\r?\n/s', $result, 2);
 			if (!preg_match('{^HTTP/[\d.]+ \s+ ((\d+) [^\r\n]*)}six', $headers, $m)) {
-				throw new Dklab_Realplexor_Exception("Non-HTTP response received:\n" . $result);
+				throw new DklabRealplexorException("Non-HTTP response received:\n" . $result);
 			}
 			if ($m[2] != 200) {
-				throw new Dklab_Realplexor_Exception("Request failed: " . $m[1] . "\n" . $body);
+				throw new DklabRealplexorException("Request failed: " . $m[1] . "\n" . $body);
 			}
 			if (!preg_match('/^Content-Length: \s* (\d+)/mix', $headers, $m)) {
-				throw new Dklab_Realplexor_Exception("No Content-Length header in response headers:\n" . $headers);
+				throw new DklabRealplexorException("No Content-Length header in response headers:\n" . $headers);
 			}
 			$needLen = $m[1];
 			$recvLen = $this->_strlen($body);
 			if ($needLen != $recvLen) {
-				throw new Dklab_Realplexor_Exception("Response length ($recvLen) is different than specified in Content-Length header ($needLen): possibly broken response\n");
+				throw new DklabRealplexorException("Response length ($recvLen) is different than specified in Content-Length header ($needLen): possibly broken response\n");
 			}
 			return $body;
 		}

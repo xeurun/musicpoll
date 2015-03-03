@@ -83,9 +83,20 @@ class Song extends BaseEntity
      */
     private $deleted = false;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\Room\Room", cascade={"persist"})
+     * @ORM\JoinColumn(name="roomId", referencedColumnName="id", onDelete="CASCADE", nullable=false)
+     **/
+    private $room;
+
     /*******************************************************/
     /*                   DO NOT REMOVE THIS CODE           */
     /*******************************************************/
+
+    public function __construct($room)
+    {
+        $this->room = $room;
+    }
 
     /*******************************************************/
     /*                   AUTO GENERATED CODE               */
@@ -111,10 +122,14 @@ class Song extends BaseEntity
 
     /**
      * @param string $title
+     *
+     * @return Song
      */
     public function setTitle($title)
     {
         $this->title = $title;
+
+        return $this;
     }
 
     /**
@@ -127,10 +142,14 @@ class Song extends BaseEntity
 
     /**
      * @param string $url
+     *
+     * @return Song
      */
     public function setUrl($url)
     {
         $this->url = $url;
+
+        return $this;
     }
 
     /**
@@ -143,10 +162,14 @@ class Song extends BaseEntity
 
     /**
      * @param string $type
+     *
+     * @return Song
      */
     public function setType($type)
     {
         $this->type = $type;
+
+        return $this;
     }
 
     /**
@@ -159,10 +182,14 @@ class Song extends BaseEntity
 
     /**
      * @param int $counter
+     *
+     * @return Song
      */
     public function setCounter($counter)
     {
         $this->counter = $counter;
+
+        return $this;
     }
 
     public function incrementCounter()
@@ -175,10 +202,9 @@ class Song extends BaseEntity
         $this->counter--;
     }
 
-    /**
-     * Add vote
-     *
+    /** Add vote
      * @param \Bundle\CommonBundle\Entity\Vote\Vote $vote
+     *
      * @return Song
      */
     public function addVote(\Bundle\CommonBundle\Entity\Vote\Vote $vote)
@@ -188,9 +214,7 @@ class Song extends BaseEntity
         return $this;
     }
 
-    /**
-     * Remove vote
-     *
+    /** Remove vote
      * @param \Bundle\CommonBundle\Entity\Vote\Vote $vote
      */
     public function removeVote(\Bundle\CommonBundle\Entity\Vote\Vote $vote)
@@ -198,9 +222,7 @@ class Song extends BaseEntity
         $this->votes->removeElement($vote);
     }
 
-    /**
-     * Get votes
-     *
+    /** Get votes
      * @return \Doctrine\Common\Collections\Collection
      */
     public function getVotes()
@@ -209,9 +231,9 @@ class Song extends BaseEntity
     }
 
     /**
-     * Get boolean
+     * @param int $id
      *
-     * @return hasCurrentUserVote
+     * @return boolean
      */
     public function hasCurrentUserVote($id)
     {
@@ -225,8 +247,17 @@ class Song extends BaseEntity
     }
 
     /**
+     * @return Song
+     */
+    public function getAuthor()
+    {
+        return $this->author;
+    }
+
+    /**
      * Set author
      * @param \Bundle\CommonBundle\Entity\User $author
+     *
      * @return Song
      */
     public function setAuthor(\Bundle\CommonBundle\Entity\User $author)
@@ -234,15 +265,6 @@ class Song extends BaseEntity
         $this->author = $author;
 
         return $this;
-    }
-
-    /**
-     * Get author
-     * @return Song
-     */
-    public function getAuthor()
-    {
-        return $this->author;
     }
 
     /**
@@ -255,10 +277,14 @@ class Song extends BaseEntity
 
     /**
      * @param string $artist
+     *
+     * @return Song
      */
     public function setArtist($artist)
     {
         $this->artist = $artist;
+
+        return $this;
     }
 
     /**
@@ -271,10 +297,14 @@ class Song extends BaseEntity
 
     /**
      * @param int $duration
+     *
+     * @return Song
      */
     public function setDuration($duration)
     {
         $this->duration = $duration;
+
+        return $this;
     }
 
     /**
@@ -287,9 +317,13 @@ class Song extends BaseEntity
 
     /**
      * @param boolean $deleted
+     *
+     * @return Song
      */
     public function setDeleted($deleted)
     {
         $this->deleted = $deleted;
+
+        return $this;
     }
 }

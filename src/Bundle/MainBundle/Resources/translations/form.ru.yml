@@ -1,0 +1,15 @@
+song:
+  placeholder:
+    title: введите название песни
+    url: введите ссылку на песню
+    search:
+      type: начните вводить тип
+      song: начните вводить название песни
+room:
+  create: Создать новую комнату
+  enter: Войти в комнату
+  return: Вернутся в комнату
+  placeholder:
+    id: id комнаты
+    oldPassword: пароль для комнаты
+    newPassword: пароль от комнаты

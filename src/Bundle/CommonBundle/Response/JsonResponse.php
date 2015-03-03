@@ -6,57 +6,51 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Класс json-ответа
+ * Custom JsonResponse
  */
 class JsonResponse extends Response
 {
     /**
-     * Текст ошибки, передаваемой в ответе
      * @var string
      */
-    protected $_error = '';
+    protected $message = '';
 
     /**
-     * Массив, содержащий структуру ответа
-     * Может содержать в качестве значения определенного ключа объект, имеющий метод jsonSerialize
      * @var array
      */
-    protected $_jsonContent = array();
+    protected $content = array();
 
-
-    /**
-     * Конструктор
-     */
-    public function __construct($headers = array())
+    public function __construct($data = array(), $headers = array())
     {
         parent::__construct('', 200, $headers);
-
         $this->headers->set('Content-type', 'application/json; charset=utf-8');
+        $this->setContent($data);
     }
 
     /**
-     * Подготовка перед отправкой клиенту
+     * @param array $responseData
+     *
+     * @return JsonResponse
      */
+    public function setContent($responseData)
+    {
+        $this->content = $responseData;
+
+        return $this;
+    }
+
     public function prepare(Request $request)
     {
-        $content = $this->_jsonContent;
-
+        $content = $this->content;
         if (!empty($this->_error)) {
-            $content = array_merge($content, array('error' => $this->_error));
+            $content = array_merge($content, array(
+                'error' => $this->error
+            ));
         }
 
-        self::setContent(json_encode($content));
+        $this->setContent(json_encode($content));
 
         parent::prepare($request);
-    }
-
-    /**
-     * Назначает контент для ответа, отправляемого в виде JSON
-     * @param array $responseData
-     */
-    public function setJsonContent(array $responseData)
-    {
-        $this->_jsonContent = $responseData;
     }
 
     /**
@@ -66,7 +60,7 @@ class JsonResponse extends Response
     public function setError($error)
     {
         if (is_string($error)) {
-            $this->_error = $error;
+            $this->error = $error;
         } else {
             throw new \Symfony\Component\Routing\Exception\InvalidParameterException(sprintf('Variable $error must be string, %s given', gettype($error)));
         }

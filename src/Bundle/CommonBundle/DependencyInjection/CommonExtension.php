@@ -24,5 +24,6 @@ class CommonExtension extends Extension
         $container->setParameter('realplexor.params', $config['realplexor']);
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+        $loader->load('repositories.yml');
     }
 }

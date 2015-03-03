@@ -31,7 +31,7 @@ class Vote extends BaseEntity
     /**
      * Идентификатор автора
      * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\User", inversedBy="votes", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=true, name="authorId", referencedColumnName="id", onDelete="CASCADE", nullable=false)
+     * @ORM\JoinColumn(name="authorId", referencedColumnName="id", onDelete="SET NULL", nullable=true)
      */
     private $author;
 
@@ -62,10 +62,14 @@ class Vote extends BaseEntity
 
     /**
      * @param int $id
+     *
+     * @return Vote
      */
     public function setId($id)
     {
         $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -78,31 +82,34 @@ class Vote extends BaseEntity
 
     /**
      * @param \Bundle\CommonBundle\Entity\Song\Song $song
+     *
+     * @return Vote
      */
     public function setSong($song)
     {
         $this->song = $song;
+
+        return $this;
     }
 
     /**
-     * Set author
+     * @return User
+     */
+    public function getAuthor()
+    {
+        return $this->author;
+    }
+
+    /**
      * @param \Bundle\CommonBundle\Entity\User $author
-     * @return $this
+     *
+     * @return Vote
      */
     public function setAuthor(\Bundle\CommonBundle\Entity\User $author)
     {
         $this->author = $author;
 
         return $this;
-    }
-
-    /**
-     * Get author
-     * @return User
-     */
-    public function getAuthor()
-    {
-        return $this->author;
     }
 
     /**
@@ -115,9 +122,13 @@ class Vote extends BaseEntity
 
     /**
      * @param boolean $dislike
+     *
+     * @return Vote
      */
     public function setDislike($dislike)
     {
         $this->dislike = $dislike;
+
+        return $this;
     }
 }

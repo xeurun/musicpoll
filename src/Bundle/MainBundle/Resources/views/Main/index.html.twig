@@ -1,114 +1,67 @@
-{% extends 'MainBundle::layout.html.twig' %}
+{% extends "::base.html.twig" %}
 
 {% block body %}
-    <div ng-controller="PopupMessageController as popupMessage" class="popup-alerts">
-        <alert hg-cloak class="ng-cloak" ng-repeat="popup in popupMessage.popups | reverse | limitTo:5" ng-show="popup.show" type="[[ popup.type ]]">[[ popup.message ]]</alert>
-    </div>
-    <div ng-controller="ModalFormController as modalForm" class="pull-left">
-        <a class="add-new-song btn btn-primary btn-lg" ng-click="modalForm.open()">
-            <span class="glyphicon glyphicon-plus"></span>
+    <div class="homepage" ng-controller="HomepageController as homepage">
+        <a class="statistic-btn btn btn-warning btn-lg" href="{{ path('statistic') }}">
+            <span class="glyphicon glyphicon-stats"></span>
         </a>
+        <toaster-container toaster-options="{'time-out': 5000, 'limit': 5, 'close-button':true, 'prevent-duplicates': true}"></toaster-container>
+        {% if app.user.room != null %}
+            <button type="button" class="btn btn-success btn-lg btn-block" ng-click="homepage.return('{{ path('room', { 'id': app.user.room.id }) }}')">
+                {{ 'room.return'|trans({}, "form") }}
+            </button>
+            <br>
+        {% endif %}
+        <p class="input-group">
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-lock" id="new-room-password"></span>
+            </span>
+            <input type="password" class="form-control" ng-model="homepage.newPassword" placeholder="{{ 'room.placeholder.newPassword'|trans({}, "form") }}" aria-describedby="new-room-password">
+        </p>
+        <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="homepage.create()">
+            {{ 'room.create'|trans({}, "form") }}
+        </button>
+        <br>
+        <p class="input-group">
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-tag" id="room-id"></span>
+            </span>
+            <input type="number" min="0" class="form-control" ng-model="homepage.roomId" placeholder="{{ 'room.placeholder.id'|trans({}, "form") }}" aria-describedby="room-id">
+        </p>
+        <p class="input-group">
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-lock" id="room-password"></span>
+            </span>
+            <input type="password" class="form-control" ng-model="homepage.password" placeholder="{{ 'room.placeholder.oldPassword'|trans({}, "form") }}" aria-describedby="room-password">
+        </p>
+        <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="homepage.enter()">
+            {{ 'room.enter'|trans({}, "form") }}
+        </button>
     </div>
-    <div ng-controller="PlayerController as player">
-        <div hg-cloak class="ng-cloak player">
-            <div class="btn-group" role="group">
-                {% if is_granted('ROLE_ADMIN') %}
-                    <a class="btn btn-primary btn-lg" ng-class="{active: player.audio.getState().isPlaying()}" ng-disabled="!player.started || !player.audio.getState().getSongId()" ng-click="player.play()">
-                        <span ng-show="!player.audio.getState().isPlaying() || !player.started" class="glyphicon glyphicon-play"></span>
-                        <span ng-show="player.audio.getState().isPlaying()" class="glyphicon glyphicon-pause"></span>
-                    </a>
-                    <a class="btn btn-primary btn-lg" ng-click="player.next()">
-                        <span ng-show="player.started" class="glyphicon glyphicon-forward"></span>
-                        <span ng-hide="player.started" class="glyphicon glyphicon-cd"></span>
-                    </a>
-                {% endif %}
-                <a class="btn btn-primary btn-lg" ng-class="{active: player.muted}" ng-click="player.mute()">
-                    <span ng-hide="player.muted" class="glyphicon glyphicon-volume-down"></span>
-                    <span ng-show="player.muted" class="glyphicon glyphicon-volume-up"></span>
-                </a>
-                {% if is_granted('ROLE_ADMIN') %}
-                    <div class="btn-group-vertical" role="group" style="margin-left: 3px;">
-                        <a style="margin-top: 1px;" ng-disabled="!player.started" class="btn btn-primary btn-xs">
-                            <span class="glyphicon glyphicon-chevron-up" ng-click="player.audio.setVolume(true)"></span>
-                        </a>
-                        <a style="margin-top: 1px;" ng-disabled="!player.started" class="btn btn-primary btn-xs">
-                            <span class="glyphicon glyphicon-chevron-down" ng-click="player.audio.setVolume(false)"></span>
-                        </a>
-                    </div>
-                {% endif %}
-            </div>
-            <div class="song-progress" ng-show="player.started">
-                {% if is_granted('ROLE_ADMIN') %}
-                    <input ng-click="player.changeTime($event)" type="range" min="0" step="1" max="[[ player.song.getDuration() ]]"/>
-                {% endif %}
-                <progressbar class="progress-striped progress-bar-danger active" value="[[ player.percent ]]" type="success"></progressbar>
-            </div>
-            <marquee scrollamount="3" ng-show="player.started">[[ player.song.getTitle() ]]</marquee>
-        </div>
-    </div>
-    <div class="container-fluid">
-        <section class="wrapper" ng-controller="ListController as list">
-            <div>
-                <h2 style="text-align: center">Плейлист</h2>
-                <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                        <div class="btn-group">
-                            <label class="btn btn-primary" ng-model="list.onlyMy" btn-radio="false">Все</label>
-                            <label class="btn btn-primary" ng-model="list.onlyMy" btn-radio="true">Мои</label>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                        <div class="btn-group">
-                            <label class="btn btn-primary" ng-model="list.top" btn-radio="false">Последние</label>
-                            <label class="btn btn-primary" ng-model="list.top" btn-radio="true">Топ</label>
-                        </div>
-                    </div>
-                    <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                        <div class="input-group">
-                            <input type="text" class="form-control" ng-model="list.searchText" placeholder="Поиск...">
-                            <span class="input-group-btn">
-                                <button type="button" ng-click="list.searchText = ''" class="btn btn-default" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                </br>
-                <ul class="list-group song-list" lr-infinite-scroll="list.songManager.getNextBlock" scroll-threshold="200" time-threshold="600" ng-init="list.songManager.getNextBlock()">
-                    <li hg-cloak ng-repeat="song in list.songManager.getSongs() | filterObjectBy:{ 'authorId': list.onlyMy ? list.userManager.getCurrentUser().getId() : '' } | filterObjectBy:list.searchText:'title' | orderObjectBy:list.top ? 'counter' : 'id':list.top" ng-class="{disabled: song.isDisabled()}" class="ng-cloak list-group-item">
-                        <span class="badge">
-                            <span ng-hide="song.voted" ng-click="list.songManager.voteForSong(song.id, true)" class="glyphicon glyphicon-hand-up"></span>
-                            <span ng-hide="song.voted" ng-click="list.songManager.voteForSong(song.id, false)" class="glyphicon glyphicon-hand-down"></span>
-                            <span ng-hide="song.disabled" ng-click="list.play(song.id)" ng-class="{'glyphicon-play': !list.player.getState(song.getId()).getSongId() || !list.player.getState(song.getId()).isPlaying(), 'glyphicon-stop': list.player.getState(song.getId()).isPlaying()}" class="glyphicon"></span>
-                            <span ng-show="(list.songManager.getSong(song.getId()).isMy() || list.userManager.getCurrentUser().isAdmin()) && !song.isDisabled()" ng-click="list.songManager.deleteSong(song.getId())" class="glyphicon glyphicon-remove"></span>
-                            <span ng-click="list.open(song.getId())">[[ song.counter ]]</span>
-                        </span>
-                        <span class="song-title">[[ song.title ]]</span>
-                        <small class="label label-default" ng-class="{hidden: !song.getArtist().length}"><br>Исполнитель: [[ song.getArtist() ]]</small>
-                        <small class="label label-default"><br>Добавил: [[ list.userManager.getUser(song.authorId).getFullname() ]]</small>
-                    </li>
-                </ul>
-            </div>
-        </section>
-        <section hg-cloak ng-controller="UserListController as userlist" class="user-list ng-cloak" ng-init="userlist.userManager.loadUsers();">
-            <ul ng-show="userlist.show">
-                <li ng-repeat="user in userlist.userManager.getUsers()" class="ng-cloak panel panel-default">
-                    <div class="panel-heading">
-                        <h4><span ng-class="userlist.userManager.getCurentUser().isAdmin() ? 'label-danger' : userlist.userManager.getUser(user.getId()).isCurrent() ? 'label-success' : 'label-primary'" class="label">[[ user.fullname ]]</span></h4>
-                    </div>
-                    <div class="panel-body">
-                        <span class="label label-default">Отправленных лайков: [[ user.sendLikes ]]</span>
-                        <span class="label label-default">Отправленных дизлайков: [[ user.sendDislikes ]]</span>
-                        <span class="label label-default">Полученных лайков: [[ user.receivedLikes ]]</span>
-                        <span class="label label-default">Полученных дизлайков: [[ user.receivedDislikes ]]</span>
-                        <span class="label label-default">Добавлений: [[ user.songs ]]</span>
-                    </div>
-                </li>
-            </ul>
-            <a class="show-user-list btn btn-primary btn-lg" ng-click="userlist.show = !userlist.show">
-                <span class="glyphicon glyphicon-user"></span>
-            </a>
-        </section>
-    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        (function() {
+            "use strict";
+
+            angular
+            .module ('musicpoll', [ 'toaster' ])
+            .config (function($interpolateProvider) {
+                $interpolateProvider.startSymbol('[[ ').endSymbol(' ]]');
+            })
+            .constant ("Config", {
+                ROUTING: {
+                    enter:  '{{ path('enter') }}',
+                    create: '{{ path('create') }}'
+                },
+                USERID: {{ app.user.id }}
+            });
+        })();
+    </script>
+    {% javascripts
+        '@MainBundle/Resources/public/js/Homepage/Controllers/*'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
 {% endblock %}

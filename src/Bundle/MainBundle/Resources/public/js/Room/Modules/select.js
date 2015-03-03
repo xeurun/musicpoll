@@ -706,7 +706,7 @@
 
     // If tagging try to split by tokens and add items
     _searchInput.on('paste', function (e) {
-      var data = e.originalEvent.clipboardData.getData('text/plain');
+      var data = e.clipboardData.getData('text/plain');
       if (data && data.length > 0 && ctrl.taggingTokens.isActivated && ctrl.tagging.fct) {
         var items = data.split(ctrl.taggingTokens.tokens[0]); // split by first token only
         if (items && items.length > 0) {

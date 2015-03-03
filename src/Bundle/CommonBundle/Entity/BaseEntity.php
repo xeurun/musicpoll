@@ -8,6 +8,28 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class BaseEntity {
 
+    public function prePersist()
+    {
+        try {
+            $currentTime = new \DateTime();
+            $this->setCreatedAt($currentTime);
+
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function preUpdate()
+    {
+        try {
+            $currentTime = new \DateTime();
+            $this->setUpdatedAt($currentTime);
+
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
     /**
      * @var \DateTime
      *
@@ -58,33 +80,8 @@ class BaseEntity {
      * Возвращает имя класса
      * @return string
      */
-    public function getEntityType()
+    protected function getEntityType()
     {
-        $class = get_class($this);
-        $className = explode("\\", $class);
-
-        return end($className);
-    }
-
-    public function prePersist()
-    {
-        try {
-            $currentTime = new \DateTime();
-            $this->setCreatedAt($currentTime);
-            
-        } catch (\Exception $e) {
-            throw $e;
-        }
-    }
-
-    public function preUpdate()
-    {
-        try {
-            $currentTime = new \DateTime();
-            $this->setUpdatedAt($currentTime);
-
-        } catch (\Exception $e) {
-            throw $e;
-        }
+        return end(explode("\\", get_class($this)));
     }
 }

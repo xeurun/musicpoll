@@ -1,0 +1,37 @@
+<div ng-controller="PlayerController as player">
+    <div hg-cloak class="ng-cloak player">
+        <div class="btn-group" role="group">
+            <a class="btn btn-primary btn-lg"
+               ng-show="player.userManager.getCurrentUser().isPlayer()"
+               ng-class="{active: player.audio.getState().isPlaying()}"
+               ng-disabled="!player.started || !player.audio.getState().getSongId()"
+               ng-click="player.play()">
+                <span ng-show="!player.audio.getState().isPlaying() || !player.started" class="glyphicon glyphicon-play"></span>
+                <span ng-show="player.audio.getState().isPlaying()" class="glyphicon glyphicon-pause"></span>
+            </a>
+            <a class="btn btn-primary btn-lg" ng-show="player.userManager.getCurrentUser().isPlayer()" ng-click="player.next()">
+                <span ng-show="player.started" class="glyphicon glyphicon-forward"></span>
+                <span ng-hide="player.started" class="glyphicon glyphicon-cd"></span>
+            </a>
+            <a class="btn btn-primary btn-lg" ng-class="{active: player.muted}" ng-click="player.mute()">
+                <span ng-hide="player.muted" class="glyphicon glyphicon-volume-down"></span>
+                <span ng-show="player.muted" class="glyphicon glyphicon-volume-up"></span>
+            </a>
+            <div ng-show="player.userManager.getCurrentUser().isPlayer()" class="btn-group-vertical" role="group" style="margin-left: 3px;">
+                <a style="margin-top: 1px;" ng-disabled="!player.started" class="btn btn-primary btn-xs">
+                    <span class="glyphicon glyphicon-chevron-up" ng-click="player.audio.setVolume(true)"></span>
+                </a>
+                <a style="margin-top: 1px;" ng-disabled="!player.started" class="btn btn-primary btn-xs">
+                    <span class="glyphicon glyphicon-chevron-down" ng-click="player.audio.setVolume(false)"></span>
+                </a>
+            </div>
+        </div>
+        <div class="song-progress" ng-show="player.started">
+            <input ng-show="player.userManager.getCurrentUser().isPlayer()" ng-click="player.changeTime($event)" type="range" min="0" step="1" max="[[ player.song.getDuration() ]]"/>
+            <progressbar class="progress-striped progress-bar-danger active" value="[[ player.percent ]]" type="success"></progressbar>
+        </div>
+        <marquee scrollamount="3" ng-show="player.started">
+            [[ player.song.getTitle() ]]
+        </marquee>
+    </div>
+</div>

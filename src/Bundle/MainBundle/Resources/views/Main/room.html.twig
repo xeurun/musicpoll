@@ -1,0 +1,17 @@
+{% extends 'MainBundle::layout.html.twig' %}
+
+{% block body %}
+    <a class="leave-btn btn btn-warning btn-lg" href="{{ path('homepage') }}">
+        <span class="glyphicon glyphicon-home"></span>
+    </a>
+    <a class="settongs-btn btn btn-primary btn-lg hidden" href="{{ path('homepage') }}">
+        <span class="glyphicon glyphicon-wrench"></span>
+    </a>
+    {% include 'MainBundle:Main/Include:popupController.html.twig' %}
+    {% include 'MainBundle:Main/Include:formController.html.twig' %}
+    {% include 'MainBundle:Main/Include:playerController.html.twig' %}
+    <div class="container-fluid">
+        {% include 'MainBundle:Main/Include:listController.html.twig' %}
+        {% include 'MainBundle:Main/Include:userController.html.twig' %}
+    </div>
+{% endblock %}

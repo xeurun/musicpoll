@@ -1,0 +1,14 @@
+<section hg-cloak ng-controller="UserListController as userlist" class="user-list ng-cloak" ng-init="userlist.userManager.loadUsers();">
+    <ul ng-show="userlist.show">
+        <li ng-repeat="user in userlist.userManager.getUsers()" class="ng-cloak">
+            <button ng-click="userlist.open(user.getId())" type="button" class="btn" ng-class="userlist.userManager.getUser(user.getId()).isCurrent() ? 'btn-success' : 'btn-primary'">
+                <span ng-show="userlist.userManager.getUser(user.getId()).isPlayer()" class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
+                [[ user.fullname ]]
+                <span ng-show="userlist.userManager.getUser(user.getId()).isAdmin()" class="glyphicon glyphicon-star" aria-hidden="true"></span>
+            </button>
+        </li>
+    </ul>
+    <a class="show-user-list btn btn-primary btn-lg" ng-click="userlist.show = !userlist.show">
+        <span class="glyphicon glyphicon-user"></span>
+    </a>
+</section>

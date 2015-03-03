@@ -60,7 +60,8 @@ class SongType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Bundle\CommonBundle\Entity\Song\Song'
+            'data_class' => 'Bundle\CommonBundle\Entity\Song\Song',
+            'translation_domain' => 'form'
         ));
     }
 
