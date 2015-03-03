@@ -1,6 +1,9 @@
-<div ng-controller="PlayerController as player">
+<div ng-controller="PlayerController as player" ng-init="player.initState()">
     <div hg-cloak class="ng-cloak player">
         <div class="btn-group" role="group">
+            <a class="btn btn-primary btn-lg" ng-hide="player.userManager.getCurrentUser().isPlayer()" ng-class="{active: player.headphone}" ng-click="player.headphoneMode()">
+                <span class="glyphicon glyphicon-headphones"></span>
+            </a>
             <a class="btn btn-primary btn-lg"
                ng-show="player.userManager.getCurrentUser().isPlayer()"
                ng-class="{active: player.audio.getState().isPlaying()}"

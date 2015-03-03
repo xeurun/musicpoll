@@ -105,7 +105,14 @@ class MainController extends BaseController
                 if(is_null($room->getPassword()) || $room->isAuthor($this->getUser()) || $room->getPassword() === $password) {
                     $user = $this->getUser()->setRoom($room);
                     $this->get('fos_user.user_manager')->updateUser($user);
-
+                    $this->get('drklab.realplexor.manager')->send("Room$roomId", array (
+                        'action'    => 'enter',
+                        'result'      => array(
+                            'id'        => $user->getId(),
+                            'admin'     => $user->hasRole('ROLE_ADMIN'),
+                            'fullname'  => $user->getFullname()
+                        )
+                    ));
                     $result['message'] = null;
                     $result['backUrl'] = $this->generateUrl('room', array('id' => $roomId));
                 }

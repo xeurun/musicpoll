@@ -12,6 +12,7 @@
         this.muted          = false;
         this.song           = null;
         this.userManager    = UserManager;
+        this.headphone      = false;
 
         this.changeTime = function ($event) {
             ApiService.put(Config.ROUTING.rewind.replace('_TIME_', angular.element($event.target).val()));
@@ -41,6 +42,69 @@
             }
         };
 
+        this.initState = function () {
+            if(!Config.PLAYER) {
+                ApiService.get(Config.ROUTING.state, {
+                    user: Config.USERID,
+                    room: Config.ROOMID
+                });
+            }
+        };
+
+        if(Config.PLAYER) {
+            $scope.$on('user:getState', function(event, data) {
+                var data = {
+                    state: {
+                        song: angular.isObject(self.song) ? self.song.getId() : null,
+                        muted:      self.muted,
+                        playing:    self.audio.getState().isPlaying(),
+                        second:     self.audio.getTime(),
+                        started:    self.started
+                    },
+                    user: data
+                };
+                ApiService.put(Config.ROUTING.state, data);
+            });
+        }
+
+        $scope.$on('user:setState', function(event, data) {
+            self.muted      = data.state.muted;
+            self.song       = SongManager.getSong(data.state.song);
+            self.second     = data.state.second;
+            self.started    = data.state.started;
+            self.audio.getState().setPlaying(data.state.playing);
+            if(angular.isObject(self.song)) {
+                self.duration = self.song.getDuration();
+                self.song.disable();
+                $rootScope.$broadcast('popup:show', {
+                    type: 'info',
+                    message: 'Сейчас играет ' + self.song.title
+                });
+            }
+            if(self.audio.getState().isPlaying()) {
+                $interval.cancel(self.interval);
+                self.interval = $interval(function() {
+                    if(self.audio.getState().isPlaying()) {
+                        self.percent = self.audio.getPercent(++self.second, self.duration);
+                    }
+                }, 1000);
+            }
+            $scope.$apply();
+        });
+
+        this.headphoneMode = function () {
+            if(angular.isObject(self.song))
+            {
+                if(self.headphone) {
+                    self.audio.pause(true);
+                } else {
+                    self.audio.playById(self.song.getId());
+                    self.audio.setTime(second);
+                }
+            }
+            self.headphone = !self.headphone;
+        };
+
         this.mute = function () {
             ApiService.put(Config.ROUTING.mute.replace('_TYPE_', !this.muted));
         };
@@ -52,8 +116,9 @@
                 self.song.disable();
                 if(!Config.PLAYER) {
                     self.audio.getState().setPlaying(true);
-                } else {
-                    self.audio.playById(self.song.id);
+                }
+                if(self.headphone || Config.PLAYER) {
+                    self.audio.playById(self.song.getId());
                 }
                 second      = 0;
                 duration    = self.song.getDuration();
@@ -91,7 +156,7 @@
         });
 
         $scope.$on('room:rewind', function(event, data) {
-            if(Config.PLAYER) {
+            if(self.headphone || Config.PLAYER) {
                 self.audio.setTime(data);
             }
             second          = data;
@@ -100,15 +165,11 @@
             $scope.$apply();
         });
 
-        $scope.$on('room:state', function(event, data) {
-            if(Config.PLAYER) {
-                //TODO: send status data
-            }
-        });
-
         $scope.$on('room:mute', function(event, data) {
             self.muted = data.on;
-            self.audio.setVolume(self.muted ? 0.2 : 1);
+            if(Config.PLAYER) {
+                self.audio.setVolume(self.muted ? 0.2 : 1);
+            }
             if(!self.muted) {
                 $rootScope.$broadcast('popup:hide');
             }

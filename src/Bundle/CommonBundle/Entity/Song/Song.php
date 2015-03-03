@@ -65,14 +65,9 @@ class Song extends BaseEntity
     private $counter = 0;
 
     /**
-     * @ORM\OneToMany(targetEntity="Bundle\CommonBundle\Entity\Vote\Vote", mappedBy="song")
-     **/
-    private $votes;
-
-    /**
      * Идентификатор автора
      * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\User", inversedBy="songs")
-     * @ORM\JoinColumn(nullable=true, name="authorId", referencedColumnName="id")
+     * @ORM\JoinColumn(name="authorId", referencedColumnName="id", onDelete="CASCADE", nullable=false)
      */
     private $author;
 
@@ -85,9 +80,14 @@ class Song extends BaseEntity
 
     /**
      * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\Room\Room", cascade={"persist"})
-     * @ORM\JoinColumn(name="roomId", referencedColumnName="id", onDelete="CASCADE", nullable=false)
+     * @ORM\JoinColumn(name="roomId", referencedColumnName="id", onDelete="SET NULL", nullable=true)
      **/
     private $room;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Bundle\CommonBundle\Entity\Vote\Vote", mappedBy="song")
+     **/
+    private $votes;
 
     /*******************************************************/
     /*                   DO NOT REMOVE THIS CODE           */

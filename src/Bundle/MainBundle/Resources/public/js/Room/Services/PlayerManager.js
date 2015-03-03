@@ -31,11 +31,17 @@
                     volumeLevel     = volumeLevel > 1 ? 1 : volumeLevel < 0 ? 0 : volumeLevel;
                     player.volume   = volumeLevel;
                 },
+                getVolume = function() {
+                    return player.volume;
+                },
                 setDefaultState = function() {
                     state = getDefaultState();
                 },
                 setTime = function (second) {
                     player.currentTime = second;
+                },
+                getTime = function () {
+                    return player.currentTime;
                 },
                 getPercent = function (currentTime, duration) {
                     currentTime = angular.isUndefined(currentTime)  ? (player.currentTime ? player.currentTime : 1) : currentTime;
@@ -55,10 +61,14 @@
                         return deferred.promise;
                     }
                 },
-                pause = function () {
-                    sendPlay(false).then(function() {
+                pause = function (fake) {
+                    if(!angular.isUndefined(fake) && fake) {
                         player.pause();
-                    });
+                    } else {
+                        sendPlay(false).then(function() {
+                            player.pause();
+                        });
+                    }
                 },
                 play = function () {
                     sendPlay(true).then(function() {
@@ -95,9 +105,11 @@
                 getPercent:         getPercent,
                 playByUrl:          playByUrl,
                 setVolume:          setVolume,
+                getVolume:          getVolume,
                 getState:           getState,
                 playById:           playById,
                 setTime:            setTime,
+                getTime:            getTime,
                 pause:              pause,
                 play:               play
             }

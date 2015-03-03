@@ -32,13 +32,7 @@ class Room extends BaseEntity
     private $password;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\Song\Song", cascade={"persist"})
-     * @ORM\JoinColumn(name="songId", referencedColumnName="id", onDelete="SET NULL", nullable=true)
-     **/
-    private $song;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\User", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\User", cascade={"persist"}, inversedBy="rooms")
      * @ORM\JoinColumn(name="authorId", referencedColumnName="id", onDelete="CASCADE", nullable=false)
      */
     private $author;
@@ -87,26 +81,6 @@ class Room extends BaseEntity
     public function setPassword($password)
     {
         $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * @return Song
-     */
-    public function getSong()
-    {
-        return $this->song;
-    }
-
-    /**
-     * @param Song $song
-     *
-     * @return Room
-     */
-    public function setSong(Song $song)
-    {
-        $this->song = $song;
 
         return $this;
     }

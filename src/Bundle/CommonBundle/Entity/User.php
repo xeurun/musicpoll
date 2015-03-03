@@ -62,7 +62,7 @@ class User extends BaseUser
     private $songCount;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\Room\Room", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\Room\Room", cascade={"persist"}, inversedBy="users")
      * @ORM\JoinColumn(name="roomId", referencedColumnName="id", onDelete="SET NULL", nullable=true)
      **/
     private $room;

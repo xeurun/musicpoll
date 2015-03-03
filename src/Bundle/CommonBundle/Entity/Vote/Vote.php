@@ -31,7 +31,7 @@ class Vote extends BaseEntity
     /**
      * Идентификатор автора
      * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\User", inversedBy="votes", cascade={"persist"})
-     * @ORM\JoinColumn(name="authorId", referencedColumnName="id", onDelete="SET NULL", nullable=true)
+     * @ORM\JoinColumn(name="authorId", referencedColumnName="id", onDelete="CASCADE", nullable=false)
      */
     private $author;
 

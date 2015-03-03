@@ -12,6 +12,9 @@
                 $rootScope.realplexor.subscribe('Room{{ app.user.room.id }}', function(data, id, cursor) {
                     $rootScope.$broadcast('room:' + data.action, data.result);
                 });
+                $rootScope.realplexor.subscribe('User{{ app.user.id }}', function(data, id, cursor) {
+                    $rootScope.$broadcast('user:' + data.action, data.result);
+                });
                 $rootScope.realplexor.execute();
             })
             .config (function($interpolateProvider, $sceDelegateProvider, $httpProvider) {
@@ -37,10 +40,12 @@
                     userStatistics: '{{ path('user_statistics', {'id': '_ID_'}) }}',
                     rewind:         '{{ path('rewind', {'time': '_TIME_'}) }}',
                     play:           '{{ path('play', {'on': '_TYPE_'}) }}',
+                    state:          '{{ path('state') }}',
                     vk_api:         'https://api.vk.com/method/_method_'
                 },
                 USERID: {{ app.user.id }},
                 OWNERID: {{ room.author.id }},
+                ROOMID: {{ room.id }},
                 PLAYER: {{ app.user != room.author ? 0 : 1 }},
                 TOKEN:  '71fcc118d02b311e47dbbc57f315952a3080a5fb68cf4f283107d18e971999f5e1fe61f53b1a7b58f39d9',
                 DELAY_FOR_POPUP: 3000,          // 3 second

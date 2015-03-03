@@ -290,16 +290,45 @@ class ApiController extends BaseController
                 throw new AccessDeniedException();
             }
 
-            if($song = $this->getRepository('song')->find($id)) {
-                $room->setSong($song);
-                $this->getRepository('room')->save($room);
+            $this->get('drklab.realplexor.manager')->send("Room$roomId", array (
+                'action'    => 'next',
+                'result'    => $id
+            ));
+        } catch (\Exception $ex) {
+            $result['error'] = $this->translate('repository.get', 'error');
+        }
 
-                $this->get('drklab.realplexor.manager')->send("Room$roomId", array (
-                    'action'    => 'next',
-                    'result'    => $id
+        return new JsonResponse($result);
+    }
+
+    /**
+     * @Route("/state", name="state")
+     * @Method("GET|PUT")
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function stateAction(Request $request)
+    {
+        $result = array();
+
+        try {
+            if($request->isMethod('GET')) {
+                if($room = $this->getRepository('room')->find($request->get('room'))) {
+                    $userId = $room->getAuthor()->getId();
+                    $this->get('drklab.realplexor.manager')->send("User$userId", array (
+                        'action'    => 'getState',
+                        'result'    => $request->get('user')
+                    ));
+                }
+            } else if($request->isMethod('PUT')) {
+                $userId = $request->get('user');
+                $this->get('drklab.realplexor.manager')->send("User$userId", array (
+                    'action'    => 'setState',
+                    'result'    => array(
+                        'state' => $request->get('state')
+                    )
                 ));
-            } else {
-                $result['error'] = $this->translate('song.notFound');
             }
         } catch (\Exception $ex) {
             $result['error'] = $this->translate('repository.get', 'error');

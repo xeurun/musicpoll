@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    function UserManager(ApiService, Config) {
+    function UserManager($rootScope, ApiService, Config) {
         var UserManager     = {},
             users           = {},
             userPrototype   = {
@@ -29,6 +29,10 @@
                 });
             });
         };
+
+        $rootScope.$on('room:enter', function(event, data) {
+            users[data.id] = angular.extend(data, userPrototype);
+        });
 
         UserManager.getUsers = function() {
             return users;
