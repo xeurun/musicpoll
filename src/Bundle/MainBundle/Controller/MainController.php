@@ -30,7 +30,9 @@ class MainController extends BaseController
      */
     public function indexAction(Request $request)
     {
-        return array();
+        return array(
+            'rooms' => $this->getRepository('room')->findAll()
+        );
     }
     /**
      * @Route("/statistic", name="statistic")

@@ -37,6 +37,19 @@
         <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="homepage.enter()">
             {{ 'room.enter'|trans({}, "form") }}
         </button>
+        <div style="position: fixed;right: 10px;top: 10px;width: 300px;">
+            <h3 style="text-align: center">Комнаты</h3>
+            <ul>
+                {% for room in rooms %}
+                    <li class="list-group-item">
+                        <span class="badge">
+                            <span>Владелец: {{ room.author.fullname }}</span>
+                        </span>
+                        <small style="cursor: pointer;" class="label label-primary" ng-click="homepage.roomId = {{ room.id }}">{{ room.id }}</small>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 {% endblock %}
 
