@@ -9,9 +9,9 @@
         <meta name="author" content="Алексей Степанков (XeuRun)">
         {% stylesheets filter='cssrewrite'
             '@MainBundle/Resources/public/css/normalize.css'
-            '//cdnjs.cloudflare.com/ajax/libs/angularjs-toaster/0.4.9/toaster.min.css'
             '//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css'
-            '@MainBundle/Resources/public/css/select.css'
+            '//ajax.googleapis.com/ajax/libs/angular_material/0.7.0/angular-material.min.css'
+            '@MainBundle/Resources/public/css/select.min.css'
             '@MainBundle/Resources/public/css/main.css'
         output='css/style.css' %}
         <link rel="stylesheet" href="{{ asset_url }}"/>
@@ -24,14 +24,16 @@
         {% block body %}{% endblock %}
         {% javascripts
             '@MainBundle/Resources/public/js/lib/dklab_realplexor.js'
+            '@MainBundle/Resources/public/js/lib/hammer.min.js'
         %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
         {% endjavascripts %}
         {% javascripts
-            '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.5/angular.js'
-            '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.5/angular-sanitize.js'
-            '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.5/angular-animate.js'
-            '//cdnjs.cloudflare.com/ajax/libs/angularjs-toaster/0.4.9/toaster.min.js'
+            '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.6/angular.min.js'
+            '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.6/angular-sanitize.min.js'
+            '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.6/angular-animate.min.js'
+            '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.6/angular-aria.min.js'
+            '//ajax.googleapis.com/ajax/libs/angular_material/0.7.0/angular-material.min.js'
         %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
         {% endjavascripts %}

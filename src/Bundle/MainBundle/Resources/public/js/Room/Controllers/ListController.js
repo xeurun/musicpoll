@@ -30,11 +30,15 @@
         $scope.$on('room:remove', function(event, data) {
             var song = SongManager.getSong(data.id);
             if(angular.isObject(song)) {
-                var user = UserManager.getUser(data.authorId);
-                $rootScope.$broadcast('popup:show', {
-                    type: 'success',
-                    message: (angular.isObject(user) ? (user.getFullname() + ' удалил ') : 'Удалена ') + song.getTitle()
-                });
+                if(angular.isUndefined(data.system) || !data.system) {
+                    $rootScope.$broadcast('popup:show', {
+                        type: 'success',
+                        message: data.author + ' удалил ' + song.getTitle()
+                    });
+                }
+                if(self.player.getState(data.id).isPlaying()) {
+                    self.player.pause();
+                }
                 SongManager.removeSong(data.id);
             }
 
@@ -46,10 +50,10 @@
                 var user = UserManager.getUser(data.authorId);
                 $rootScope.$broadcast('popup:show', {
                     type: 'info',
-                    message: user.getFullname() + ' проголосовал ' + (data.dislike ? 'против ' : 'за ') + song.getTitle()
+                    message: data.author + ' проголосовал ' + (data.dislike ? 'против ' : 'за ') + song.getTitle()
                 });
                 song.updateCounter(data.count);
-                if(user.isCurrent()) {
+                if(angular.isObject(user) && user.isCurrent()) {
                     song.vote();
                 }
             }

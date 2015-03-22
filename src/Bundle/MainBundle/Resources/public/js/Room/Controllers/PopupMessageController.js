@@ -3,12 +3,13 @@
 
     function PopupMessageController ($scope, $rootScope, $timeout, Config) {
         var self = this,
-            hidePopup = function(index) {
+            hidePopup = function(index, delay) {
                 // DELAY_FOR_POPUP for delay and POPUP_ANIMATION_DURATION for animation * count
                 // (individual animation for every next)
-                $timeout(function() {}, Config.DELAY_FOR_POPUP + Config.POPUP_ANIMATION_DURATION * (self.popups.length - 1)).then(function() {
+                delay = angular.isNumber(delay) ? delay : Config.POPUP_ANIMATION_DURATION;
+                $timeout(function() {}, Config.DELAY_FOR_POPUP + delay * (self.popups.length - 1)).then(function() {
                     self.popups[index].show = false;
-                    $timeout(function() {}, Config.POPUP_ANIMATION_DURATION).then(function() {
+                    $timeout(function() {}, delay).then(function() {
                         self.popups.splice(index, 1);
                     });
                 });
@@ -28,7 +29,7 @@
 
             if(!save) {
                 //if not saved start remove process for first popup
-                hidePopup(0);
+                hidePopup(0, data.delay);
             }
         });
 

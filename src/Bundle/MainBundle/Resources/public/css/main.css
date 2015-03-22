@@ -15,7 +15,7 @@
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 
-* {
+.clear-radius {
     border-radius: 0 !important;
 }
 
@@ -45,6 +45,18 @@ ul {
         list-style: none;
         overflow: hidden;
     }
+
+ul.ui-select-choices.ui-select-choices-content {
+    margin-top: 35px;
+}
+
+md-slider {
+    z-index: 5;
+}
+
+div.md-track-ticks > canvas {
+    left: 0;
+}
 
 .homepage {
     width: 350px;
@@ -86,7 +98,7 @@ ul {
     right: 10px;
 }
 
-.settongs-btn {
+.settings-btn {
     position: fixed;
     top: 130px;
     left: 10px;
@@ -123,8 +135,8 @@ ul {
 }
 
     .player .song-progress {
-        height: 20px;
-        width: 290px;
+        width: 270px;
+        margin: 0 auto;
     }
 
         .player .song-progress input[type="range"] {
@@ -174,8 +186,8 @@ ul {
     position: fixed;
     bottom: 0;
     right: 0;
-    width: 315px;
-    padding-right: 40px;
+    width: 300px;
+    padding-right: 10px;
     z-index: 9999;
 }
 

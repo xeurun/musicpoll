@@ -29,15 +29,15 @@
         <ul class="list-group song-list" lr-infinite-scroll="list.songManager.getNextBlock" scroll-threshold="200" time-threshold="600" ng-init="list.songManager.getNextBlock()">
             <li hg-cloak ng-repeat="song in list.songManager.getSongs() | filterObjectBy:{ 'authorId': list.onlyMy ? list.userManager.getCurrentUser().getId() : '' } | filterObjectBy:list.searchText:'title' | orderObjectBy:list.top ? 'counter' : 'id':list.top" ng-class="{disabled: song.isDisabled()}" class="ng-cloak list-group-item">
                 <span class="badge">
-                    <span ng-hide="song.voted" ng-click="list.songManager.voteForSong(song.id, true)" class="glyphicon glyphicon-hand-up"></span>
-                    <span ng-hide="song.voted" ng-click="list.songManager.voteForSong(song.id, false)" class="glyphicon glyphicon-hand-down"></span>
-                    <span ng-hide="song.disabled" ng-click="list.play(song.id)" ng-class="{'glyphicon-play': !list.player.getState(song.getId()).getSongId() || !list.player.getState(song.getId()).isPlaying(), 'glyphicon-stop': list.player.getState(song.getId()).isPlaying()}" class="glyphicon"></span>
-                    <span ng-show="(list.songManager.getSong(song.getId()).isMy() || list.userManager.getCurrentUser().isAdmin()) && !song.isDisabled()" ng-click="list.songManager.deleteSong(song.getId())" class="glyphicon glyphicon-remove"></span>
-                    <span ng-click="list.open(song.getId())">[[ song.counter ]]</span>
+                    <span ng-hide="song.getVoted()" ng-click="list.songManager.voteForSong(song.getId(), true)" class="glyphicon glyphicon-hand-up"></span>
+                    <span ng-hide="song.getVoted()" ng-click="list.songManager.voteForSong(song.getId(), false)" class="glyphicon glyphicon-hand-down"></span>
+                    <span ng-hide="song.isDisabled()" ng-click="list.play(song.getId())" ng-class="{'glyphicon-play': !list.player.getState(song.getId()).getSongId() || !list.player.getState(song.getId()).isPlaying(), 'glyphicon-stop': list.player.getState(song.getId()).isPlaying()}" class="glyphicon"></span>
+                    <span ng-show="(list.songManager.getSong(song.getId()).isMy() || list.userManager.getCurrentUser().isAdmin() || list.userManager.getCurrentUser().isPlayer()) && !song.isDisabled()" ng-click="list.songManager.deleteSong(song.getId())" class="glyphicon glyphicon-remove"></span>
+                    <span ng-click="list.open(song.getId())">[[ song.getCounter() ]]</span>
                 </span>
-                <span class="song-title">[[ song.title ]]</span>
+                <span class="song-title">[[ song.getTitle() ]]</span>
                 <small class="label label-default" ng-class="{hidden: !song.getArtist().length}"><br>Исполнитель: [[ song.getArtist() ]]</small>
-                <small class="label label-default"><br>Добавил: [[ list.userManager.getUser(song.authorId).getFullname() ]]</small>
+                <small class="label label-default"><br>Добавил: [[ song.getAuthorFullname() ]]</small>
             </li>
         </ul>
     </div>

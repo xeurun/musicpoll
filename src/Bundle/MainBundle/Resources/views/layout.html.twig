@@ -6,7 +6,7 @@
             "use strict";
 
             angular
-            .module ('musicpoll', [ 'ui.bootstrap', 'ui.select', 'ngAnimate', 'ngSanitize' ])
+            .module ('musicpoll', [ 'ui.bootstrap', 'ui.select', 'ngAnimate', 'ngSanitize', 'ngMaterial' ])
             .run(function($rootScope) {
                 $rootScope.realplexor = new Dklab_Realplexor('{{ config.realplexor_url }}', '{{ config.realplexor_namespace }}');
                 $rootScope.realplexor.subscribe('Room{{ app.user.room.id }}', function(data, id, cursor) {
@@ -28,24 +28,32 @@
             })
             .constant ("Config", {
                 ROUTING: {
-                    vote:           '{{ path('vote', {'id': '_ID_', 'choose': '_CHOOSE_'}) }}',
-                    remove:         '{{ path('remove', {'id': '_ID_'}) }}',
                     add:            '{{ path('add') }}',
+                    vote:           '{{ path('vote', {'id': '_ID_', 'choose': '_CHOOSE_'}) }}',
                     form:           '{{ path('form') }}',
                     mute:           '{{ path('mute', {'on': '_TYPE_'}) }}',
-                    getPortion:     '{{ path('get_portion', {'offset': '_OFFSET_'}) }}',
                     next:           '{{ path('next_song', {'id': '_ID_'}) }}',
-                    getUsers:       '{{ path('get_users') }}',
-                    whoVote:        '{{ path('who_vote', {'id': '_ID_'}) }}',
-                    userStatistics: '{{ path('user_statistics', {'id': '_ID_'}) }}',
-                    rewind:         '{{ path('rewind', {'time': '_TIME_'}) }}',
                     play:           '{{ path('play', {'on': '_TYPE_'}) }}',
+                    skip:           '{{ path('skip') }}',
                     state:          '{{ path('state') }}',
+                    rewind:         '{{ path('rewind', {'time': '_TIME_'}) }}',
+                    remove:         '{{ path('remove', {'id': '_ID_'}) }}',
+                    whoVote:        '{{ path('who_vote', {'id': '_ID_'}) }}',
+                    setting:        '{{ path('setting', {'id': '_ID_'}) }}',
+                    getUsers:       '{{ path('get_users') }}',
+                    getPortion:     '{{ path('get_portion', {'offset': '_OFFSET_'}) }}',
+                    userStatistics: '{{ path('user_statistics', {'id': '_ID_'}) }}',
                     vk_api:         'https://api.vk.com/method/_method_'
                 },
                 USERID: {{ app.user.id }},
                 OWNERID: {{ room.author.id }},
-                ROOMID: {{ room.id }},
+                ROOM: {
+                    ID: {{ room.id }},
+                    SETTINGS: {
+                        SKIP: {{ room.skip }},
+                        RADIO: '{{ room.radio }}'
+                    }
+                },
                 PLAYER: {{ app.user != room.author ? 0 : 1 }},
                 TOKEN:  '71fcc118d02b311e47dbbc57f315952a3080a5fb68cf4f283107d18e971999f5e1fe61f53b1a7b58f39d9',
                 DELAY_FOR_POPUP: 3000,          // 3 second
@@ -94,8 +102,6 @@
                 };
             })
             .filter('filterObjectBy', function($filter) {
-                var filter = $filter('filter');
-
                 return function(map, expression, comparator) {
                     if (!expression) {
                         return map;
@@ -103,7 +109,7 @@
 
                     var result = {};
                     angular.forEach(map, function(data, index) {
-                        if (filter([data], expression, comparator).length) {
+                        if ($filter('filter')([data], expression, comparator).length) {
                             result[index] = data;
                         }
                     });
@@ -114,6 +120,7 @@
         })();
     </script>
     {% javascripts
+        '@MainBundle/Resources/public/js/Room/Models/*'
         '@MainBundle/Resources/public/js/Room/Modules/*'
         '@MainBundle/Resources/public/js/Room/Services/*'
         '@MainBundle/Resources/public/js/Room/Directives/*'

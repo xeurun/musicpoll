@@ -3,7 +3,7 @@
         <li ng-repeat="user in userlist.userManager.getUsers()" class="ng-cloak">
             <button ng-click="userlist.open(user.getId())" type="button" class="btn" ng-class="userlist.userManager.getUser(user.getId()).isCurrent() ? 'btn-success' : 'btn-primary'">
                 <span ng-show="userlist.userManager.getUser(user.getId()).isPlayer()" class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
-                [[ user.fullname ]]
+                [[ user.getFullname() ]]
                 <span ng-show="userlist.userManager.getUser(user.getId()).isAdmin()" class="glyphicon glyphicon-star" aria-hidden="true"></span>
             </button>
         </li>

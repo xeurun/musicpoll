@@ -30,6 +30,12 @@
 
                     volumeLevel     = volumeLevel > 1 ? 1 : volumeLevel < 0 ? 0 : volumeLevel;
                     player.volume   = volumeLevel;
+
+                    $rootScope.$broadcast('popup:show', {
+                        type: 'info',
+                        message: 'Громкость: ' + player.volume.toFixed(2),
+                        delay: 1
+                    });
                 },
                 getVolume = function() {
                     return player.volume;
@@ -50,7 +56,7 @@
                     return Math.round(currentTime / duration * 100);
                 },
                 sendPlay = function (playing) {
-                    if(isMainPLayer) {
+                    if(isMainPLayer && Config.PLAYER) {
                         return ApiService.put(Config.ROUTING.play.replace('_TYPE_', playing));
                     } else {
                         var deferred = $q.defer();
@@ -70,10 +76,14 @@
                         });
                     }
                 },
-                play = function () {
-                    sendPlay(true).then(function() {
+                play = function (fake) {
+                    if(!angular.isUndefined(fake) && fake) {
                         player.play();
-                    });
+                    } else {
+                        sendPlay(true).then(function() {
+                            player.play();
+                        });
+                    }
                 },
                 getState = function (id) {
                     if(!angular.isUndefined(id)) {
@@ -84,16 +94,18 @@
 
                     return state;
                 },
-                playByUrl = function (url) {
+                playByUrl = function (url, fake) {
                     if(!angular.equals(player.src, url)) {
                         player.src = url;
                     }
-                    play();
+                    play(fake);
                 },
-                playById = function (id) {
+                playById = function (id, fake) {
                     state.songId = id;
-                    playByUrl(SongManager.getSong(state.songId).url);
+                    playByUrl(SongManager.getSong(state.songId).getUrl(), fake);
                 };
+
+            player.preload = 'auto';
 
             player.addEventListener('offline',  (!angular.isUndefined(callbacks)    && angular.isFunction(callbacks['onoffline']))  ? callbacks['onoffline']    : function () { pause(); });
             player.addEventListener('online',   (!angular.isUndefined(callbacks)    && angular.isFunction(callbacks['ononline']))   ? callbacks['ononline']     : function () { play(); });

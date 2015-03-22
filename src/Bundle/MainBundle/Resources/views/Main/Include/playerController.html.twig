@@ -1,40 +1,45 @@
 <div ng-controller="PlayerController as player" ng-init="player.initState()">
     <div hg-cloak class="ng-cloak player">
         <div class="btn-group" role="group">
-            <a class="btn btn-primary btn-lg" ng-hide="player.userManager.getCurrentUser().isPlayer()" ng-class="{active: player.headphone}" ng-click="player.headphoneMode()">
+            <a class="btn btn-primary btn-lg"
+               ng-hide="player.userManager.getCurrentUser().isPlayer()"
+               ng-class="{active: player.headphone}"
+               ng-click="player.headphoneMode()"
+               tooltip-placement="bottom" tooltip="Режим наушников">
                 <span class="glyphicon glyphicon-headphones"></span>
             </a>
             <a class="btn btn-primary btn-lg"
                ng-show="player.userManager.getCurrentUser().isPlayer()"
                ng-class="{active: player.audio.getState().isPlaying()}"
-               ng-disabled="!player.started || !player.audio.getState().getSongId()"
-               ng-click="player.play()">
-                <span ng-show="!player.audio.getState().isPlaying() || !player.started" class="glyphicon glyphicon-play"></span>
+               ng-disabled="!player.started"
+               ng-click="player.play()"
+               tooltip-placement="bottom" tooltip="Пауза">
+                <span ng-hide="player.audio.getState().isPlaying()" class="glyphicon glyphicon-play"></span>
                 <span ng-show="player.audio.getState().isPlaying()" class="glyphicon glyphicon-pause"></span>
             </a>
-            <a class="btn btn-primary btn-lg" ng-show="player.userManager.getCurrentUser().isPlayer()" ng-click="player.next()">
+            <a class="btn btn-primary btn-lg" ng-show="player.userManager.getCurrentUser().isPlayer()" ng-click="player.next()" tooltip-placement="bottom" tooltip="Запустить/следующий трек">
                 <span ng-show="player.started" class="glyphicon glyphicon-forward"></span>
                 <span ng-hide="player.started" class="glyphicon glyphicon-cd"></span>
             </a>
-            <a class="btn btn-primary btn-lg" ng-class="{active: player.muted}" ng-click="player.mute()">
+            <a class="btn btn-primary btn-lg" ng-hide="player.headphone" ng-class="{active: player.muted}" ng-click="player.mute()" tooltip-placement="bottom" tooltip="Приглушить звук">
                 <span ng-hide="player.muted" class="glyphicon glyphicon-volume-down"></span>
                 <span ng-show="player.muted" class="glyphicon glyphicon-volume-up"></span>
             </a>
-            <div ng-show="player.userManager.getCurrentUser().isPlayer()" class="btn-group-vertical" role="group" style="margin-left: 3px;">
-                <a style="margin-top: 1px;" ng-disabled="!player.started" class="btn btn-primary btn-xs">
-                    <span class="glyphicon glyphicon-chevron-up" ng-click="player.audio.setVolume(true)"></span>
+            <div ng-show="player.userManager.getCurrentUser().isPlayer() || player.headphone" class="btn-group-vertical" role="group" style="margin-left: 3px;">
+                <a style="margin-top: 1px;" ng-disabled="!player.started" class="btn btn-primary btn-xs" tooltip-placement="bottom" tooltip="Прибавить звук" ng-click="player.audio.setVolume(true)">
+                    <span class="glyphicon glyphicon-chevron-up"></span>
                 </a>
-                <a style="margin-top: 1px;" ng-disabled="!player.started" class="btn btn-primary btn-xs">
-                    <span class="glyphicon glyphicon-chevron-down" ng-click="player.audio.setVolume(false)"></span>
+                <a style="margin-top: 1px;" ng-disabled="!player.started" class="btn btn-primary btn-xs" tooltip-placement="bottom" tooltip="Убавить звук" ng-click="player.audio.setVolume(false)">
+                    <span class="glyphicon glyphicon-chevron-down"></span>
                 </a>
             </div>
         </div>
-        <div class="song-progress" ng-show="player.started">
-            <input ng-show="player.userManager.getCurrentUser().isPlayer()" ng-click="player.changeTime($event)" type="range" min="0" step="1" max="[[ player.song.getDuration() ]]"/>
-            <progressbar class="progress-striped progress-bar-danger active" value="[[ player.percent ]]" type="success"></progressbar>
+        <a ng-disabled="!player.started" class="btn btn-primary btn-lg" ng-hide="player.skip" ng-click="player.voteSkip()" tooltip-placement="bottom" tooltip="Проголосовать за пропуск">
+            <span class="glyphicon glyphicon-thumbs-down"></span>
+        </a>
+        <div class="song-progress" ng-show="player.started" layout>
+            <md-slider flex md-discrete ng-model="player.second" ng-disabled="!player.userManager.getCurrentUser().isPlayer()" ng-click="player.changeTime()" step="1" min="1" max="[[ player.duration ]]" aria-label="progress"></md-slider>
         </div>
-        <marquee scrollamount="3" ng-show="player.started">
-            [[ player.song.getTitle() ]]
-        </marquee>
+        <marquee scrollamount="3" ng-show="player.started">[[ player.song.getTitle() ]]</marquee>
     </div>
 </div>

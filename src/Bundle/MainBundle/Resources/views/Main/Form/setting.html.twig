@@ -1,0 +1,28 @@
+<script type="text/ng-template" id="settings.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Настройки</h3>
+    </div>
+    <div class="modal-body">
+        <div class="input-group">
+            <span class="input-group-addon" id="skip-vote-count">Голосов для пропуска</span>
+            <input ng-model="settings.skip" type="number" class="form-control" placeholder="необходимое кол-во голосов для пропуска" aria-describedby="skip-vote-count">
+        </div>
+        <hr>
+        <div class="input-group">
+            <span class="input-group-addon" id="radio-url">URL радио</span>
+            <input ng-model="settings.radio"
+                   type="text"
+                   class="form-control"
+                   placeholder="для проигрывания когда плейлист пуст"
+                   aria-describedby="radio-url"
+                   tooltip-placement="top" tooltip="Ссылка должна вести на прямое прослушивание(при открытии воспроизводить музыку)">
+            <span class="input-group-addon" tooltip-placement="left" tooltip="На сайте можно скачать m3u и скопировать из него ссылку">
+                <a href="http://www.listenlive.eu/" target="_blank">список</a>
+            </span>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="save()">Сохранить</button>
+        <button class="btn btn-warning" ng-click="close()">Закрыть</button>
+    </div>
+</script>

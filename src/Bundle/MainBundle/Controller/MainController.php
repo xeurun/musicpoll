@@ -105,7 +105,15 @@ class MainController extends BaseController
         try {
             if(!empty($roomId) && $room = $this->getRepository('room')->find($roomId)) {
                 if(is_null($room->getPassword()) || $room->isAuthor($this->getUser()) || $room->getPassword() === $password) {
-                    $user = $this->getUser()->setRoom($room);
+                    $user = $this->getUser();
+                    if($oldRoom = $user->getRoom()) {
+                        $oldRoomId = $oldRoom->getId();
+                        $this->get('drklab.realplexor.manager')->send("Room$oldRoomId", array (
+                            'action'    => 'leave',
+                            'result'    => $user->getId()
+                        ));
+                    }
+                    $user->setRoom($room);
                     $this->get('fos_user.user_manager')->updateUser($user);
                     $this->get('drklab.realplexor.manager')->send("Room$roomId", array (
                         'action'    => 'enter',

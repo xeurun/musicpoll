@@ -1,14 +1,28 @@
 {% extends 'MainBundle::layout.html.twig' %}
 
 {% block body %}
+    <div ng-controller="PopupMessageController as popupMessage" class="popup-alerts">
+        <alert hg-cloak class="ng-cloak" ng-repeat="popup in popupMessage.popups | reverse | limitTo:3" ng-show="popup.show" type="[[ popup.type ]]">
+            [[ popup.message ]]
+        </alert>
+    </div>
     <a class="leave-btn btn btn-warning btn-lg" href="{{ path('homepage') }}">
         <span class="glyphicon glyphicon-home"></span>
     </a>
-    <a class="settongs-btn btn btn-primary btn-lg hidden" href="{{ path('homepage') }}">
-        <span class="glyphicon glyphicon-wrench"></span>
-    </a>
-    {% include 'MainBundle:Main/Include:popupController.html.twig' %}
-    {% include 'MainBundle:Main/Include:formController.html.twig' %}
+    <div ng-controller="NewSongFormController as newSongForm" class="pull-left">
+        <a class="add-new-song btn btn-primary btn-lg" ng-click="newSongForm.open()">
+            <span class="glyphicon glyphicon-plus"></span>
+        </a>
+    </div>
+    <div ng-controller="SettingsFormController as settingsForm">
+        {% include 'MainBundle:Main/Form:setting.html.twig' %}
+        <a ng-cloak class="settings-btn btn btn-primary btn-lg"
+           ng-show="settingsForm.userManager.getCurrentUser().isPlayer()"
+           ng-click="settingsForm.open()"
+           tooltip-placement="right" tooltip="Настройки комнаты">
+            <span class="glyphicon glyphicon-wrench"></span>
+        </a>
+    </div>
     {% include 'MainBundle:Main/Include:playerController.html.twig' %}
     <div class="container-fluid">
         {% include 'MainBundle:Main/Include:listController.html.twig' %}

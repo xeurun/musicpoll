@@ -39,7 +39,8 @@ class ApiController extends BaseController
             "artist"    => $song->getArtist(),
             "counter"   => $song->getCounter(),
             "duration"  => $song->getDuration(),
-            "authorId"  => $song->getAuthor()->getId()
+            "authorId"  => $song->getAuthor()->getId(),
+            "author"    => $song->getAuthor()->getFullname()
         );
     }
 
@@ -110,7 +111,8 @@ class ApiController extends BaseController
                 if($song = $repository->find($id)) {
                     $dislike    = ($choose != "true");
                     $vote       = new Vote($song, $dislike);
-                    $roomId     = $this->getUser()->getRoom()->getId();
+                    $user       = $this->getUser();
+                    $roomId     = $user->getRoom()->getId();
                     $this->getRepository('vote')->save($vote);
                     $this->getRepository('song')->refresh($song);
                     $this->get('drklab.realplexor.manager')->send("Room$roomId", array (
@@ -119,7 +121,8 @@ class ApiController extends BaseController
                             'id'        => $song->getId(),
                             'count'     => $song->getCounter(),
                             'dislike'   => $dislike,
-                            'authorId'  => $this->getUser()->getId()
+                            'authorId'  => $user->getId(),
+                            'author'    => $user->getFullname()
                         )
                     ));
                 } else {
@@ -127,6 +130,52 @@ class ApiController extends BaseController
                 }
             } else {
                 $result['error'] = $this->translate('vote.alreadyVote');
+            }
+        } catch (\Exception $ex) {
+            $result['error'] = $ex->getMessage();
+        }
+
+        return new JsonResponse($result);
+    }
+
+    /**
+     * @Route("/setting/{id}", requirements={"id" = "\d+|_ID_"}, name="setting")
+     * @Method("PUT")
+     * @param Request $request
+     * @param integer $id
+     *
+     * @return JsonResponse
+     */
+    public function settingAction(Request $request, $id)
+    {
+        $result = array();
+
+        $skip   = $request->get('skip');
+        $radio  = $request->get('radio');
+
+        try {
+            $roomRepository = $this->getRepository('room');
+            /** @var \Bundle\CommonBundle\Entity\Room\Room $room */
+            if($room = $roomRepository->find($id)) {
+                if(!$room->isAuthor($this->getUser())) {
+                    throw new AccessDeniedException();
+                }
+
+                $room->setSkip($skip);
+                $room->setRadio($radio);
+
+                $this->get('drklab.realplexor.manager')->send("Room$id", array (
+                        'action'    => 'setting',
+                        'result'    => array(
+                            'radio' => $radio,
+                            'skip'  => $skip
+                        )
+                    )
+                );
+
+                $roomRepository->save($room);
+            } else {
+                $result['error'] = $this->translate('room.notFound');
             }
         } catch (\Exception $ex) {
             $result['error'] = $ex->getMessage();
@@ -161,7 +210,7 @@ class ApiController extends BaseController
                     )
                 ));
             } catch (\Exception $ex) {
-                $result['error'] = $this->translate('repository.save', 'error');
+                $result['error'] = $ex->getMessage();
             }
         } else {
             $result['error'] = $this->getFormErrors($form);
@@ -187,10 +236,11 @@ class ApiController extends BaseController
             $songRepository = $this->getRepository('song');
             /** @var Song $song */
             if($song = $songRepository->find($id)) {
+                /** @var \Bundle\CommonBundle\Entity\User $user */
                 $user   = $this->getUser();
                 $room   = $user->getRoom();
                 $roomId = $room->getId();
-                if (!$room->isAuthor($user) && $user != $song->getAuthor()) {
+                if (!$room->isAuthor($user) && $user != $song->getAuthor() && !$user->hasRole('ROLE_ADMIN')) {
                     throw new AccessDeniedException();
                 }
                 $song->setDeleted(true);
@@ -199,14 +249,15 @@ class ApiController extends BaseController
                     'action'    => 'remove',
                     'result'    => array(
                         'id'        => $id,
-                        'authorId'  => $user->getId()
+                        'author'    => $user->getFullname(),
+                        'system'    => $request->get('system')
                     )
                 ));
             } else {
                 $result['error'] = $this->translate('song.notFound');
             }
         } catch (\Exception $ex) {
-            $result['error'] = $this->translate('repository.get', 'error');
+            $result['error'] = $ex->getMessage();
         }
 
         return new JsonResponse($result);
@@ -238,6 +289,29 @@ class ApiController extends BaseController
     }
 
     /**
+     * @Route("/skip", name="skip")
+     * @Method("PUT")
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function skipAction(Request $request)
+    {
+        $result = array();
+        $roomId = $this->getUser()->getRoom()->getId();
+        $this->get('drklab.realplexor.manager')->send("Room$roomId", array (
+                'action'    => 'skip',
+                'result'    => array(
+                    'id'        => $this->getUser()->getId(),
+                    'fullname'  => $this->getUser()->getFullname()
+                )
+            )
+        );
+
+        return new JsonResponse($result);
+    }
+
+    /**
      * @Route("/rewind/{time}", requirements={"time" = "\d+|_TIME_"}, name="rewind")
      * @Method("PUT")
      * @param Request $request
@@ -263,7 +337,7 @@ class ApiController extends BaseController
                 'result'    => $time
             ));
         } catch (\Exception $ex) {
-            $result['error'] = $this->translate('repository.get', 'error');
+            $result['error'] = $ex->getMessage();
         }
 
         return new JsonResponse($result);
@@ -295,7 +369,7 @@ class ApiController extends BaseController
                 'result'    => $id
             ));
         } catch (\Exception $ex) {
-            $result['error'] = $this->translate('repository.get', 'error');
+            $result['error'] = $ex->getMessage();
         }
 
         return new JsonResponse($result);
@@ -331,7 +405,7 @@ class ApiController extends BaseController
                 ));
             }
         } catch (\Exception $ex) {
-            $result['error'] = $this->translate('repository.get', 'error');
+            $result['error'] = $ex->getMessage();
         }
 
         return new JsonResponse($result);
@@ -364,7 +438,7 @@ class ApiController extends BaseController
                 'result'    => $play
             ));
         } catch (\Exception $ex) {
-            $result['error'] = $this->translate('repository.get', 'error');
+            $result['error'] = $ex->getMessage();
         }
 
         return new JsonResponse($result);

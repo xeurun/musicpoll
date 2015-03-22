@@ -1,46 +1,14 @@
 (function() {
     "use strict";
 
-    function SongManager($filter, ApiService, Config, UserManager) {
+    function SongManager($filter, ApiService, Config, Song) {
         var offset          = 0,
-            songs           = {},
-            songPrototype   = {
-                getId: function() {
-                    return this.id;
-                },
-                disable: function() {
-                    this.disabled = true;
-                },
-                getDuration: function() {
-                    return this.duration;
-                },
-                getTitle: function() {
-                    return this.title;
-                },
-                getArtist: function() {
-                    return this.artist;
-                },
-                getAuthor: function() {
-                    return UserManager.getUser(this.authorId);
-                },
-                isDisabled: function() {
-                    return this.disabled;
-                },
-                updateCounter: function(count) {
-                    this.counter = count;
-                },
-                isMy: function() {
-                    return this.authorId === Config.USERID
-                },
-                vote: function() {
-                    this.voted = true;
-                }
-            };
+            songs           = {};
 
         this.getNextBlock = function() {
             ApiService.get(Config.ROUTING.getPortion.replace('_OFFSET_', offset)).then(function(data) {
                 angular.forEach(data.entities, function(value, index) {
-                    songs[index] = angular.extend(value, songPrototype);
+                    songs[index] = new Song(value);
                 });
                 offset += data.count;
             });
@@ -50,8 +18,10 @@
             return songs;
         };
 
-        this.deleteSong = function(id) {
-            ApiService.delete(Config.ROUTING.remove.replace('_ID_', id));
+        this.deleteSong = function(id, system) {
+            ApiService.delete(Config.ROUTING.remove.replace('_ID_', id), {
+                system: system || false
+            });
         };
 
         this.removeSong = function(id) {
@@ -67,7 +37,7 @@
                 result  = null;
 
             angular.forEach(temp, function(value, index) {
-                if(angular.isUndefined(value.disabled) || !value.disabled) {
+                if(!value.isDisabled()) {
                     result = value;
 
                     return;
@@ -86,7 +56,7 @@
         };
 
         this.addSong = function(id, song) {
-            songs[id] = angular.extend(song, songPrototype);;
+            songs[id] = new Song(song);
         };
     };
 

@@ -7,7 +7,8 @@
             <span class="input-group-addon">Вконтакте</span>
             <span>
                 <ui-select ng-model="songs.selected"
-                           theme="bootstrap">
+                           theme="bootstrap"
+                           reset-search-input="false">
                     <ui-select-match placeholder="{{ 'song.placeholder.search.song'|trans({}, "form") }}">[[ $select.selected.title | points:70 ]]</ui-select-match>
                     <ui-select-choices repeat="song in songs track by $index"
                                        refresh="refreshSongs($select.search)"
@@ -27,9 +28,7 @@
         <p class="clearfix hidden">
             <ui-select ng-model="form.song.type"
                        theme="bootstrap"
-                       reset-search-input="false"
-                       class="pull-left"
-                       style="width: 30%;">
+                       reset-search-input="false">
                 <ui-select-match placeholder="{{ 'song.placeholder.search.type'|trans({}, "form") }}">[[ $select.selected ]]</ui-select-match>
                 <ui-select-choices repeat="type in types track by $index">
                     <span ng-bind-html="type | highlight: $select.search"></span>
@@ -52,6 +51,6 @@
     </form>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="save()">OK</button>
-    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" ng-click="save()">Добавить</button>
+    <button class="btn btn-warning" ng-click="cancel()">Закрыть</button>
 </div>

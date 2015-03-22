@@ -1,37 +1,24 @@
 (function() {
     "use strict";
 
-    function UserManager($rootScope, ApiService, Config) {
+    function UserManager($rootScope, ApiService, Config, User) {
         var UserManager     = {},
-            users           = {},
-            userPrototype   = {
-                getId: function() {
-                    return this.id;
-                },
-                isPlayer: function() {
-                    return this.id === Config.OWNERID;
-                },
-                isAdmin: function() {
-                    return this.admin;
-                },
-                isCurrent: function() {
-                    return this.id === Config.USERID;
-                },
-                getFullname: function() {
-                    return this.fullname;
-                }
-            };
+            users           = {};
 
         UserManager.loadUsers = function() {
             ApiService.get(Config.ROUTING.getUsers).then(function(data) {
                 angular.forEach(data.entities, function(value, index) {
-                    users[index] = angular.extend(value, userPrototype);
+                    users[index] = new User(value);
                 });
             });
         };
 
         $rootScope.$on('room:enter', function(event, data) {
-            users[data.id] = angular.extend(data, userPrototype);
+            users[data.id] = new User(data);
+        });
+
+        $rootScope.$on('room:leave', function(event, data) {
+            delete users[data];
         });
 
         UserManager.getUsers = function() {

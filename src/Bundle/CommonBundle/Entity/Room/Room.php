@@ -38,6 +38,20 @@ class Room extends BaseEntity
     private $author;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="skip", type="integer", options={"default" = 10})
+     */
+    private $skip = 0;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="radio", type="string", nullable=true)
+     */
+    private $radio;
+
+    /**
      * @ORM\OneToMany(targetEntity="Bundle\CommonBundle\Entity\User", mappedBy="room")
      **/
     private $users;
@@ -121,5 +135,45 @@ class Room extends BaseEntity
     public function getUsers()
     {
         return $this->users;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSkip()
+    {
+        return $this->skip;
+    }
+
+    /**
+     * @param int $skip
+     *
+     * @return Room
+     */
+    public function setSkip($skip)
+    {
+        $this->skip = $skip;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRadio()
+    {
+        return $this->radio;
+    }
+
+    /**
+     * @param string $radio
+     *
+     * @return Room
+     */
+    public function setRadio($radio)
+    {
+        $this->radio = $radio;
+
+        return $this;
     }
 }

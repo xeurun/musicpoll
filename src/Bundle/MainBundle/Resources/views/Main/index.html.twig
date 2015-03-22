@@ -59,7 +59,7 @@
             "use strict";
 
             angular
-            .module ('musicpoll', [ 'toaster' ])
+            .module ('musicpoll', [ 'ngMaterial', 'ngAnimate'])
             .config (function($interpolateProvider) {
                 $interpolateProvider.startSymbol('[[ ').endSymbol(' ]]');
             })

@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    function HomepageController ($http, Config, toaster) {
+    function HomepageController ($mdToast, $http, Config) {
         this.roomId         = null;
         this.password       = null;
         this.newPassword    = null;
@@ -12,7 +12,12 @@
                 if (response.backUrl && !response.message)  {
                     window.location.href = response.backUrl;
                 } else if(response.message) {
-                    toaster.pop('warning', response.message);
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .content(response.message)
+                            .position('bottom left')
+                            .hideDelay(5000)
+                    );
                 }
             })
             .error(function(response, status, headers, config) {

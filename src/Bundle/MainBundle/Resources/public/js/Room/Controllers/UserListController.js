@@ -7,6 +7,7 @@
 
         this.open = function (id) {
             var url = Config.ROUTING.userStatistics.replace('_ID_', id);
+            $modal.close();
             $modal.open({
                 templateUrl: url
             }).result.then(function () {}, function () {
