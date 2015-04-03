@@ -23,3 +23,5 @@ parameters:
     realplexor_host:        127.0.0.1
     realplexor_port:        10010
     realplexor_namespace:   musicpoll
+
+    vk_token: ThisTokenIsNotValidChangeIt

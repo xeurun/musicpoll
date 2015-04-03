@@ -155,6 +155,7 @@ class MainController extends BaseController
                     'config' => array(
                         'realplexor_url'        => $this->container->getParameter('realplexor_url'),
                         'realplexor_namespace'  => $this->container->getParameter('realplexor_namespace'),
+                        'vk_token'              => $this->container->getParameter('vk_token')
                     ),
                     'room' => $room
                 );
