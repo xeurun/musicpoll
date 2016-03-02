@@ -9,8 +9,8 @@
                 <ui-select ng-model="songs.selected"
                            theme="bootstrap"
                            reset-search-input="false">
-                    <ui-select-match placeholder="{{ 'song.placeholder.search.song'|trans({}, "form") }}">[[ $select.selected.title | points:70 ]]</ui-select-match>
-                    <ui-select-choices repeat="song in songs track by $index"
+                    <ui-select-match placeholder="{{ 'song.placeholder.search.song'|trans({}, 'form') }}">[[ $select.selected.title | points:70 ]]</ui-select-match>
+                    <ui-select-choices repeat="song in songs"
                                        refresh="refreshSongs($select.search)"
                                        refresh-delay="250">
                         <span ng-bind-html="song.title | points:70 | highlight: $select.search"></span>
@@ -24,16 +24,6 @@
         <p class="input-group">
             <span class="input-group-addon" style="padding-right: 15px;">Название</span>
             <span>{{ form_widget(songForm.title) }}</span>
-        </p>
-        <p class="clearfix hidden">
-            <ui-select ng-model="form.song.type"
-                       theme="bootstrap"
-                       reset-search-input="false">
-                <ui-select-match placeholder="{{ 'song.placeholder.search.type'|trans({}, "form") }}">[[ $select.selected ]]</ui-select-match>
-                <ui-select-choices repeat="type in types track by $index">
-                    <span ng-bind-html="type | highlight: $select.search"></span>
-                </ui-select-choices>
-            </ui-select>
         </p>
         <p class="input-group">
             <span class="input-group-addon" style="padding-right: 28px;">Ссылка</span>

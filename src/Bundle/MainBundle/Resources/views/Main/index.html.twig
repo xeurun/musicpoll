@@ -6,7 +6,7 @@
             <span class="glyphicon glyphicon-stats"></span>
         </a>
         <toaster-container toaster-options="{'time-out': 5000, 'limit': 5, 'close-button':true, 'prevent-duplicates': true}"></toaster-container>
-        {% if app.user.room != null %}
+        {% if app.user and app.user.room != null %}
             <button type="button" class="btn btn-success btn-lg btn-block" ng-click="homepage.return('{{ path('room', { 'id': app.user.room.id }) }}')">
                 {{ 'room.return'|trans({}, "form") }}
             </button>
@@ -37,19 +37,21 @@
         <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="homepage.enter()">
             {{ 'room.enter'|trans({}, "form") }}
         </button>
-        <div style="position: fixed;right: 10px;top: 10px;width: 300px;">
-            <h3 style="text-align: center">Комнаты</h3>
-            <ul class="list-group">
-                {% for room in rooms %}
-                    <li class="list-group-item">
-                        <span class="badge">
-                            <span>Владелец: {{ room.author.fullname }}</span>
-                        </span>
-                        <small style="cursor: pointer;" class="label label-primary" ng-click="homepage.roomId = {{ room.id }}">{{ room.id }}</small>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+        {% if rooms %}
+            <div style="position: fixed;right: 10px;top: 10px;width: 300px;">
+                <h3 style="text-align: center">Комнаты</h3>
+                <ul class="list-group">
+                    {% for room in rooms %}
+                        <li class="list-group-item">
+                            <span class="badge">
+                                <span>Владелец: {{ room.author.fullname }}</span>
+                            </span>
+                            <small style="cursor: pointer;" class="label label-primary" ng-click="homepage.roomId = {{ room.id }}">{{ room.id }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
 
@@ -68,7 +70,7 @@
                     enter:  '{{ path('enter') }}',
                     create: '{{ path('create') }}'
                 },
-                USERID: {{ app.user.id }}
+                USERID: {{ app.user ? app.user.id : 0 }}
             });
         })();
     </script>

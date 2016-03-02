@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    function ListController($rootScope, $scope, $modal, $templateCache, SongManager, UserManager, PlayerManager, Config) {
+    function ListController($rootScope, $scope, $window, $modal, $templateCache, SongManager, UserManager, PlayerManager, Config) {
         var self = this;
 
         this.songManager    = SongManager;
@@ -9,6 +9,7 @@
         this.player         = new PlayerManager();
         this.onlyMy         = false;
         this.top            = false;
+        this.loaded         = false;
 
         this.play = function (id) {
             if(!self.player.getState(id).isPlaying()) {
@@ -18,6 +19,10 @@
             }
         };
 
+        $rootScope.$watch('$viewContentLoaded', function() {
+            self.loaded = true;
+        });
+
         this.open = function (id) {
             var url = Config.ROUTING.whoVote.replace('_ID_', id);
             $modal.open({
@@ -25,6 +30,13 @@
             }).result.then(function () {}, function () {
                 $templateCache.remove(url);
             });
+        };
+
+        this.addTo = function (id, type) {
+            var song = SongManager.getSong(id);
+            if (type === 'vk' && song !== null) {
+                $window.open('https://vk.com/search?c%5Bq%5D=' + song.getTitle() + '&c%5Bsection%5D=audio', '_blank')
+            }
         };
 
         $scope.$on('room:remove', function(event, data) {

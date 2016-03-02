@@ -10,7 +10,6 @@
 /bin/
 /composer.phar
 /web/.htaccess
-/composer.lock
 /app/logs/.gitkeep
 /.idea/
 /web/js/

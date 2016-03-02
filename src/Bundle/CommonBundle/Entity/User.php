@@ -2,7 +2,6 @@
 
 namespace Bundle\CommonBundle\Entity;
 
-use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -10,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table("People")
  * @ORM\Entity(repositoryClass="Bundle\CommonBundle\Entity\UserRepository")
  */
-class User extends BaseUser
+class User extends \FOS\UserBundle\Model\User
 {
     /**
      * @ORM\Id
@@ -22,7 +21,7 @@ class User extends BaseUser
     /**
      * @var string
      *
-     * @ORM\Column(name="fullname", type="text", nullable=false)
+     * @ORM\Column(name="fullname", type="string", nullable=false)
      */
     private $fullname;
 
@@ -31,35 +30,35 @@ class User extends BaseUser
      *
      * @ORM\Column(name="likeSendCount", type="integer", options={"default" = 0})
      */
-    private $likeSendCount;
+    private $likeSendCount = 0;
 
     /**
      * @var integer
      *
      * @ORM\Column(name="dislikeSendCount", type="integer", options={"default" = 0})
      */
-    private $dislikeSendCount;
+    private $dislikeSendCount = 0;
 
     /**
      * @var integer
      *
      * @ORM\Column(name="likeReceiveCount", type="integer", options={"default" = 0})
      */
-    private $likeReceiveCount;
+    private $likeReceiveCount = 0;
 
     /**
      * @var integer
      *
      * @ORM\Column(name="dislikeReceiveCount", type="integer", options={"default" = 0})
      */
-    private $dislikeReceiveCount;
+    private $dislikeReceiveCount = 0;
 
     /**
      * @var integer
      *
      * @ORM\Column(name="songCount", type="integer", options={"default" = 0})
      */
-    private $songCount;
+    private $songCount = 0;
 
     /**
      * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\Room\Room", cascade={"persist"}, inversedBy="users")
@@ -86,11 +85,23 @@ class User extends BaseUser
     /*                   DO NOT REMOVE THIS CODE           */
     /*******************************************************/
 
-    public function __construct($password) {
+    public function __construct($password = null) {
+        parent::__construct();
         $this->password = $password;
         $this->songs = new \Doctrine\Common\Collections\ArrayCollection();
         $this->votes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    public function setUsername($username)
+    {
+        $this->username = $username;
+
+        if (empty($this->fullname)) {
+            $this->fullname = $this->username;
+        }
+
+        return $this;
     }
 
     /**

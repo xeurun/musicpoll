@@ -2,6 +2,10 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
 
+services:
+    fos_user.doctrine_registry:
+        alias: doctrine
+
 framework:
     router:
         resource: "%kernel.root_dir%/config/routing.yml"

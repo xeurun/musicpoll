@@ -25,21 +25,21 @@ class Song extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="title", type="text", nullable=false)
+     * @ORM\Column(name="title", type="string", nullable=false)
      */
     private $title;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="url", type="text", nullable=false)
+     * @ORM\Column(name="url", type="string", nullable=false)
      */
     private $url;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="artist", type="text", nullable=true)
+     * @ORM\Column(name="artist", type="string", nullable=true)
      */
     private $artist;
 
@@ -53,7 +53,7 @@ class Song extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="type", type="text", nullable=false)
+     * @ORM\Column(name="type", type="string", nullable=false)
      */
     private $type;
 

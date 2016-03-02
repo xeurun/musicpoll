@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<head>
+<html ng-app="musicpoll">
     <head>
         <meta charset="UTF-8" />
-        <title>{% block title %}Алексей Степанков (XeuRun){% endblock %}</title>
+        <title>{% block title %}MusicPoll{% endblock %}</title>
         <link rel="icon" type="image/x-icon" href="favicon.ico">
-        <meta name="keywords" content="Степанков, Алексей, Алекс">
-        <meta name="description" content="Сайт Алексея Степанкова (XeuRun)">
+        <meta name="keywords" content="musicpoll, Степанков, Алексей, Алекс">
+        <meta name="description" content="MusicPoll">
         <meta name="author" content="Алексей Степанков (XeuRun)">
         {% stylesheets filter='cssrewrite'
             '@MainBundle/Resources/public/css/normalize.css'
-            '//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css'
-            '//ajax.googleapis.com/ajax/libs/angular_material/0.7.0/angular-material.min.css'
-            '@MainBundle/Resources/public/css/select.min.css'
+            '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'
+            '//ajax.googleapis.com/ajax/libs/angular_material/1.0.5/angular-material.min.css'
+            '//cdnjs.cloudflare.com/ajax/libs/angular-ui-select/0.14.9/select.min.css'
             '@MainBundle/Resources/public/css/main.css'
         output='css/style.css' %}
         <link rel="stylesheet" href="{{ asset_url }}"/>
@@ -20,7 +20,7 @@
         {% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
-    <body ng-app="musicpoll">
+    <body>
         {% block body %}{% endblock %}
         {% javascripts
             '@MainBundle/Resources/public/js/lib/dklab_realplexor.js'
@@ -29,11 +29,12 @@
         <script type="text/javascript" src="{{ asset_url }}"></script>
         {% endjavascripts %}
         {% javascripts
-            '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.6/angular.min.js'
-            '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.6/angular-sanitize.min.js'
-            '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.6/angular-animate.min.js'
-            '//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-beta.6/angular-aria.min.js'
-            '//ajax.googleapis.com/ajax/libs/angular_material/0.7.0/angular-material.min.js'
+            '//ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js'
+            '//ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular-sanitize.min.js'
+            '//ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular-animate.min.js'
+            '//ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular-aria.min.js'
+            '//ajax.googleapis.com/ajax/libs/angular_material/1.0.5/angular-material.min.js'
+            '//cdnjs.cloudflare.com/ajax/libs/angular-ui-select/0.14.9/select.min.js'
         %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
         {% endjavascripts %}

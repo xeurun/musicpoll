@@ -4,21 +4,35 @@
         <div class="row">
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                 <div class="btn-group">
-                    <label class="btn btn-primary" ng-model="list.onlyMy" btn-radio="false">Все</label>
-                    <label class="btn btn-primary" ng-model="list.onlyMy" btn-radio="true">Мои</label>
+                    <label class="btn btn-primary" ng-model="list.onlyMy" btn-radio="false">
+                        Все
+                        <md-tooltip md-direction="top">Список всех треков</md-tooltip>
+                    </label>
+                    <label class="btn btn-primary" ng-model="list.onlyMy" btn-radio="true">
+                        Мои
+                        <md-tooltip md-direction="top">Список треков которые добавил я</md-tooltip>
+                    </label>
                 </div>
             </div>
             <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                 <div class="btn-group">
-                    <label class="btn btn-primary" ng-model="list.top" btn-radio="false">Последние</label>
-                    <label class="btn btn-primary" ng-model="list.top" btn-radio="true">Топ</label>
+                    <label class="btn btn-primary" ng-model="list.top" btn-radio="false">
+                        Последние
+                        <md-tooltip md-direction="top">Фильтр по последним добавленным трекам</md-tooltip>
+                    </label>
+                    <label class="btn btn-primary" ng-model="list.top" btn-radio="true">
+                        Топ
+                        <md-tooltip md-direction="top">Фильтр по самым топовым трекам</md-tooltip>
+                    </label>
                 </div>
             </div>
             <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
                 <div class="input-group">
                     <input type="text" class="form-control" ng-model="list.searchText" placeholder="Поиск...">
+                    <md-tooltip md-direction="top">Поиск трека по названию</md-tooltip>
                     <span class="input-group-btn">
                         <button type="button" ng-click="list.searchText = ''" class="btn btn-default" aria-label="Close">
+                            <md-tooltip md-direction="left">Очистить поле поиска</md-tooltip>
                             <span aria-hidden="true">×</span>
                         </button>
                     </span>
@@ -26,19 +40,58 @@
             </div>
         </div>
         </br>
-        <ul class="list-group song-list" lr-infinite-scroll="list.songManager.getNextBlock" scroll-threshold="200" time-threshold="600" ng-init="list.songManager.getNextBlock()">
-            <li hg-cloak ng-repeat="song in list.songManager.getSongs() | filterObjectBy:{ 'authorId': list.onlyMy ? list.userManager.getCurrentUser().getId() : '' } | filterObjectBy:list.searchText:'title' | orderObjectBy:list.top ? 'counter' : 'id':list.top" ng-class="{disabled: song.isDisabled()}" class="ng-cloak list-group-item">
+        <ul class="list-group song-list"
+            lr-infinite-scroll="list.songManager.getNextBlock"
+            scroll-threshold="200"
+            time-threshold="600"
+            ng-init="list.songManager.getNextBlock()">
+            <li hg-cloak
+                ng-repeat="song in list.songManager.getSongs() | filterObjectBy:{ 'authorId': list.onlyMy ? list.userManager.getCurrentUser().getId() : '' } | filterObjectBy:list.searchText:'title' | orderObjectBy:list.top ? 'counter' : 'id':list.top"
+                ng-class="{disabled: song.isDisabled()}"
+                class="ng-cloak list-group-item">
                 <span class="badge">
-                    <span ng-hide="song.getVoted()" ng-click="list.songManager.voteForSong(song.getId(), true)" class="glyphicon glyphicon-hand-up"></span>
-                    <span ng-hide="song.getVoted()" ng-click="list.songManager.voteForSong(song.getId(), false)" class="glyphicon glyphicon-hand-down"></span>
-                    <span ng-hide="song.isDisabled()" ng-click="list.play(song.getId())" ng-class="{'glyphicon-play': !list.player.getState(song.getId()).getSongId() || !list.player.getState(song.getId()).isPlaying(), 'glyphicon-stop': list.player.getState(song.getId()).isPlaying()}" class="glyphicon"></span>
-                    <span ng-show="(list.songManager.getSong(song.getId()).isMy() || list.userManager.getCurrentUser().isAdmin() || list.userManager.getCurrentUser().isPlayer()) && !song.isDisabled()" ng-click="list.songManager.deleteSong(song.getId())" class="glyphicon glyphicon-remove"></span>
-                    <span ng-click="list.open(song.getId())">[[ song.getCounter() ]]</span>
+                    <span ng-click="list.addTo(song.getId(), 'vk')" class="glyphicon glyphicon-search">
+                        <md-tooltip>Найти вконтакте</md-tooltip>
+                    </span>
+                    <span ng-hide="song.getVoted()"
+                          ng-click="list.songManager.voteForSong(song.getId(), true)"
+                          class="glyphicon glyphicon-hand-up">
+                        <md-tooltip>Голос за!</md-tooltip>
+                    </span>
+                    <span ng-hide="song.getVoted()"
+                          ng-click="list.songManager.voteForSong(song.getId(), false)"
+                          class="glyphicon glyphicon-hand-down">
+                        <md-tooltip>Голос против!</md-tooltip>
+                    </span>
+                    <span ng-hide="song.isDisabled()"
+                          ng-click="list.play(song.getId())"
+                          ng-class="{'glyphicon-play': !list.player.getState(song.getId()).getSongId() || !list.player.getState(song.getId()).isPlaying(), 'glyphicon-stop': list.player.getState(song.getId()).isPlaying()}"
+                          class="glyphicon">
+                        <md-tooltip>Прослушать</md-tooltip>
+                    </span>
+                    <span ng-show="(list.songManager.getSong(song.getId()).isMy() || list.userManager.getCurrentUser().isAdmin() || list.userManager.getCurrentUser().isPlayer()) && !song.isDisabled()"
+                          ng-click="list.songManager.deleteSong(song.getId())"
+                          class="glyphicon glyphicon-remove">
+                        <md-tooltip>Удалить</md-tooltip>
+                    </span>
+                    <span ng-click="list.open(song.getId())">
+                        [[ song.getCounter() ]]
+                        <md-tooltip>Рейтинг</md-tooltip>
+                    </span>
                 </span>
                 <span class="song-title">[[ song.getTitle() ]]</span>
-                <small class="label label-default" ng-class="{hidden: !song.getArtist().length}"><br>Исполнитель: [[ song.getArtist() ]]</small>
-                <small class="label label-default"><br>Добавил: [[ song.getAuthorFullname() ]]</small>
+                <small class="label label-default" ng-class="{hidden: !song.getArtist().length}">
+                    <br>
+                    Исполнитель: [[ song.getArtist() ]]
+                </small>
+                <small class="label label-default">
+                    <br>
+                    Добавил: [[ song.getAuthorFullname() ]]
+                </small>
             </li>
         </ul>
+    </div>
+    <div class="load-hover" ng-hide="list.loaded">
+        <md-progress-circular md-mode="indeterminate" md-diameter="96"></md-progress-circular>
     </div>
 </section>

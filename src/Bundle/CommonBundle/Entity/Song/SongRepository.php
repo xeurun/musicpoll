@@ -52,6 +52,7 @@ class SongRepository extends BaseRepository
      */
     public function getTopSongs()
     {
+        // TODO: group by title
         $query = $this->createQueryBuilder('s');
         $query
             ->setMaxResults(10)

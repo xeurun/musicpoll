@@ -40,7 +40,7 @@
                 if(!value.isDisabled()) {
                     result = value;
 
-                    return;
+                    return result;
                 }
             });
 

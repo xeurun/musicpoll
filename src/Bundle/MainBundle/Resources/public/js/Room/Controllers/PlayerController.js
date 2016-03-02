@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    function PlayerController($rootScope, $scope, $timeout, $interval, UserManager, ApiService, PlayerManager, SongManager, Config) {
+    function PlayerController($rootScope, $scope, $timeout, $interval, $mdToast, UserManager, ApiService, PlayerManager, SongManager, Config) {
         var self = this,
             interval,
             timeout;
@@ -31,7 +31,20 @@
                     SongManager.deleteSong(self.song.getId(), true);
                 }
                 var song = SongManager.getTopSong();
-                ApiService.put(Config.ROUTING.next.replace('_ID_', song ? song.getId() : null));
+                if (song === null && Config.ROOM.SETTINGS.RADIO === '') {
+                    self.song = null;
+                    self.audio.pause();
+                    self.started = false;
+
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .content('Радио не настроено!')
+                            .position('bottom left')
+                            .hideDelay(5000)
+                    );
+                }
+
+                ApiService.put(Config.ROUTING.next.replace('_ID_', song !== null ? song.getId() : null));
             }
         };
 
@@ -95,14 +108,13 @@
                     interval = $interval(function() {
                         ++self.second;
                     }, 1000);
-                } else if(angular.isString(Config.ROOM.SETTINGS.RADIO)) {
-                    if(self.headphone) {
-                        self.audio.playByUrl(Config.ROOM.SETTINGS.RADIO);
-                    }
+                } else if(Config.ROOM.SETTINGS.RADIO !== '' && self.headphone) {
+                    self.audio.playByUrl(Config.ROOM.SETTINGS.RADIO);
                 }
+
                 $rootScope.$broadcast('popup:show', {
                     type: 'info',
-                    message: 'Сейчас играет ' + (angular.isObject(self.song) ? self.song.title : 'радио')
+                    message: 'Сейчас играет ' + (!angular.isObject(self.song) ? 'радио' : self.song.title)
                 });
             }
             $scope.$apply();
@@ -115,7 +127,7 @@
                 if(angular.isObject(self.song)) {
                     self.audio.playById(self.song.getId());
                     self.audio.setTime(self.second);
-                } else if(angular.isString(Config.ROOM.SETTINGS.RADIO)) {
+                } else if(Config.ROOM.SETTINGS.RADIO !== '') {
                     self.audio.playByUrl(Config.ROOM.SETTINGS.RADIO);
                 }
             }
@@ -136,7 +148,7 @@
             self.skips.splice(0, self.skips.length);
             self.skip = false;
             var isSong = angular.isObject(self.song);
-            if(isSong || angular.isString(Config.ROOM.SETTINGS.RADIO)) {
+            if(isSong || Config.ROOM.SETTINGS.RADIO !== '') {
                 self.started = true;
                 if(!Config.PLAYER) {
                     self.audio.getState().setPlaying(true);

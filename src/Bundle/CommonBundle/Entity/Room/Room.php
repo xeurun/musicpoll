@@ -27,7 +27,7 @@ class Room extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="password", type="text", nullable=true)
+     * @ORM\Column(name="password", type="string", nullable=true)
      */
     private $password;
 

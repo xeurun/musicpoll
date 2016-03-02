@@ -26,11 +26,10 @@
             }
 
             .button {
-                width: 100px;
+                width: 100%;
                 background: #3399cc;
                 display: block;
                 margin: 0 auto;
-                margin-top: 1%;
                 padding: 10px;
                 text-align: center;
                 text-decoration: none;
@@ -40,8 +39,12 @@
                 -webkit-transition: background .3s;
             }
 
-            .button:hover {
+            .button:not(#toggle-login):hover {
                 background: #2288bb;
+            }
+
+            #toggle-login {
+                text-align: left;
             }
 
             #login {
@@ -71,13 +74,15 @@
                 color: #fff;
             }
 
+            #content,
             form {
                 background:#f0f0f0;
                 padding:6% 4%;
             }
 
             input[type="text"],
-            input[type="password"] {
+            input[type="password"],
+            input[type="email"] {
                 width: 92%;
                 background: #fff;
                 margin-bottom: 4%;
@@ -111,28 +116,36 @@
         </style>
     </head>
     <body>
-        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-            {{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |
-            <a class="button" id="toggle-login" href="{{ path('fos_user_security_logout') }}">
-                {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
-            </a>
-        {% else %}
-            <a class="button" id="toggle-login" href="{{ path('fos_user_security_login') }}">
-                {{ 'layout.login'|trans({}, 'FOSUserBundle') }}
-            </a>
-        {% endif %}
+        <div class="button" id="toggle-login">
+            {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                {{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |
+                <a href="{{ path('fos_user_security_logout') }}">
+                    {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
+                </a>
+            {% else %}
+                <a href="{{ path('fos_user_security_login') }}">
+                    {{ 'layout.login'|trans({}, 'FOSUserBundle') }}
+                </a>
+                |
+                <a href="{{ path('fos_user_registration_register') }}">
+                    {{ 'layout.register'|trans({}, 'FOSUserBundle') }}
+                </a>
+            {% endif %}
+        </div>
         <div id="login">
             <div id="triangle"></div>
-            <h1>Авторизация</h1>
-            {% for type, messages in app.session.flashBag.all %}
-                {% for message in messages %}
-                    <div class="{{ type }}">
-                        {{ message|trans({}, 'FOSUserBundle') }}
-                    </div>
+            <h1>Заполните форму ниже</h1>
+            <div id="content">
+                {% for type, messages in app.session.flashBag.all %}
+                    {% for message in messages %}
+                        <div class="{{ type }}">
+                            {{ message|trans({}, 'FOSUserBundle') }}
+                        </div>
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
-            {% block fos_user_content %}
-            {% endblock fos_user_content %}
+                {% block fos_user_content %}
+                {% endblock fos_user_content %}
+            </div>
         </div>
     </body>
 </html>

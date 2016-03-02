@@ -51,7 +51,7 @@
             })
             .constant ("Config", {
                 ROUTING: { },
-                USERID: {{ app.user.id }}
+                USERID: {{ app.user ? app.user.id : 0 }}
             });
         })();
     </script>
