@@ -9,8 +9,8 @@ class RealplexorManager
 
     /**
      * @var DklabRealplexor
-    */
-    private $_realplexor;
+     */
+    private $realplexor;
 
     /**
      * Конструктор
@@ -19,7 +19,7 @@ class RealplexorManager
      */
     public function __construct(DklabRealplexor $realplexor)
     {
-        $this->_realplexor = $realplexor;
+        $this->realplexor = $realplexor;
     }
 
     /**
@@ -27,15 +27,35 @@ class RealplexorManager
      */
     public function getRealplexor()
     {
-        return $this->_realplexor;
+        return $this->realplexor;
     }
 
     /**
-     * @param string $channel
-     * @param mixed $data
-     * @throws \Exception
-     *
-     * @return mixed
+     * @inheritdoc
+     */
+    public function cmdOnlineWithCounters($idPrefixes = null)
+    {
+        try {
+            return $this->realplexor->cmdOnlineWithCounters($idPrefixes);
+        } catch (DklabRealplexorException $ex) {
+            throw new \Exception($ex->getMessage(), 0, $ex);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function cmdWatch($fromPos, $idPrefixes = null)
+    {
+        try {
+            return $this->realplexor->cmdWatch($fromPos, $idPrefixes);
+        } catch (DklabRealplexorException $ex) {
+            throw new \Exception($ex->getMessage(), 0, $ex);
+        }
+    }
+
+    /**
+     * @inheritdoc
      */
     public function send($channel, $data)
     {
@@ -44,9 +64,8 @@ class RealplexorManager
         }
 
         try {
-            $this->_realplexor->send($channel, $data);
-        }
-        catch(DklabRealplexorException $ex) {
+            $this->realplexor->send($channel, $data);
+        } catch (DklabRealplexorException $ex) {
             throw new \Exception($ex->getMessage(), 0, $ex);
         }
     }

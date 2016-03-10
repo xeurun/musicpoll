@@ -22,11 +22,11 @@
         </p>
         <hr>
         <p class="input-group">
-            <span class="input-group-addon" style="padding-right: 15px;">Название</span>
+            <span class="input-group-addon" style="padding-right: 38px;">Название</span>
             <span>{{ form_widget(songForm.title) }}</span>
         </p>
         <p class="input-group">
-            <span class="input-group-addon" style="padding-right: 28px;">Ссылка</span>
+            <span class="input-group-addon" style="padding-right: 51px;">Ссылка</span>
             <span>{{ form_widget(songForm.url) }}</span>
             <span class="input-group-addon" ng-class="form.song.url ? '' : 'hidden'">
                 <button style="padding: 0 5px;" type="button" ng-class="previewPlayer.getState().isPlaying() ? 'btn-danger' : 'btn-success'" class="btn btn-xs" ng-click="play($event)">
@@ -37,6 +37,12 @@
         </p>
         <p class="hidden">
             <input type="hidden" name="_token" ng-init="form.song._token='{{ songForm._token.vars.value }}'" value="{{ songForm._token.vars.value }}"/>
+        </p>
+        <p class="input-group">
+            <span class="input-group-addon" style="padding-right: 10px;">Длительность</span>
+            <span>
+                <input type="text" disabled="disabled" ng-model="getDurationFormatted()" class="form-control" aria-invalid="true">
+            </span>
         </p>
     </form>
 </div>

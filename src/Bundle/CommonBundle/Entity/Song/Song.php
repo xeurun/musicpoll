@@ -51,6 +51,13 @@ class Song extends BaseEntity
     private $duration;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="genre_id", type="integer", nullable=true)
+     */
+    private $genreId;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="type", type="string", nullable=false)
@@ -188,6 +195,26 @@ class Song extends BaseEntity
     public function setCounter($counter)
     {
         $this->counter = $counter;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getGenreId()
+    {
+        return $this->genreId;
+    }
+
+    /**
+     * @param int $genreId
+     *
+     * @return Song
+     */
+    public function setGenreId($genreId)
+    {
+        $this->genreId = $genreId;
 
         return $this;
     }

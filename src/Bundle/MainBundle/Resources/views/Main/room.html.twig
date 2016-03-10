@@ -25,6 +25,14 @@
             <span class="glyphicon glyphicon-wrench"></span>
         </a>
     </div>
+    <div ng-controller="ProfileFormController as profileForm">
+        {% include 'MainBundle:Main/Form:profile.html.twig' %}
+        <a ng-cloak class="profile-btn btn btn-primary btn-lg"
+           ng-click="profileForm.open()">
+            <md-tooltip md-direction="right">Настройки пользователя</md-tooltip>
+            <span class="glyphicon glyphicon-user"></span>
+        </a>
+    </div>
     {% include 'MainBundle:Main/Include:playerController.html.twig' %}
     <div class="container-fluid">
         {% include 'MainBundle:Main/Include:listController.html.twig' %}

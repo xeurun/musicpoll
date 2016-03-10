@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                <div class="input-group">
+                <div class="input-group" style="margin-right:12px;">
                     <input type="text" class="form-control" ng-model="list.searchText" placeholder="Поиск...">
                     <md-tooltip md-direction="top">Поиск трека по названию</md-tooltip>
                     <span class="input-group-btn">
@@ -48,7 +48,7 @@
             <li hg-cloak
                 ng-repeat="song in list.songManager.getSongs() | filterObjectBy:{ 'authorId': list.onlyMy ? list.userManager.getCurrentUser().getId() : '' } | filterObjectBy:list.searchText:'title' | orderObjectBy:list.top ? 'counter' : 'id':list.top"
                 ng-class="{disabled: song.isDisabled()}"
-                class="ng-cloak list-group-item">
+                class="ng-cloak list-group-item parent-hover">
                 <span class="badge">
                     <span ng-click="list.addTo(song.getId(), 'vk')" class="glyphicon glyphicon-search">
                         <md-tooltip>Найти вконтакте</md-tooltip>
@@ -80,13 +80,21 @@
                     </span>
                 </span>
                 <span class="song-title">[[ song.getTitle() ]]</span>
-                <small class="label label-default" ng-class="{hidden: !song.getArtist().length}">
+                <small class="label label-default" ng-class="{hidden: !song.getDurationFormatted().length}">
                     <br>
-                    Исполнитель: [[ song.getArtist() ]]
+                    Длительность: [[ song.getDurationFormatted() ]]
                 </small>
                 <small class="label label-default">
                     <br>
                     Добавил: [[ song.getAuthorFullname() ]]
+                </small>
+                <small class="label label-default child-hover" ng-class="{hidden: !song.getGenre().length}">
+                    <br>
+                    Жанр: [[ song.getGenre() ]]
+                </small>
+                <small class="label label-default child-hover" ng-class="{hidden: !song.getArtist().length}">
+                    <br>
+                    Исполнитель: [[ song.getArtist() ]]
                 </small>
             </li>
         </ul>

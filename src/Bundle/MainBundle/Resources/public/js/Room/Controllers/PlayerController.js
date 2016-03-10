@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    function PlayerController($rootScope, $scope, $timeout, $interval, $mdToast, UserManager, ApiService, PlayerManager, SongManager, Config) {
+    function PlayerController($rootScope, $scope, $timeout, $window, $interval, $mdToast, UserManager, ApiService, PlayerManager, SongManager, Config) {
         var self = this,
             interval,
             timeout;
@@ -174,6 +174,9 @@
                         self.audio.playByUrl(Config.ROOM.SETTINGS.RADIO);
                     }
                 }
+
+                $window.document.title = self.song.getTitle() + self.song.getArtist().length ? ' - ' + self.song.getArtist() : '';
+
                 $rootScope.$broadcast('popup:show', {
                     type: 'info',
                     message: 'Сейчас играет ' + (isSong ? self.song.getTitle() : 'радио')
@@ -182,6 +185,9 @@
                 self.audio.pause();
                 $rootScope.$broadcast('popup:show', {type: 'danger', message: 'Плейлист пуст!'});
                 self.audio.setDefaultState();
+
+                // TODO: change this!
+                $window.document.title = 'MusicPool';
             }
 
             $scope.$apply();

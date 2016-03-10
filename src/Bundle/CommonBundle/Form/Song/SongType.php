@@ -28,7 +28,7 @@ class SongType extends AbstractType
             'label' => false,
             'required' => true,
             'attr' => array(
-                'ng-model'      => "form.song.url",
+                'ng-model'      => 'form.song.url',
                 'class'         => 'form-control' ,
                 'placeholder'   => 'song.placeholder.url'
             ),
@@ -47,6 +47,13 @@ class SongType extends AbstractType
         ));
 
         $builder->add('duration', 'text', array(
+            'required' => false,
+            'attr' => array(
+                'class' => 'hidden'
+            ),
+        ));
+
+        $builder->add('genreId', 'text', array(
             'required' => false,
             'attr' => array(
                 'class' => 'hidden'

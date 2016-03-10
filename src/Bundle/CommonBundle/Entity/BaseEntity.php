@@ -6,8 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * BaseEntity
  */
-class BaseEntity {
-
+class BaseEntity
+{
     public function prePersist()
     {
         try {

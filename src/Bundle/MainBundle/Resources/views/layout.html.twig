@@ -40,10 +40,14 @@
                     remove:         '{{ path('remove', {'id': '_ID_'}) }}',
                     whoVote:        '{{ path('who_vote', {'id': '_ID_'}) }}',
                     setting:        '{{ path('setting', {'id': '_ID_'}) }}',
+                    profile:        '{{ path('profile') }}',
                     getUsers:       '{{ path('get_users') }}',
                     getPortion:     '{{ path('get_portion', {'offset': '_OFFSET_'}) }}',
                     userStatistics: '{{ path('user_statistics', {'id': '_ID_'}) }}',
                     vk_api:         'https://api.vk.com/method/_method_'
+                },
+                USER: {
+                    BACKGROUND: '{{ app.user.background }}'
                 },
                 USERID: {{ app.user.id }},
                 OWNERID: {{ room.author.id }},

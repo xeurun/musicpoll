@@ -91,7 +91,7 @@ class MainController extends BaseController
      * @Route("/enter", name="enter")
      * @param Request $request
      *
-     * @return Responce
+     * @return Response
      */
     public function enterAction(Request $request)
     {

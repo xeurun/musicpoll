@@ -5,15 +5,21 @@
         this.open = function () {
             $modal.open({
                 templateUrl: Config.ROUTING.form,
-                controller: function ($scope, $modalInstance, Config, ApiService, PlayerManager) {
+                controller: function ($scope, $modalInstance, Config, ApiService, PlayerManager, CustomConvert) {
                     $scope.songs = [];
                     $scope.types = ['VK'];
                     $scope.form  = {
                         song: {
+                            duration: 0,
                             type:   'VK',
                             _token: ''
                         }
                     };
+
+                    $scope.getDurationFormatted = function () {
+                        return CustomConvert.toHHMMSS($scope.form.song.duration);
+                    };
+                    
                     $scope.previewPlayer = new PlayerManager(
                         {
                             onerror: function() {
@@ -30,6 +36,7 @@
                             $scope.form.song.title      = newValue.title;
                             $scope.form.song.artist     = newValue.artist;
                             $scope.form.song.duration   = newValue.duration;
+                            $scope.form.song.genreId    = newValue.genre_id;
                         }
                     });
 

@@ -40,7 +40,8 @@ class ApiController extends BaseController
             "counter"   => $song->getCounter(),
             "duration"  => $song->getDuration(),
             "authorId"  => $song->getAuthor()->getId(),
-            "author"    => $song->getAuthor()->getFullname()
+            "author"    => $song->getAuthor()->getFullname(),
+            "genre_id"  => $song->getGenreId()
         );
     }
 
@@ -56,7 +57,7 @@ class ApiController extends BaseController
     {
         $result = array();
         try {
-            /** @var var SongRepository $repository */
+            /** @var SongRepository $repository */
             $repository = $this->getRepository('song');
             $entities   = $repository->getSongPortion($offset, self::SONG_LIMIT);
             foreach ($entities as $entity) {
@@ -177,6 +178,31 @@ class ApiController extends BaseController
             } else {
                 $result['error'] = $this->translate('room.notFound');
             }
+        } catch (\Exception $ex) {
+            $result['error'] = $ex->getMessage();
+        }
+
+        return new JsonResponse($result);
+    }
+
+    /**
+     * @Route("/profile", name="profile")
+     * @Method("PUT")
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function profileAction(Request $request)
+    {
+        $result = array();
+
+        $background = $request->get('background');
+
+        try {
+            $user = $this->getUser();
+            $user->setBackground($background);
+
+            $this->getRepository('user')->save($user);
         } catch (\Exception $ex) {
             $result['error'] = $ex->getMessage();
         }
@@ -451,7 +477,7 @@ class ApiController extends BaseController
      * @param Request $request
      * @param integer $id
      *
-     * @return Responce
+     * @return Response
      */
     public function userStatisticsAction(Request $request, $id)
     {
@@ -469,7 +495,7 @@ class ApiController extends BaseController
      * @param Request $request
      * @param integer $id
      *
-     * @return Responce
+     * @return Response
      */
     public function whoVoteAction(Request $request, $id)
     {
@@ -485,7 +511,7 @@ class ApiController extends BaseController
      * @Method("GET")
      * @Template("MainBundle:Main/Form:song.html.twig")
      *
-     * @return Responce
+     * @return Response
      */
     public function formAction()
     {

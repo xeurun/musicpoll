@@ -11,6 +11,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User extends \FOS\UserBundle\Model\User
 {
+    public function prePersist() { }
+
+    public function preUpdate() { }
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -80,6 +84,13 @@ class User extends \FOS\UserBundle\Model\User
      * @ORM\OneToMany(targetEntity="Bundle\CommonBundle\Entity\Room\Room", mappedBy="author")
      **/
     private $rooms;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="background", type="string", nullable=false)
+     */
+    private $background;
 
     /*******************************************************/
     /*                   DO NOT REMOVE THIS CODE           */
@@ -339,5 +350,25 @@ class User extends \FOS\UserBundle\Model\User
     public function getRooms()
     {
         return $this->rooms;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBackground()
+    {
+        return $this->background;
+    }
+
+    /**
+     * @param string $background
+     *
+     * @return User
+     */
+    public function setBackground($background)
+    {
+        $this->background = $background;
+
+        return $this;
     }
 }

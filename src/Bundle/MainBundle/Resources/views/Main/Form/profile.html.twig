@@ -1,0 +1,25 @@
+<script type="text/ng-template" id="profile.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Профиль</h3>
+    </div>
+    <div class="modal-body">
+        <div class="input-group">
+            <span class="input-group-addon" id="profile-background">URL фона</span>
+            <input ng-model="profile.background"
+                   type="text"
+                   class="form-control"
+                   aria-describedby="profile-background">
+            <md-tooltip md-direction="top">Должна быть прямая ссылка на фоновое изображение</md-tooltip>
+            <span class="input-group-btn">
+                <button type="button" ng-click="profile.background = ''" class="btn btn-default" aria-label="Close">
+                    <md-tooltip md-direction="left">Очистить поле ввода</md-tooltip>
+                    <span aria-hidden="true">×</span>
+                </button>
+            </span>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="save()">Сохранить</button>
+        <button class="btn btn-warning" ng-click="close()">Закрыть</button>
+    </div>
+</script>
