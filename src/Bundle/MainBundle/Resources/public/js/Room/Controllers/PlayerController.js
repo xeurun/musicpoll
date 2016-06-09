@@ -226,16 +226,32 @@
         });
         
         $scope.$on('room:appCommand', function(event, data) {
-            if (data.command == 'skip' && Config.USERID == USERID) {
-                $rootScope.$broadcast('room:skip', {
-                    id: data.user,
-                    fullname: UserManager.getUser(data.user).getFullname()
-                });
-            } else if (data.command == 'volume' && Config.USERID == USERID) {
-                $rootScope.$broadcast('room:mute', {
-                    on: !self.muted,
-                    author: UserManager.getUser(data.user).getFullname()
-                });
+            if()Config.USERID == data.user {
+                if (data.command == 'skip') {
+                    $rootScope.$broadcast('room:skip', {
+                        id: data.user,
+                        fullname: UserManager.getUser(data.user).getFullname()
+                    });
+                } else if (data.command == 'volume') {
+                    $rootScope.$broadcast('room:mute', {
+                        on: !self.muted,
+                        author: UserManager.getUser(data.user).getFullname()
+                    });
+                } else if (data.command == 'add') {
+                    var content = {
+                        song: {
+                            duration: 0,
+                            type:   'VK',
+                            _token: ''
+                        }
+                    };
+                    content.song.url        = data.content.url;
+                    content.song.title      = data.content.title;
+                    content.song.artist     = data.content.artist;
+                    content.song.duration   = data.content.duration;
+                    content.song.genreId    = data.content.genre_id;
+                    ApiService.post(Config.ROUTING.add, content);
+                }
             }
         });
 

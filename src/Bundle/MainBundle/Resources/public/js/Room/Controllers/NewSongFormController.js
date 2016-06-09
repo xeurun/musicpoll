@@ -40,17 +40,6 @@
                         }
                     });
 
-                    $scope.$on('room:appCommand', function(event, data) {
-                        if (data.command == 'add' && Config.USERID == data.user) {
-                            $scope.form.song.url        = data.content.url;
-                            $scope.form.song.title      = data.content.title;
-                            $scope.form.song.artist     = data.content.artist;
-                            $scope.form.song.duration   = data.content.duration;
-                            $scope.form.song.genreId    = data.content.genre_id;
-                            ApiService.post(Config.ROUTING.add, $scope.form);
-                        }
-                    });
-
                     $scope.save = function () {
                         ApiService.post(Config.ROUTING.add, $scope.form);
                         $modalInstance.dismiss('save');
