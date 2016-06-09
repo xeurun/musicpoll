@@ -526,6 +526,31 @@ class ApiController extends BaseController
     }
 
     /**
+     * TODO: Самый костыльный костыль что я писал, очень стыдно(
+     * @Route("/vkWrapper", name="vk_wrapper")
+     * @Method("POST")
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function appVkWrapperAction(Request $request)
+    {
+        $token   = $request->request->get('token');
+        $api     = $request->request->get('api');
+
+        $result = null;
+        if(!empty($token)) {
+            $user = $this->getRepository('user')->findByToken($token);
+            $result = @file_get_contents($api);
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'result'  => $result
+        ]);
+    }
+
+    /**
      * @Route("/appCommand", name="app_command")
      * @Method("POST")
      * @param Request $request
