@@ -526,31 +526,6 @@ class ApiController extends BaseController
     }
 
     /**
-     * TODO: Самый костыльный костыль что я писал, очень стыдно(
-     * @Route("/vkWrapper", name="vk_wrapper")
-     * @Method("GET")
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function appVkWrapperAction(Request $request)
-    {
-        $token   = $request->query->get('token');
-        $api     = $request->query->get('api');
-
-        $result = null;
-        if(!empty($token)) {
-            $user = $this->getRepository('user')->findByToken($token);
-            $result = @file_get_contents($api);
-        }
-
-        return new JsonResponse([
-            'success' => true,
-            'result'  => $result
-        ]);
-    }
-
-    /**
      * @Route("/appCommand", name="app_command")
      * @Method("POST")
      * @param Request $request
@@ -563,8 +538,9 @@ class ApiController extends BaseController
         $command = $request->request->get('command');
         $content = $request->request->get('content');
         
+        $result = false;
         if(!empty($token)) {
-            $user = $this->getRepository('user')->findByToken($token);
+            $user = $this->getRepository('user')->findOneByToken($token);
             
             if($user instanceof User) {
                 $room = $user->getRoom();
@@ -574,14 +550,16 @@ class ApiController extends BaseController
                     'result'    => [
                         'user'    => $user->getId(),
                         'command' => $command,
-                        'content' => $content
+                        'content' => json_decode($content, true)
                     ]
                 ));
+
+                $result = true;
             }
         }
 
         return new JsonResponse([
-            'success' => true
+            'success' => $result
         ]);
     }
 }

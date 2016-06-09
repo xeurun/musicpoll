@@ -209,7 +209,6 @@
             $scope.$apply();
         });
 
-
         $scope.$on('room:setting', function(event, data) {
             Config.ROOM.SETTINGS.SKIP = data.skip;
             Config.ROOM.SETTINGS.RADIO = data.radio;
@@ -223,6 +222,20 @@
                     message:    'Владелец комнаты обновил настройки, голосов до пропуска: ' + (Config.ROOM.SETTINGS.SKIP - self.skips.length) + '!'
                 });
                 $scope.$apply();
+            }
+        });
+        
+        $scope.$on('room:appCommand', function(event, data) {
+            if (data.command == 'skip' && Config.USERID == USERID) {
+                $rootScope.$broadcast('room:skip', {
+                    id: data.user,
+                    fullname: UserManager.getUser(data.user).getFullname()
+                });
+            } else if (data.command == 'volume' && Config.USERID == USERID) {
+                $rootScope.$broadcast('room:mute', {
+                    on: !self.muted,
+                    author: UserManager.getUser(data.user).getFullname()
+                });
             }
         });
 
