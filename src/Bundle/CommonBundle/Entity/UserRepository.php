@@ -4,6 +4,7 @@ namespace Bundle\CommonBundle\Entity;
 
 use Bundle\CommonBundle\Entity\BaseEntity;
 use Bundle\CommonBundle\Entity\BaseRepository;
+use FOS\UserBundle\Util\TokenGenerator;
 
 /**
  * UserRepository
@@ -24,5 +25,24 @@ class UserRepository extends BaseRepository
             ->addOrderBy('u.likeReceiveCount', 'DESC');
 
         return $query->getQuery()->getResult();
+    }
+    
+    /** Get top users
+     * @return mixed
+     */
+    public function getToken()
+    {
+        $token = null;
+        if($this->currentUser instanceof User) {
+            $token = $this->currentUser->getToken();
+            if(empty($token)) {
+                $tokenGenerator = new TokenGenerator();
+                $token = $tokenGenerator->generateToken();
+                $this->currentUser->setToken($token);
+                $this->save($this->currentUser);
+            }
+        }
+        
+        return $token;
     }
 }

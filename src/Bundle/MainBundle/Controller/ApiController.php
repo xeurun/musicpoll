@@ -2,7 +2,10 @@
 
 namespace Bundle\MainBundle\Controller;
 
+use Bundle\CommonBundle\Entity\User;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -17,7 +20,7 @@ use Bundle\CommonBundle\Entity\Vote\Vote;
 
 /**
  * Class ApiController
- * @Route("/api", name="homepage")
+ * @Route("/api")
  * @package Bundle\MainBundle\Controller
  */
 class ApiController extends BaseController
@@ -520,5 +523,40 @@ class ApiController extends BaseController
         return array(
             'songForm' => $songForm->createView()
         );
+    }
+
+    /**
+     * @Route("/appCommand", name="app_command")
+     * @Method("POST")
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function appCommandAction(Request $request)
+    {
+        $token   = $request->request->get('token');
+        $command = $request->request->get('command');
+        $content = $request->request->get('content');
+        
+        if(!empty($token)) {
+            $user = $this->getRepository('user')->findByToken($token);
+            
+            if($user instanceof User) {
+                $room = $user->getRoom();
+
+                $this->get('drklab.realplexor.manager')->send("Room{$room->getId()}", array (
+                    'action'    => 'appCommand',
+                    'result'    => [
+                        'user'    => $user->getId(),
+                        'command' => $command,
+                        'content' => $content
+                    ]
+                ));
+            }
+        }
+
+        return new JsonResponse([
+            'success' => true
+        ]);
     }
 }

@@ -26,12 +26,13 @@ class MainController extends BaseController
      * @Template()
      * @param Request $request
      *
-     * @return Responce
+     * @return Response
      */
     public function indexAction(Request $request)
     {
         return array(
-            'rooms' => $this->getRepository('room')->findAll()
+            'rooms' => $this->getRepository('room')->findAll(),
+            'token' => $this->getRepository('user')->getToken()
         );
     }
     /**
@@ -39,7 +40,7 @@ class MainController extends BaseController
      * @Template()
      * @param Request $request
      *
-     * @return Responce
+     * @return Response
      */
     public function statisticAction(Request $request)
     {
@@ -56,7 +57,7 @@ class MainController extends BaseController
      * @Route("/create", name="create")
      * @param Request $request
      *
-     * @return Responce
+     * @return Response
      */
     public function createAction(Request $request)
     {
@@ -142,7 +143,7 @@ class MainController extends BaseController
      * @param Request $request
      * @param integer $id
      *
-     * @return Responce
+     * @return Response
      */
     public function roomAction(Request $request, $id)
     {

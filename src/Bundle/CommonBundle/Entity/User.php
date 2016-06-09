@@ -92,6 +92,13 @@ class User extends \FOS\UserBundle\Model\User
      */
     private $background;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="token", type="string", nullable=true)
+     */
+    private $token;
+
     /*******************************************************/
     /*                   DO NOT REMOVE THIS CODE           */
     /*******************************************************/
@@ -368,6 +375,26 @@ class User extends \FOS\UserBundle\Model\User
     public function setBackground($background)
     {
         $this->background = $background;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return User
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
 
         return $this;
     }
