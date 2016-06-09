@@ -112,6 +112,8 @@
                     self.audio.playByUrl(Config.ROOM.SETTINGS.RADIO);
                 }
 
+                $window.document.title = (!angular.isObject(self.song)) ? 'Радио' : (self.song.title + (self.song.getArtist().length ? (' - ' + self.song.getArtist()) : ''));
+
                 $rootScope.$broadcast('popup:show', {
                     type: 'info',
                     message: 'Сейчас играет ' + (!angular.isObject(self.song) ? 'радио' : self.song.title)
@@ -175,7 +177,7 @@
                     }
                 }
 
-                $window.document.title = self.song.getTitle() + self.song.getArtist().length ? ' - ' + self.song.getArtist() : '';
+                $window.document.title = isSong ? (self.song.getTitle() + (self.song.getArtist().length ? (' - ' + self.song.getArtist()) : '')) : 'Радио';
 
                 $rootScope.$broadcast('popup:show', {
                     type: 'info',

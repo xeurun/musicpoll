@@ -3,6 +3,8 @@
 /app/cache/
 /app/config/parameters.yml
 /app/logs/
+/app/var/sessions/
+!app/var/sessions/.gitkeep
 !app/cache/.gitkeep
 !app/logs/.gitkeep
 /build/

@@ -65,14 +65,17 @@
             })
             .filter('orderObjectBy', function() {
                 return function(items, field, reverse) {
-                    var filtered = [];
+                    var filtered = [],
+                        capitalize = function(s) {
+                            return s[0].toUpperCase() + s.substr(1);
+                        };
 
                     angular.forEach(items, function(item) {
                         filtered.push(item);
                     });
                     filtered.reverse();
                     filtered.sort(function (a, b) {
-                        return (a[field] > b[field] ? 1 : -1);
+                        return (a['get' + capitalize(field)]() > b['get' + capitalize(field)]() ? 1 : -1);
                     });
                     if(reverse) {
                         filtered.reverse();
