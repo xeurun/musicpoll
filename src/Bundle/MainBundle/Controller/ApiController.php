@@ -528,15 +528,15 @@ class ApiController extends BaseController
     /**
      * TODO: Самый костыльный костыль что я писал, очень стыдно(
      * @Route("/vkWrapper", name="vk_wrapper")
-     * @Method("POST")
+     * @Method("GET")
      * @param Request $request
      *
      * @return JsonResponse
      */
     public function appVkWrapperAction(Request $request)
     {
-        $token   = $request->request->get('token');
-        $api     = $request->request->get('api');
+        $token   = $request->query->get('token');
+        $api     = $request->query->get('api');
 
         $result = null;
         if(!empty($token)) {
