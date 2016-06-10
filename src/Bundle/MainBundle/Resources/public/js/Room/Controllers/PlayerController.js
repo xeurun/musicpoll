@@ -226,7 +226,7 @@
         });
         
         $scope.$on('room:appCommand', function(event, data) {
-            if()Config.USERID == data.user {
+            if(Config.USERID == data.user) {
                 if (data.command == 'skip') {
                     $rootScope.$broadcast('room:skip', {
                         id: data.user,
