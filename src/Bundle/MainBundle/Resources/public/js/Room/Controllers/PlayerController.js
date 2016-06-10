@@ -241,8 +241,7 @@
                     var content = {
                         song: {
                             duration: 0,
-                            type:   'VK',
-                            _token: ''
+                            type:   'VK'
                         }
                     };
                     content.song.url        = data.content.url;
