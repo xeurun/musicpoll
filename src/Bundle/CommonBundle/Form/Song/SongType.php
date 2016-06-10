@@ -68,7 +68,8 @@ class SongType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'Bundle\CommonBundle\Entity\Song\Song',
-            'translation_domain' => 'form'
+            'translation_domain' => 'form',
+            'csrf_protection' => false,
         ));
     }
 

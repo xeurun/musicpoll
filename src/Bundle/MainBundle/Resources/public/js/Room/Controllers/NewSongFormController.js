@@ -11,8 +11,7 @@
                     $scope.form  = {
                         song: {
                             duration: 0,
-                            type:   'VK',
-                            _token: ''
+                            type:   'VK'
                         }
                     };
 
