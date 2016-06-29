@@ -58,7 +58,7 @@
                         if(!$scope.previewPlayer.getState().isPlaying()) {
                             var url = $scope.form.song.url;
                             if ($scope.form.song.type == 'sc') {
-                                url += '?client_id = ' + Config.SC_TOKEN;
+                                url += '?client_id=' + Config.SC_TOKEN;
                             }
                             $scope.previewPlayer.playByUrl(url);
                         } else {
@@ -77,7 +77,7 @@
                                     v: '5.28'
                                 }).then(function(data) {
                                     if(!angular.isUndefined(data.response)) {
-                                        $scope.songs = data.response.items
+                                        $scope.songs = data.response.items;
                                     }
                                 });
                             } else {
@@ -86,8 +86,8 @@
                                     q: term,
                                     types: 'tracks'
                                 }).then(function(data) {
-                                    if(!angular.isUndefined(data.response)) {
-                                        $scope.songs = data.response
+                                    if(!angular.isUndefined(data)) {
+                                        $scope.songs = data;
                                     }
                                 });
                             }

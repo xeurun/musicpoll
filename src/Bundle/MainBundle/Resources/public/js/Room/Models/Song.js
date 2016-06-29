@@ -26,7 +26,7 @@
                 },
                 getUrl: function () {
                     if (type == 'sc') {
-                        return url + '?client_id = ' + Config.SC_TOKEN;
+                        return url + '?client_id=' + Config.SC_TOKEN;
                     } else {
                         return url;
                     }
