@@ -11,21 +11,13 @@
                     $scope.form  = {
                         song: {
                             url:        '',
+                            title:      '',
                             type:       'vk',
+                            sourceId:   null,
                             duration:   0
                         }
                     };
-
-                    $scope.getDurationFormatted = function () {
-                        var duration = $scope.form.song.duration;
-                        
-                        if (duration == undefined) {
-                            duration = 0;
-                        }
-                        
-                        return CustomConvert.toHHMMSS(duration);
-                    };
-                    
+                    $scope.duration = 0;
                     $scope.previewPlayer = new PlayerManager(
                         {
                             onerror: function() {
@@ -37,20 +29,29 @@
 
                     $scope.$watch('songs.selected', function(newValue) {
                         $scope.previewPlayer.pause();
-                        $scope.form.song.title      = newValue.title;
-                        $scope.form.song.sourceId   = newValue.id;
-                        if(newValue && newValue.stream_url != undefined) {
-                            $scope.form.song.url        = newValue.stream_url;
-                            $scope.form.song.artist     = newValue.user != undefined ? newValue.user.username : '';
-                            $scope.form.song.duration   = newValue.duration / 1000;
-                            $scope.form.song.genreId    = 0;
-                            $scope.form.song.type       = 'sc';
-                        } else {
-                            $scope.form.song.url        = newValue.url;
-                            $scope.form.song.artist     = newValue.artist;
-                            $scope.form.song.duration   = newValue.duration;
-                            $scope.form.song.genreId    = newValue.genre_id;
-                            $scope.form.song.type       = 'vk';
+
+                        var duration = $scope.form.song.duration;
+                        if (angular.isUndefined(duration)) {
+                            duration = 0;
+                        }
+                        $scope.duration = CustomConvert.toHHMMSS(duration);
+
+                        if(!angular.isUndefined(newValue)) {
+                            $scope.form.song.title      = newValue.title;
+                            $scope.form.song.sourceId   = newValue.id;
+                            if(!angular.isUndefined(newValue.stream_url)) {
+                                $scope.form.song.url        = newValue.stream_url;
+                                $scope.form.song.artist     = newValue.user != undefined ? newValue.user.username : '';
+                                $scope.form.song.duration   = newValue.duration / 1000;
+                                $scope.form.song.genreId    = 0;
+                                $scope.form.song.type       = 'sc';
+                            } else {
+                                $scope.form.song.url        = newValue.url;
+                                $scope.form.song.artist     = newValue.artist;
+                                $scope.form.song.duration   = newValue.duration;
+                                $scope.form.song.genreId    = newValue.genre_id;
+                                $scope.form.song.type       = 'vk';
+                            }
                         }
                     });
 

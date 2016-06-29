@@ -330,5 +330,5 @@ div.md-track-ticks > canvas {
         }
 
             .log-list > ul > li .badge {
-                min-width: 60px;
+                width: 65px;
             }

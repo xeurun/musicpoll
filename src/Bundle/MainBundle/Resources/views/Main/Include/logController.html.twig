@@ -18,7 +18,6 @@
     <hr>
     <ul ng-show="loglist.show">
         <li ng-repeat="song in loglist.songs | orderObjectBy:'counter':true" class="ng-cloak">
-            <span class="song-title">[[ song.getTitle() ]]</span>
             <span class="badge pull-right">
                 <span ng-click="loglist.addTo(song.getId(), 'vk')" class="glyphicon glyphicon-search">
                     <md-tooltip md-direction="left">Найти вконтакте</md-tooltip>
@@ -31,6 +30,7 @@
                     <md-tooltip md-direction="left">Общий рейтинг</md-tooltip>
                 </span>
             </span>
+            <span class="song-title">[[ song.getTitle() ]]</span>
         </li>
     </ul>
     <a class="show-log-list btn btn-primary btn-lg" ng-show="!loglist.show" ng-click="loglist.show = !loglist.show">
