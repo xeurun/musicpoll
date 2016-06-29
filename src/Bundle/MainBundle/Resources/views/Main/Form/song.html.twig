@@ -11,11 +11,28 @@
                            reset-search-input="false">
                     <ui-select-match placeholder="{{ 'song.placeholder.search.song'|trans({}, 'form') }}">[[ $select.selected.title | points:70 ]]</ui-select-match>
                     <ui-select-choices repeat="song in songs"
-                                       refresh="refreshSongs($select.search)"
+                                       refresh="refreshSongs($select.search, 'vk')"
                                        refresh-delay="250">
                         <span ng-bind-html="song.title | points:70 | highlight: $select.search"></span>
                         </br>
                         <small ng-bind-html="song.artist | points:70"></small>
+                    </ui-select-choices>
+                </ui-select>
+            </span>
+        </p>
+        <p class="input-group">
+            <span class="input-group-addon">SoundCloud</span>
+            <span>
+                <ui-select ng-model="songs.selected"
+                           theme="bootstrap"
+                           reset-search-input="false">
+                    <ui-select-match placeholder="{{ 'song.placeholder.search.song'|trans({}, 'form') }}">[[ $select.selected.title | points:70 ]]</ui-select-match>
+                    <ui-select-choices repeat="song in songs"
+                                       refresh="refreshSongs($select.search, 'sc')"
+                                       refresh-delay="250">
+                        <span ng-bind-html="song.title | points:70 | highlight: $select.search"></span>
+                        </br>
+                        <small ng-bind-html="song.tag_list | points:70"></small>
                     </ui-select-choices>
                 </ui-select>
             </span>

@@ -25,3 +25,4 @@ parameters:
     realplexor_namespace:   musicpoll
 
     vk_token: ThisTokenIsNotValidChangeIt
+    sc_token: ThisTokenIsNotValidChangeIt

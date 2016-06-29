@@ -44,7 +44,8 @@
                     getUsers:       '{{ path('get_users') }}',
                     getPortion:     '{{ path('get_portion', {'offset': '_OFFSET_'}) }}',
                     userStatistics: '{{ path('user_statistics', {'id': '_ID_'}) }}',
-                    vk_api:         'https://api.vk.com/method/_method_'
+                    vk_api:         'https://api.vk.com/method/_method_',
+                    sc_api:         'http://api.soundcloud.com/tracks'
                 },
                 USER: {
                     BACKGROUND: '{{ app.user.background }}'
@@ -60,6 +61,7 @@
                 },
                 PLAYER: {{ app.user != room.author ? 0 : 1 }},
                 TOKEN:  '{{ config.vk_token }}',
+                SC_TOKEN:  '{{ config.vk_token }}',
                 DELAY_FOR_POPUP: 3000,          // 3 second
                 POPUP_ANIMATION_DURATION: 3500  // 3.5 second
             })

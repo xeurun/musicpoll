@@ -35,16 +35,17 @@ class ApiController extends BaseController
      */
     private function _getSongFileds($song, $userId = null) {
         return array(
-            "id"        => $song->getId(),
-            "url"       => $song->getUrl(),
-            "title"     => $song->getTitle(),
-            "voted"     => is_null($userId) ? false : $song->hasCurrentUserVote($userId),
-            "artist"    => $song->getArtist(),
-            "counter"   => $song->getCounter(),
-            "duration"  => $song->getDuration(),
-            "authorId"  => $song->getAuthor()->getId(),
-            "author"    => $song->getAuthor()->getFullname(),
-            "genre_id"  => $song->getGenreId()
+            'id'        => $song->getId(),
+            'url'       => $song->getUrl(),
+            'title'     => $song->getTitle(),
+            'voted'     => is_null($userId) ? false : $song->hasCurrentUserVote($userId),
+            'artist'    => $song->getArtist(),
+            'counter'   => $song->getCounter(),
+            'duration'  => $song->getDuration(),
+            'authorId'  => $song->getAuthor()->getId(),
+            'author'    => $song->getAuthor()->getFullname(),
+            'genre_id'  => $song->getGenreId(),
+            'type'      => $song->getType()
         );
     }
 

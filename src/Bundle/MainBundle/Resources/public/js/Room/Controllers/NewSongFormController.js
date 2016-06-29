@@ -7,7 +7,7 @@
                 templateUrl: Config.ROUTING.form,
                 controller: function ($scope, $modalInstance, Config, ApiService, PlayerManager, CustomConvert) {
                     $scope.songs = [];
-                    $scope.types = ['VK'];
+                    $scope.types = ['VK', 'SC'];
                     $scope.form  = {
                         song: {
                             duration: 0,
@@ -29,13 +29,22 @@
                     );
 
                     $scope.$watch('songs.selected', function(newValue) {
-                        if(newValue) {
+                        if(newValue && newValue.stream_url != undefined) {
+                            $scope.previewPlayer.pause();
+                            $scope.form.song.url        = newValue.stream_url;
+                            $scope.form.song.title      = newValue.title;
+                            $scope.form.song.artist     = newValue.user != undefined ? newValue.user.username : '';
+                            $scope.form.song.duration   = newValue.duration;
+                            $scope.form.song.genreId    = 0;
+                            $scope.form.song.type       = 'sc';
+                        } else {
                             $scope.previewPlayer.pause();
                             $scope.form.song.url        = newValue.url;
                             $scope.form.song.title      = newValue.title;
                             $scope.form.song.artist     = newValue.artist;
                             $scope.form.song.duration   = newValue.duration;
                             $scope.form.song.genreId    = newValue.genre_id;
+                            $scope.form.song.type       = 'vk';
                         }
                     });
 
@@ -47,26 +56,42 @@
                     $scope.play = function ($event) {
                         if($event) $event.preventDefault();
                         if(!$scope.previewPlayer.getState().isPlaying()) {
-                            $scope.previewPlayer.playByUrl($scope.form.song.url);
+                            var url = $scope.form.song.url;
+                            if ($scope.form.song.type == 'sc') {
+                                url += '?client_id = ' + Config.SC_TOKEN;
+                            }
+                            $scope.previewPlayer.playByUrl(url);
                         } else {
                             $scope.previewPlayer.pause();
                         }
                     };
 
-                    $scope.refreshSongs = function(term) {
+                    $scope.refreshSongs = function(term, type) {
                         if(term.length > 2) {
-                            ApiService.jsonp(Config.ROUTING.vk_api.replace('_method_', 'audio.search'), {
-                                callback: 'JSON_CALLBACK',
-                                q: term,
-                                auto_complete: 1,
-                                access_token: Config.TOKEN,
-                                v: '5.28'
-                            }).then(function(data) {
-                                if(!angular.isUndefined(data.response)) {
-                                    $scope.songs = data.response.items
-                                }
-                            });
-                        };
+                            if (type == 'vk') {
+                                ApiService.jsonp(Config.ROUTING.vk_api.replace('_method_', 'audio.search'), {
+                                    callback: 'JSON_CALLBACK',
+                                    q: term,
+                                    auto_complete: 1,
+                                    access_token: Config.TOKEN,
+                                    v: '5.28'
+                                }).then(function(data) {
+                                    if(!angular.isUndefined(data.response)) {
+                                        $scope.songs = data.response.items
+                                    }
+                                });
+                            } else {
+                                ApiService.jsonp(Config.ROUTING.sc_api, {
+                                    client_id: Config.SC_TOKEN,
+                                    q: term,
+                                    types: 'tracks'
+                                }).then(function(data) {
+                                    if(!angular.isUndefined(data.response)) {
+                                        $scope.songs = data.response
+                                    }
+                                });
+                            }
+                        }
                     };
 
                     $scope.$on('modalForm:close', function() {
