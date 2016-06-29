@@ -406,10 +406,6 @@ class Song extends BaseEntity
     {
         $this->deleted = $deleted;
 
-        if ($this->deleted) {
-            $this->votes = new \Doctrine\Common\Collections\ArrayCollection();
-        }
-
         return $this;
     }
 }
