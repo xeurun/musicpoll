@@ -36,18 +36,17 @@
                     );
 
                     $scope.$watch('songs.selected', function(newValue) {
+                        $scope.previewPlayer.pause();
+                        $scope.form.song.title      = newValue.title;
+                        $scope.form.song.sourceId   = newValue.id;
                         if(newValue && newValue.stream_url != undefined) {
-                            $scope.previewPlayer.pause();
                             $scope.form.song.url        = newValue.stream_url;
-                            $scope.form.song.title      = newValue.title;
                             $scope.form.song.artist     = newValue.user != undefined ? newValue.user.username : '';
                             $scope.form.song.duration   = newValue.duration / 1000;
                             $scope.form.song.genreId    = 0;
                             $scope.form.song.type       = 'sc';
                         } else {
-                            $scope.previewPlayer.pause();
                             $scope.form.song.url        = newValue.url;
-                            $scope.form.song.title      = newValue.title;
                             $scope.form.song.artist     = newValue.artist;
                             $scope.form.song.duration   = newValue.duration;
                             $scope.form.song.genreId    = newValue.genre_id;
@@ -56,8 +55,15 @@
                     });
 
                     $scope.save = function () {
+                        $scope.previewPlayer.pause();
                         ApiService.post(Config.ROUTING.add, $scope.form);
-                        $modalInstance.dismiss('save');
+                        $scope.songs = [];
+                        $scope.form  = {
+                            song: {
+                                url:        '',
+                                duration:   0
+                            }
+                        };
                     };
 
                     $scope.play = function ($event) {

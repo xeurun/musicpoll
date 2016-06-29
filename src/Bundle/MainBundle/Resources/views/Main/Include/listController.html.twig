@@ -80,21 +80,18 @@
                     </span>
                 </span>
                 <span class="song-title">[[ song.getTitle() ]]</span>
+                <br>
+                <small class="label label-default" ng-class="{hidden: !song.getArtist().length}">
+                    Исполнитель: [[ song.getArtist() ]]
+                </small>
                 <small class="label label-default" ng-class="{hidden: !song.getDurationFormatted().length}">
-                    <br>
                     Длительность: [[ song.getDurationFormatted() ]]
                 </small>
-                <small class="label label-default">
-                    <br>
-                    Добавил: [[ song.getAuthorFullname() ]]
-                </small>
                 <small class="label label-default child-hover" ng-class="{hidden: !song.getGenre().length}">
-                    <br>
                     Жанр: [[ song.getGenre() ]]
                 </small>
-                <small class="label label-default child-hover" ng-class="{hidden: !song.getArtist().length}">
-                    <br>
-                    Исполнитель: [[ song.getArtist() ]]
+                <small class="label label-default child-hover">
+                    Добавил: [[ song.getAuthorFullname() ]]
                 </small>
             </li>
         </ul>

@@ -1,4 +1,11 @@
 <section hg-cloak ng-controller="UserListController as userlist" class="user-list ng-cloak" ng-init="userlist.userManager.loadUsers();">
+    <div ng-show="userlist.show" class="user-list-header">
+        <h3>Список пользователей комнаты</h3>
+        <span ng-click="userlist.show = false;" class="user-list-close btn" aria-label="Close">
+            <span aria-hidden="true">×</span>
+        </span>
+    </div>
+    <hr>
     <ul ng-show="userlist.show">
         <li ng-repeat="user in userlist.userManager.getUsers()" class="ng-cloak">
             <button ng-click="userlist.open(user.getId())" type="button" class="btn" ng-class="userlist.userManager.getUser(user.getId()).isCurrent() ? 'btn-success' : 'btn-primary'">
@@ -8,7 +15,7 @@
             </button>
         </li>
     </ul>
-    <a class="show-user-list btn btn-primary btn-lg" ng-click="userlist.show = !userlist.show">
+    <a class="show-user-list btn btn-primary btn-lg" ng-show="!userlist.show" ng-click="userlist.show = !userlist.show">
         <md-tooltip md-direction="left">Список пользователей в комнате</md-tooltip>
         <span class="glyphicon glyphicon-list-alt"></span>
     </a>

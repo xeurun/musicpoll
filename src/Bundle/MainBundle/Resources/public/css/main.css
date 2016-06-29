@@ -25,7 +25,7 @@ body {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 
-.clear-radius {
+.btn {
     border-radius: 0 !important;
 }
 
@@ -151,6 +151,12 @@ div.md-track-ticks > canvas {
     right: 10px;
 }
 
+.show-log-list {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+}
+
 .settings-btn {
     position: fixed;
     top: 190px;
@@ -183,14 +189,16 @@ div.md-track-ticks > canvas {
 }
 
 .player {
-    width: 300px;
+    width: 350px;
     padding: 5px;
     margin: 0 auto;
-    background: #EFEFEF;
+    background-color: #fff;
     text-align: center;
-    -webkit-box-shadow: inset 0px 0px 4px 0px #000;
-    -moz-box-shadow: inset 0px 0px 4px 0px #000;
-    box-shadow: inset 0px 0px 4px 0px #000;
+    border-bottom-left-radius: 300px;
+    border-bottom-right-radius: 300px;
+    -webkit-box-shadow: inset 0px 0px 2px 0px #000;
+    -moz-box-shadow: inset 0px 0px 2px 0px #000;
+    box-shadow: inset 0px 0px 2px 0px #000;
 }
 
     .player .song-progress {
@@ -241,26 +249,86 @@ div.md-track-ticks > canvas {
         word-wrap: break-word;
     }
 
+    .song-list > li small {
+        margin-right: 5px;
+    }
+
 .user-list {
     position: fixed;
     bottom: 0;
     right: 0;
-    width: 300px;
-    padding-right: 10px;
+    padding: 10px 10px 0 10px;
     z-index: 9;
+    max-width: 300px;
+    background-color: #fff;
 }
+
+    .user-list > .user-list-header h3 {
+        margin: 0;
+        padding-right: 30px;
+        padding-bottom: 10px;
+        font-size: 18px;
+        text-align: center;
+    }
+
+    .user-list > .user-list-header .user-list-close {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
 
     .user-list > ul {
         height: 400px;
         overflow-y: scroll;
-        margin-bottom: 70px;
+        margin: 0;
     }
 
         .user-list > ul > li {
             margin-right: 10px;
             margin-bottom: 10px;
+            width: 250px;
         }
 
             .user-list > ul > li > button{
                 width: 100%;
+            }
+
+.log-list {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding: 10px 10px 0 10px;
+    z-index: 9;
+    max-width: 300px;
+    background-color: #fff;
+}
+
+    .log-list > .log-list-header h3 {
+        margin: 0;
+        padding-right: 30px;
+        padding-bottom: 10px;
+        font-size: 18px;
+        text-align: center;
+    }
+
+    .log-list > .log-list-header .log-list-close {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+    .log-list > ul {
+        height: 400px;
+        overflow-y: scroll;
+        margin: 0;
+    }
+
+        .log-list > ul > li {
+            margin-right: 10px;
+            width: 250px;
+            margin-bottom: 10px;
+        }
+
+            .log-list > ul > li .badge {
+                min-width: 60px;
             }

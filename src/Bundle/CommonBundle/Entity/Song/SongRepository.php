@@ -46,6 +46,35 @@ class SongRepository extends BaseRepository
     }
 
     /**
+     * Get song portion for log top
+     * @param integer $limit
+     * @param integer $search
+     *
+     * @return mixed
+     */
+    public function getLogTop($limit, $search = null)
+    {
+        $query = $this->createQueryBuilder('s');
+        $query
+            ->where('s.deleted = 1')
+            ->andWhere('s.skip = 0')
+            ->andWhere('s.room = :room')
+            ->setParameter('room', $this->getCurrentUser()->getRoom())
+            ->setMaxResults($limit);
+
+        if (!empty($search)) {
+            $query
+                ->andWhere('s.title LIKE :title')
+                ->setParameter('title', "%%$search%%");
+        }
+
+        $query->orderBy('s.counter', 'DESC');
+        $query->addOrderBy('s.createdAt', 'DESC');
+
+        return $query->getQuery()->getResult();
+    }
+
+    /**
      * Get top songs
      *
      * @return mixed

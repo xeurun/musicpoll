@@ -53,6 +53,13 @@ class SongType extends AbstractType
             ),
         ));
 
+        $builder->add('sourceId', 'text', array(
+            'required' => false,
+            'attr' => array(
+                'class' => 'hidden'
+            ),
+        ));
+
         $builder->add('genreId', 'text', array(
             'required' => false,
             'attr' => array(

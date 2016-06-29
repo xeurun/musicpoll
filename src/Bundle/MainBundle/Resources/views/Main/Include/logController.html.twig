@@ -1,0 +1,40 @@
+<section hg-cloak ng-controller="LogListController as loglist" class="log-list ng-cloak" ng-init="loglist.init();">
+    <div ng-show="loglist.show" class="log-list-header">
+        <h3>Топ завершенных песен комнаты</h3>
+        <span ng-click="loglist.show = false;" class="log-list-close btn" aria-label="Close">
+            <span aria-hidden="true">×</span>
+        </span>
+    </div>
+    <div ng-show="loglist.show" class="input-group" style="margin-bottom:12px;">
+        <input type="text" class="form-control" ng-model="loglist.searchText" ng-model-options='{ debounce: 500 }' ng-change="loglist.refreshSongs()" placeholder="Поиск...">
+        <md-tooltip md-direction="bottom">Поиск трека по названию</md-tooltip>
+        <span class="input-group-btn">
+            <button type="button" ng-click="loglist.searchText = '';loglist.refreshSongs();" class="btn btn-default" aria-label="Close">
+                <md-tooltip md-direction="left">Очистить поле поиска</md-tooltip>
+                <span aria-hidden="true">×</span>
+            </button>
+        </span>
+    </div>
+    <hr>
+    <ul ng-show="loglist.show">
+        <li ng-repeat="song in loglist.songs | orderObjectBy:'counter':true" class="ng-cloak">
+            <span class="song-title">[[ song.getTitle() ]]</span>
+            <span class="badge pull-right">
+                <span ng-click="loglist.addTo(song.getId(), 'vk')" class="glyphicon glyphicon-search">
+                    <md-tooltip md-direction="left">Найти вконтакте</md-tooltip>
+                </span>
+                <span class="glyphicon glyphicon-hand-right" ng-click="loglist.addAgain(song.getId())">
+                    <md-tooltip md-direction="left">Добавить повторно</md-tooltip>
+                </span>
+                <span>
+                    [[ song.getCounter() ]]
+                    <md-tooltip md-direction="left">Общий рейтинг</md-tooltip>
+                </span>
+            </span>
+        </li>
+    </ul>
+    <a class="show-log-list btn btn-primary btn-lg" ng-show="!loglist.show" ng-click="loglist.show = !loglist.show">
+        <md-tooltip md-direction="right">Список проигранных песен</md-tooltip>
+        <span class="glyphicon glyphicon-trash"></span>
+    </a>
+</section>

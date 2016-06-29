@@ -25,10 +25,10 @@
             }
         };
 
-        this.next = function () {
+        this.next = function (skip) {
             if(Config.PLAYER) {
                 if (angular.isObject(self.song)) {
-                    SongManager.deleteSong(self.song.getId(), true);
+                    SongManager.deleteSong(self.song.getId(), true, skip);
                 }
                 var song = SongManager.getTopSong();
                 if (song === null && Config.ROOM.SETTINGS.RADIO === '') {
@@ -214,7 +214,7 @@
             Config.ROOM.SETTINGS.RADIO = data.radio;
             if(self.skips.length >= Config.ROOM.SETTINGS.SKIP) {
                 if(Config.PLAYER && self.started) {
-                    self.next();
+                    self.next(true);
                 }
             } else {
                 $rootScope.$broadcast('popup:show', {
@@ -249,6 +249,7 @@
                     content.song.artist     = data.content.artist;
                     content.song.duration   = data.content.duration;
                     content.song.genreId    = data.content.genre_id;
+                    //content.song.sourceId   = data.content.source_id;
                     ApiService.post(Config.ROUTING.add, content);
                 }
             }
@@ -259,7 +260,7 @@
                 self.skips.push(data.id);
                 if(self.skips.length >= Config.ROOM.SETTINGS.SKIP) {
                     if(Config.PLAYER) {
-                        self.next();
+                        self.next(true);
                     }
                 }
 

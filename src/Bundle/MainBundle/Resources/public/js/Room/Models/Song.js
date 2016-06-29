@@ -3,18 +3,19 @@
 
     function Song(Config, UserManager, CustomConvert) {
         var Song = function (song) {
-            var id       = song.id,
-                url      = song.url,
-                title    = song.title,
-                voted    = song.voted,
-                artist   = song.artist,
-                author   = song.author,
-                counter  = song.counter,
-                disabled = false,
-                authorId = song.authorId,
-                duration = song.duration,
-                genre_id = song.genre_id,
-                type     = song.type;
+            var id          = song.id,
+                url         = song.url,
+                title       = song.title,
+                voted       = song.voted,
+                artist      = song.artist,
+                author      = song.author,
+                counter     = song.counter,
+                disabled    = false,
+                authorId    = song.authorId,
+                duration    = song.duration,
+                genre_id    = song.genre_id,
+                source_id   = song.source_id,
+                type        = song.type;
 
             //TODO: Public field only for angular filter
             return {
@@ -39,6 +40,9 @@
                 },
                 getGenreId: function () {
                     return genre_id;
+                },
+                getSourceId: function () {
+                    return source_id;
                 },
                 getGenre: function () {
                     var genre = '';

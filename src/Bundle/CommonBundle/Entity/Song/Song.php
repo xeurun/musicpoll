@@ -53,6 +53,13 @@ class Song extends BaseEntity
     /**
      * @var integer
      *
+     * @ORM\Column(name="source_id", type="integer", nullable=true)
+     */
+    private $sourceId;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="genre_id", type="integer", nullable=true)
      */
     private $genreId;
@@ -86,6 +93,13 @@ class Song extends BaseEntity
     private $deleted = false;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="skip", type="boolean", options={"default": false})
+     */
+    private $skip = false;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Bundle\CommonBundle\Entity\Room\Room", cascade={"persist"})
      * @ORM\JoinColumn(name="roomId", referencedColumnName="id", onDelete="SET NULL", nullable=true)
      **/
@@ -103,6 +117,7 @@ class Song extends BaseEntity
     public function __construct($room)
     {
         $this->room = $room;
+        $this->votes = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /*******************************************************/
@@ -195,6 +210,26 @@ class Song extends BaseEntity
     public function setCounter($counter)
     {
         $this->counter = $counter;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSourceId()
+    {
+        return $this->sourceId;
+    }
+
+    /**
+     * @param int $sourceId
+     *
+     * @return Song
+     */
+    public function setSourceId($sourceId)
+    {
+        $this->sourceId = $sourceId;
 
         return $this;
     }
@@ -337,6 +372,26 @@ class Song extends BaseEntity
     /**
      * @return boolean
      */
+    public function isSkip()
+    {
+        return $this->skip;
+    }
+
+    /**
+     * @param boolean $skip
+     *
+     * @return Song
+     */
+    public function setSkip($skip)
+    {
+        $this->skip = $skip;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
     public function isDeleted()
     {
         return $this->deleted;
@@ -350,6 +405,10 @@ class Song extends BaseEntity
     public function setDeleted($deleted)
     {
         $this->deleted = $deleted;
+
+        if ($this->deleted) {
+            $this->votes = new \Doctrine\Common\Collections\ArrayCollection();
+        }
 
         return $this;
     }

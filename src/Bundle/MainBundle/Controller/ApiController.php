@@ -45,6 +45,7 @@ class ApiController extends BaseController
             'authorId'  => $song->getAuthor()->getId(),
             'author'    => $song->getAuthor()->getFullname(),
             'genre_id'  => $song->getGenreId(),
+            'source_id' => $song->getSourceId(),
             'type'      => $song->getType()
         );
     }
@@ -64,6 +65,32 @@ class ApiController extends BaseController
             /** @var SongRepository $repository */
             $repository = $this->getRepository('song');
             $entities   = $repository->getSongPortion($offset, self::SONG_LIMIT);
+            foreach ($entities as $entity) {
+                $result['entities'][$entity->getId()] = $this->_getSongFileds($entity, $this->getUser()->getId());
+            }
+            $result['count'] = count($entities);
+        } catch (\Exception $ex) {
+            $result['error'] = $ex->getMessage();
+        }
+
+        return new JsonResponse($result);
+    }
+
+    /**
+     * @Route("/getLogTop", name="get_log_top")
+     * @Method("GET")
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getLogTop(Request $request)
+    {
+        $result = [];
+
+        try {
+            /** @var SongRepository $repository */
+            $repository = $this->getRepository('song');
+            $entities   = $repository->getLogTop(self::SONG_LIMIT, $request->get('search'));
             foreach ($entities as $entity) {
                 $result['entities'][$entity->getId()] = $this->_getSongFileds($entity, $this->getUser()->getId());
             }
@@ -273,8 +300,13 @@ class ApiController extends BaseController
                 if (!$room->isAuthor($user) && $user != $song->getAuthor() && !$user->hasRole('ROLE_ADMIN')) {
                     throw new AccessDeniedException();
                 }
+
                 $song->setDeleted(true);
+                if ($request->get('skip', false)) {
+                    $song->setSkip(true);
+                }
                 $songRepository->save($song);
+
                 $this->get('drklab.realplexor.manager')->send("Room$roomId", array (
                     'action'    => 'remove',
                     'result'    => array(

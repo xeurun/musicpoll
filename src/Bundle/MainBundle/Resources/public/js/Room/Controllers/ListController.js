@@ -35,7 +35,7 @@
         this.addTo = function (id, type) {
             var song = SongManager.getSong(id);
             if (type === 'vk' && song !== null) {
-                $window.open('https://vk.com/search?c%5Bq%5D=' + song.getTitle() + '&c%5Bsection%5D=audio', '_blank')
+                $window.open('https://new.vk.com/search?c%5Bq%5D=' + song.getTitle() + '&c%5Bsection%5D=audio', '_blank')
             }
         };
 

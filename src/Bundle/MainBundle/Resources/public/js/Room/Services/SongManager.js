@@ -14,13 +14,26 @@
             });
         };
 
+        this.getLogSongs = function(search) {
+            var result = {};
+
+            ApiService.get(Config.ROUTING.getLogTop, { search: search }).then(function(data) {
+                angular.forEach(data.entities, function(value, index) {
+                    result[index] = new Song(value);
+                });
+            });
+
+            return result;
+        };
+
         this.getSongs = function() {
             return songs;
         };
 
-        this.deleteSong = function(id, system) {
+        this.deleteSong = function(id, system, skip) {
             ApiService.delete(Config.ROUTING.remove.replace('_ID_', id), {
-                system: system || false
+                system: system || false,
+                skip:   skip || false
             });
         };
 
