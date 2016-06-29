@@ -7,16 +7,24 @@
                 templateUrl: Config.ROUTING.form,
                 controller: function ($scope, $modalInstance, Config, ApiService, PlayerManager, CustomConvert) {
                     $scope.songs = [];
-                    $scope.types = ['VK', 'SC'];
+                    $scope.types = ['vk', 'sc'];
                     $scope.form  = {
                         song: {
                             duration: 0,
-                            type:   'VK'
+                            type:   'vk'
                         }
                     };
 
                     $scope.getDurationFormatted = function () {
-                        return CustomConvert.toHHMMSS($scope.form.song.duration);
+                        var duration = $scope.form.song.duration;
+                        
+                        if (duration != undefined) {
+                            duration /= $scope.form.song.type == 'sc' ? 1000 : 1;
+                        } else {
+                            duration = 0;
+                        }
+                        
+                        return CustomConvert.toHHMMSS(duration);
                     };
                     
                     $scope.previewPlayer = new PlayerManager(
@@ -34,7 +42,7 @@
                             $scope.form.song.url        = newValue.stream_url;
                             $scope.form.song.title      = newValue.title;
                             $scope.form.song.artist     = newValue.user != undefined ? newValue.user.username : '';
-                            $scope.form.song.duration   = newValue.duration;
+                            $scope.form.song.duration   = newValue.duration / 1000;
                             $scope.form.song.genreId    = 0;
                             $scope.form.song.type       = 'sc';
                         } else {
@@ -81,7 +89,7 @@
                                     }
                                 });
                             } else {
-                                ApiService.jsonp(Config.ROUTING.sc_api, {
+                                ApiService.get(Config.ROUTING.sc_api, {
                                     client_id: Config.SC_TOKEN,
                                     q: term,
                                     types: 'tracks'
