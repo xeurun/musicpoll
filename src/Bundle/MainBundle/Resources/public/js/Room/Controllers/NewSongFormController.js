@@ -10,17 +10,16 @@
                     $scope.types = ['vk', 'sc'];
                     $scope.form  = {
                         song: {
-                            duration: 0,
-                            type:   'vk'
+                            url:        '',
+                            type:       'vk',
+                            duration:   0
                         }
                     };
 
                     $scope.getDurationFormatted = function () {
                         var duration = $scope.form.song.duration;
                         
-                        if (duration != undefined) {
-                            duration /= $scope.form.song.type == 'sc' ? 1000 : 1;
-                        } else {
+                        if (duration == undefined) {
                             duration = 0;
                         }
                         

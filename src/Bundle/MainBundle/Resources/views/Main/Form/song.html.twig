@@ -4,7 +4,7 @@
 <div class="modal-body">
     <form novalidate action="{{ path('add') }}" method="post">
         <p class="input-group">
-            <span class="input-group-addon">Вконтакте</span>
+            <span class="input-group-addon" style="min-width: 115px;">Вконтакте</span>
             <span>
                 <ui-select ng-model="songs.selected"
                            theme="bootstrap"
@@ -21,7 +21,7 @@
             </span>
         </p>
         <p class="input-group">
-            <span class="input-group-addon">SoundCloud</span>
+            <span class="input-group-addon" style="min-width: 115px;">SoundCloud</span>
             <span>
                 <ui-select ng-model="songs.selected"
                            theme="bootstrap"
@@ -39,11 +39,11 @@
         </p>
         <hr>
         <p class="input-group">
-            <span class="input-group-addon" style="padding-right: 38px;">Название</span>
+            <span class="input-group-addon" style="min-width: 115px;">Название</span>
             <span>{{ form_widget(songForm.title) }}</span>
         </p>
         <p class="input-group">
-            <span class="input-group-addon" style="padding-right: 51px;">Ссылка</span>
+            <span class="input-group-addon" style="min-width: 115px;">Ссылка</span>
             <span>{{ form_widget(songForm.url) }}</span>
             <span class="input-group-addon" ng-class="form.song.url ? '' : 'hidden'">
                 <button style="padding: 0 5px;" type="button" ng-class="previewPlayer.getState().isPlaying() ? 'btn-danger' : 'btn-success'" class="btn btn-xs" ng-click="play($event)">
@@ -58,7 +58,7 @@
         </p>
         #}
         <p class="input-group">
-            <span class="input-group-addon" style="padding-right: 10px;">Длительность</span>
+            <span class="input-group-addon" style="min-width: 115px;">Длительность</span>
             <span>
                 <input type="text" disabled="disabled" ng-model="getDurationFormatted()" class="form-control" aria-invalid="true">
             </span>
