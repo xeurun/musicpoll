@@ -189,21 +189,18 @@ div.md-track-ticks > canvas {
 }
 
 .player {
-    width: 350px;
+    width: 920px;
     padding: 5px;
     margin: 0 auto;
     background-color: #fff;
     text-align: center;
-    border-bottom-left-radius: 300px;
-    border-bottom-right-radius: 300px;
     -webkit-box-shadow: inset 0px 0px 2px 0px #000;
     -moz-box-shadow: inset 0px 0px 2px 0px #000;
     box-shadow: inset 0px 0px 2px 0px #000;
 }
 
     .player .song-progress {
-        width: 270px;
-        margin: 0 auto;
+        width: 100%;
     }
 
         .player .song-progress input[type="range"] {

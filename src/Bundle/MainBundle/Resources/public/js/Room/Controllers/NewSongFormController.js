@@ -30,12 +30,6 @@
                     $scope.$watch('songs.selected', function(newValue) {
                         $scope.previewPlayer.pause();
 
-                        var duration = $scope.form.song.duration;
-                        if (angular.isUndefined(duration)) {
-                            duration = 0;
-                        }
-                        $scope.duration = CustomConvert.toHHMMSS(duration);
-
                         if(!angular.isUndefined(newValue)) {
                             $scope.form.song.title      = newValue.title;
                             $scope.form.song.sourceId   = newValue.id;
@@ -53,11 +47,16 @@
                                 $scope.form.song.type       = 'vk';
                             }
                         }
+
+                        $scope.duration = CustomConvert.toHHMMSS($scope.form.song.duration);
                     });
 
                     $scope.save = function () {
-                        $scope.previewPlayer.pause();
                         ApiService.post(Config.ROUTING.add, $scope.form);
+                        $modalInstance.dismiss('save');
+                    };
+
+                    $scope.clear = function () {
                         $scope.songs = [];
                         $scope.form  = {
                             song: {
@@ -120,7 +119,7 @@
                 $rootScope.$broadcast('modalForm:close');
             });
         };
-    };
+    }
 
     angular.module('musicpoll').controller('NewSongFormController', NewSongFormController);
 })();

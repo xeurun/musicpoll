@@ -22,7 +22,7 @@
                 <span ng-click="loglist.addTo(song.getId(), 'vk')" class="glyphicon glyphicon-search">
                     <md-tooltip md-direction="left">Найти вконтакте</md-tooltip>
                 </span>
-                <span class="glyphicon glyphicon-hand-right" ng-click="loglist.addAgain(song.getId())">
+                <span class="glyphicon glyphicon-repeat" ng-click="loglist.addAgain(song.getId())">
                     <md-tooltip md-direction="left">Добавить повторно</md-tooltip>
                 </span>
                 <span>
@@ -35,6 +35,6 @@
     </ul>
     <a class="show-log-list btn btn-primary btn-lg" ng-show="!loglist.show" ng-click="loglist.show = !loglist.show">
         <md-tooltip md-direction="right">Список проигранных песен</md-tooltip>
-        <span class="glyphicon glyphicon-trash"></span>
+        <span class="glyphicon glyphicon-time"></span>
     </a>
 </section>
