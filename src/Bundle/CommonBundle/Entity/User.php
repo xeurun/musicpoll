@@ -105,6 +105,7 @@ class User extends \FOS\UserBundle\Model\User
 
     public function __construct($password = null) {
         parent::__construct();
+        $this->background = '';
         $this->password = $password;
         $this->songs = new \Doctrine\Common\Collections\ArrayCollection();
         $this->votes = new \Doctrine\Common\Collections\ArrayCollection();

@@ -1,0 +1,4 @@
+###> docker ###
+var/lib/mysql
+!var/lib/mysql/.gitkeep
+###< docker ###

@@ -1,0 +1,89 @@
+version: '3.6'
+networks:
+  public:
+    external: true
+    name: public
+  local:
+    internal: true
+    name: local
+
+services:
+  mysql:
+    container_name: ${DOCKER_PROJECT_NAME}-mysql
+    build:
+      context: .docker
+      dockerfile: Dockerfile-mysql
+      args:
+        TIMEZONE: ${TIMEZONE}
+        VERSION: 5.7
+    networks:
+      - public
+      - local
+    ports:
+      - 3306
+    volumes:
+      - .docker/var/lib/mysql:/var/lib/mysql
+    environment:
+      TZ: ${TIMEZONE}
+      MYSQL_ROOT_PASSWORD: ${DOCKER_PROJECT_NAME}
+      MYSQL_DATABASE: ${DOCKER_PROJECT_NAME}
+      MYSQL_USER: ${DOCKER_PROJECT_NAME}
+      MYSQL_PASSWORD: ${DOCKER_PROJECT_NAME}
+  php-fpm:
+    container_name: ${DOCKER_PROJECT_NAME}-php-fpm
+    build:
+      context: .docker
+      dockerfile: Dockerfile-php-fpm
+      args:
+        VERSION: 7.0-fpm-alpine
+    environment:
+      TZ: ${TIMEZONE}
+      XDEBUG_REMOTE_HOST: ${XDEBUG_REMOTE_HOST}
+    networks:
+      - public
+      - local
+    depends_on:
+      - mysql
+    volumes:
+      - .:/app
+  nginx:
+    container_name: ${DOCKER_PROJECT_NAME}-nginx
+    build:
+      context: .docker
+      dockerfile: Dockerfile-nginx
+    environment:
+      TZ: ${TIMEZONE}
+      NGINX_VERSION: 1.8
+    networks:
+      - public
+      - local
+    depends_on:
+      - php-fpm
+      - realplexor
+    ports:
+      - "8085:80"
+      - "4453:443"
+    volumes:
+      - .:/app
+  realplexor:
+    container_name: ${DOCKER_PROJECT_NAME}-realplexor
+    image: lyberteam/vbo-realplexor
+    networks:
+      - public
+      - local
+    ports:
+    - 10011:10010
+    - 8089:8088
+  composer:
+    container_name: ${DOCKER_PROJECT_NAME}-composer
+    build:
+      context: .docker
+      dockerfile: Dockerfile-composer
+      args:
+        VERSION: 1.7
+    environment:
+      TZ: ${TIMEZONE}
+      PW: /app
+      COMPOSER_HOME: /tmp
+    volumes:
+      - .:/app
