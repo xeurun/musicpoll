@@ -24,7 +24,7 @@ An open source platform application for listen music in small party/company/grou
     <a href="https://github.com/xeurun/musicpoll/issues">
     	<img src="https://img.shields.io/github/issues/xeurun/musicpoll.svg">
     </a>
-    <a href="https://opensource.org/licenses/MIT">
+    <a href="https://choosealicense.com/licenses/gpl-3.0/">
     	<img src="https://img.shields.io/badge/license-GPL3-blue.svg">
     </a>
 </p>
