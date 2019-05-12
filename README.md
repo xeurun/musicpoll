@@ -1,6 +1,8 @@
 MusicPoll - v0.1beta
 ========================
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/776e23bab2824184be3f3372092090fd)](https://app.codacy.com/app/xeurun/musicpoll?utm_source=github.com&utm_medium=referral&utm_content=xeurun/musicpoll&utm_campaign=Badge_Grade_Dashboard)
+
 MusicPoll - is a service for listen music in small party/company/group with friends and colleagues
 
 How install?
