@@ -1,4 +1,4 @@
-# MusicPoll - v0.1beta
+# MusicPoll
 
 <h4 align="center">
 An open source platform application for listen music in small party/company/group with friends and colleagues
