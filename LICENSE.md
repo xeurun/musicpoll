@@ -1,17 +1,3 @@
-            Symfony Copyright (c) 2004-2014 Fabien Potencier
-
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is furnished
-to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-            MusicPoll Copyright (C) 2015 Alex Stepankov
-
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
@@ -647,7 +633,7 @@ state the exclusion of warranty; and each file should have at least
 the "copyright" line and a pointer to where the full notice is found.
 
     MusicPoll
-    Copyright (C) 2015 Alex Stepankov
+    Copyright (C) 2015 Alexey Stepankov
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -667,7 +653,7 @@ Also add information on how to contact you by electronic and paper mail.
   If the program does terminal interaction, make it output a short
 notice like this when it starts in an interactive mode:
 
-    MusicPoll Copyright (C) 2015 Alex Stepankov
+    MusicPoll Copyright (C) 2015 Alexey Stepankov
     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
     This is free software, and you are welcome to redistribute it
     under certain conditions; type `show c' for details.
